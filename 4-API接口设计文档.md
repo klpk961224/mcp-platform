@@ -208,7 +208,7 @@ X-API-Key: {api_key}
 
 ## 7. 接口列表
 
-### 7.1 认证授权接口
+### 7.1 认证域服务接口（端口8001）
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -216,8 +216,13 @@ X-API-Key: {api_key}
 | 用户登出 | POST | /api/v1/auth/logout | 用户登出，吊销Token |
 | 刷新Token | POST | /api/v1/auth/refresh | 刷新JWT Token |
 | 获取用户信息 | GET | /api/v1/auth/me | 获取当前登录用户信息 |
+| 创建API Key | POST | /api/v1/auth/api-keys | 创建API Key |
+| 删除API Key | DELETE | /api/v1/auth/api-keys/{id} | 删除API Key |
+| 验证权限 | POST | /api/v1/auth/verify | 验证用户权限 |
 
-### 7.2 用户管理接口
+### 7.2 用户域服务接口（端口8002）
+
+#### 7.2.1 用户管理
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -228,19 +233,9 @@ X-API-Key: {api_key}
 | 删除用户 | DELETE | /api/v1/users/{id} | 删除用户 |
 | 启用/禁用用户 | PATCH | /api/v1/users/{id}/status | 启用或禁用用户 |
 | 重置密码 | POST | /api/v1/users/{id}/reset-password | 重置用户密码 |
+| 分配角色 | POST | /api/v1/users/{id}/roles | 为用户分配角色 |
 
-### 7.3 多租户接口
-
-| 接口 | 方法 | 路径 | 说明 |
-|-----|------|------|------|
-| 查询租户列表 | GET | /api/v1/tenants | 分页查询租户列表 |
-| 查询租户详情 | GET | /api/v1/tenants/{id} | 查询租户详情 |
-| 创建租户 | POST | /api/v1/tenants | 创建新租户 |
-| 更新租户 | PUT | /api/v1/tenants/{id} | 更新租户信息 |
-| 删除租户 | DELETE | /api/v1/tenants/{id} | 删除租户 |
-| 配置租户套餐 | POST | /api/v1/tenants/{id}/package | 配置租户套餐 |
-
-### 7.4 部门管理接口
+#### 7.2.2 部门管理
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -252,7 +247,30 @@ X-API-Key: {api_key}
 | 删除部门 | DELETE | /api/v1/departments/{id} | 删除部门 |
 | 移动部门 | POST | /api/v1/departments/{id}/move | 移动部门位置 |
 
-### 7.5 角色权限接口
+#### 7.2.3 租户管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询租户列表 | GET | /api/v1/tenants | 分页查询租户列表 |
+| 查询租户详情 | GET | /api/v1/tenants/{id} | 查询租户详情 |
+| 创建租户 | POST | /api/v1/tenants | 创建新租户 |
+| 更新租户 | PUT | /api/v1/tenants/{id} | 更新租户信息 |
+| 删除租户 | DELETE | /api/v1/tenants/{id} | 删除租户 |
+| 配置租户套餐 | POST | /api/v1/tenants/{id}/package | 配置租户套餐 |
+
+#### 7.2.4 岗位管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询岗位列表 | GET | /api/v1/positions | 分页查询岗位列表 |
+| 查询岗位详情 | GET | /api/v1/positions/{id} | 查询岗位详情 |
+| 创建岗位 | POST | /api/v1/positions | 创建新岗位 |
+| 更新岗位 | PUT | /api/v1/positions/{id} | 更新岗位信息 |
+| 删除岗位 | DELETE | /api/v1/positions/{id} | 删除岗位 |
+
+### 7.3 权限域服务接口（端口8003）
+
+#### 7.3.1 角色管理
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -264,7 +282,17 @@ X-API-Key: {api_key}
 | 分配权限 | POST | /api/v1/roles/{id}/permissions | 为角色分配权限 |
 | 分配菜单 | POST | /api/v1/roles/{id}/menus | 为角色分配菜单 |
 
-### 7.6 菜单管理接口
+#### 7.3.2 权限管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询权限列表 | GET | /api/v1/permissions | 分页查询权限列表 |
+| 查询权限详情 | GET | /api/v1/permissions/{id} | 查询权限详情 |
+| 创建权限 | POST | /api/v1/permissions | 创建新权限 |
+| 更新权限 | PUT | /api/v1/permissions/{id} | 更新权限信息 |
+| 删除权限 | DELETE | /api/v1/permissions/{id} | 删除权限 |
+
+#### 7.3.3 菜单管理
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -276,7 +304,9 @@ X-API-Key: {api_key}
 | 更新菜单 | PUT | /api/v1/menus/{id} | 更新菜单信息 |
 | 删除菜单 | DELETE | /api/v1/menus/{id} | 删除菜单 |
 
-### 7.7 MCP工具管理接口
+### 7.4 系统域服务接口（端口8004）
+
+#### 7.4.1 MCP工具管理
 
 | 接口 | 方法 | 路径 | 说明 |
 |-----|------|------|------|
@@ -288,9 +318,97 @@ X-API-Key: {api_key}
 | 执行MCP工具 | POST | /api/v1/mcp-tools/execute | 执行MCP工具 |
 | 查询工具调用日志 | GET | /api/v1/mcp-tools/{id}/logs | 查询工具调用日志 |
 
-### 7.8 多数据源接口
+#### 7.4.2 多数据源管理
 
 | 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询单个数据源 | POST | /api/v1/multi-db/query | 查询单个数据源 |
+| 查询多个数据源 | POST | /api/v1/multi-db/query-multiple | 同时查询多个数据源 |
+| 跨数据源关联查询 | POST | /api/v1/multi-db/query-join | 跨数据源关联查询 |
+| 执行自定义SQL | POST | /api/v1/multi-db/execute-sql | 执行自定义SQL |
+| 执行跨数据源事务 | POST | /api/v1/multi-db/transaction | 执行跨数据源事务 |
+| 数据源健康检查 | GET | /api/v1/multi-db/health-check | 检查数据源健康状态 |
+
+#### 7.4.3 字典管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询字典列表 | GET | /api/v1/dicts | 分页查询字典列表 |
+| 查询字典详情 | GET | /api/v1/dicts/{id} | 查询字典详情 |
+| 创建字典 | POST | /api/v1/dicts | 创建新字典 |
+| 更新字典 | PUT | /api/v1/dicts/{id} | 更新字典信息 |
+| 删除字典 | DELETE | /api/v1/dicts/{id} | 删除字典 |
+| 查询字典项列表 | GET | /api/v1/dicts/{id}/items | 查询字典项列表 |
+| 创建字典项 | POST | /api/v1/dicts/{id}/items | 创建字典项 |
+| 更新字典项 | PUT | /api/v1/dicts/{id}/items/{item_id} | 更新字典项 |
+| 删除字典项 | DELETE | /api/v1/dicts/{id}/items/{item_id} | 删除字典项 |
+
+#### 7.4.4 系统配置
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询系统配置 | GET | /api/v1/system/config | 查询系统配置 |
+| 更新系统配置 | PUT | /api/v1/system/config | 更新系统配置 |
+
+#### 7.4.5 错误码管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询错误码列表 | GET | /api/v1/error-codes | 分页查询错误码列表 |
+| 创建错误码 | POST | /api/v1/error-codes | 创建错误码 |
+| 更新错误码 | PUT | /api/v1/error-codes/{id} | 更新错误码 |
+| 删除错误码 | DELETE | /api/v1/error-codes/{id} | 删除错误码 |
+
+### 7.5 支撑域服务接口（端口8005）
+
+#### 7.5.1 日志审计
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询登录日志 | GET | /api/v1/logs/login | 分页查询登录日志 |
+| 查询操作日志 | GET | /api/v1/logs/operation | 分页查询操作日志 |
+
+#### 7.5.2 通知管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询通知列表 | GET | /api/v1/notifications | 分页查询通知列表 |
+| 查询未读通知数 | GET | /api/v1/notifications/unread-count | 查询未读通知数量 |
+| 标记通知已读 | POST | /api/v1/notifications/{id}/read | 标记通知已读 |
+| 批量标记已读 | POST | /api/v1/notifications/read-all | 批量标记通知已读 |
+| 创建通知 | POST | /api/v1/notifications | 创建通知 |
+
+#### 7.5.3 敏感词管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询敏感词列表 | GET | /api/v1/sensitive-words | 分页查询敏感词列表 |
+| 创建敏感词 | POST | /api/v1/sensitive-words | 创建敏感词 |
+| 更新敏感词 | PUT | /api/v1/sensitive-words/{id} | 更新敏感词 |
+| 删除敏感词 | DELETE | /api/v1/sensitive-words/{id} | 删除敏感词 |
+
+#### 7.5.4 地区管理
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 查询省份列表 | GET | /api/v1/regions/provinces | 查询省份列表 |
+| 查询城市列表 | GET | /api/v1/regions/cities/{province_id} | 查询城市列表 |
+| 查询区镇列表 | GET | /api/v1/regions/districts/{city_id} | 查询区镇列表 |
+
+### 7.6 业务域服务接口（端口8006，空壳）
+
+| 接口 | 方法 | 路径 | 说明 |
+|-----|------|------|------|
+| 订单管理 | - | /api/v1/business/orders | 预留：订单管理接口 |
+| 商品管理 | - | /api/v1/business/products | 预留：商品管理接口 |
+| 报表统计 | - | /api/v1/business/reports | 预留：报表统计接口 |
+| 业务流程 | - | /api/v1/business/workflows | 预留：业务流程接口 |
+
+**说明**：业务域服务目前为空壳，后续根据业务需求添加具体接口。
+
+---
+
+## 8. API接口分类图
 |-----|------|------|------|
 | 查询单个数据源 | POST | /api/v1/multi-db/query | 查询单个数据源 |
 | 查询多个数据源 | POST | /api/v1/multi-db/query-multiple | 同时查询多个数据源 |
