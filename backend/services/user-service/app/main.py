@@ -11,12 +11,12 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from app.core.config import settings
-from app.api.v1 import users, departments, tenants
+from app.api.v1 import users, departments, tenants, positions
 from common.database.connection import datasource_manager
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="用户域服务 - 用户管理、部门管理、租户管理",
+    description="用户域服务 - 用户管理、部门管理、租户管理、岗位管理",
     version="1.0.0",
     debug=settings.APP_DEBUG
 )
@@ -32,6 +32,7 @@ app.add_middleware(
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(departments.router, prefix="/api/v1")
 app.include_router(tenants.router, prefix="/api/v1")
+app.include_router(positions.router, prefix="/api/v1")
 
 
 @app.get("/")

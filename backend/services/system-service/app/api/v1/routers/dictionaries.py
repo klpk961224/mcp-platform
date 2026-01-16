@@ -1,379 +1,301 @@
-# -*- coding: utf-8 -*-
 """
-字典API路由
-
-功能说明：
-1. 字典CRUD操作
-2. 字典项管理
-3. 字典缓存管理
-
-使用示例：
-    from app.api.v1.routers.dictionaries import router as dictionaries_router
-    
-    app.include_router(dictionaries_router, prefix="/api/v1/dictionaries", tags=["字典"])
+字典管理API路由
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field
 from loguru import logger
+from typing import Optional
+import sys
+import os
 
-from common.database.session import get_db
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+from app.core.config import settings
+from app.core.deps import get_db
 from app.services.dict_service import DictService
 
-
-# 创建路由器
-router = APIRouter()
+router = APIRouter(prefix="/dictionaries", tags=["字典管理"])
 
 
-# ==================== Pydantic模型 ====================
-
-class DictionaryCreate(BaseModel):
-    """创建字典请求"""
-    name: str = Field(..., description="字典名称", min_length=1, max_length=100)
-    code: str = Field(..., description="字典编码", min_length=1, max_length=50)
-    description: Optional[str] = Field(None, description="描述")
-    status: str = Field("active", description="状态（active/inactive）")
-    tenant_id: Optional[str] = Field(None, description="租户ID")
-
-
-class DictionaryUpdate(BaseModel):
-    """更新字典请求"""
-    name: Optional[str] = Field(None, description="字典名称", min_length=1, max_length=100)
-    description: Optional[str] = Field(None, description="描述")
-    status: Optional[str] = Field(None, description="状态（active/inactive）")
-
-
-class DictionaryResponse(BaseModel):
-    """字典响应"""
-    id: str
-    tenant_id: Optional[str]
-    name: str
-    code: str
-    description: Optional[str]
-    status: str
-    created_at: Optional[str]
-    updated_at: Optional[str]
-
-    class Config:
-        from_attributes = True
-
-
-class DictionaryItemCreate(BaseModel):
-    """创建字典项请求"""
-    label: str = Field(..., description="标签", min_length=1, max_length=100)
-    value: str = Field(..., description="值", min_length=1, max_length=100)
-    sort_order: int = Field(0, description="排序")
-    description: Optional[str] = Field(None, description="描述")
-    status: str = Field("active", description="状态（active/inactive）")
-
-
-class DictionaryItemUpdate(BaseModel):
-    """更新字典项请求"""
-    label: Optional[str] = Field(None, description="标签", min_length=1, max_length=100)
-    value: Optional[str] = Field(None, description="值", min_length=1, max_length=100)
-    sort_order: Optional[int] = Field(None, description="排序")
-    description: Optional[str] = Field(None, description="描述")
-    status: Optional[str] = Field(None, description="状态（active/inactive）")
-
-
-class DictionaryItemResponse(BaseModel):
-    """字典项响应"""
-    id: str
-    dictionary_id: str
-    label: str
-    value: str
-    sort_order: int
-    description: Optional[str]
-    status: str
-    created_at: Optional[str]
-    updated_at: Optional[str]
-
-    class Config:
-        from_attributes = True
-
-
-# ==================== API端点 ====================
-
-@router.post("/", response_model=DictionaryResponse, status_code=status.HTTP_201_CREATED)
-def create_dictionary(
-    dictionary_data: DictionaryCreate,
+@router.post("", summary="创建字典")
+async def create_dict(
+    type: str = Query(..., description="字典类型"),
+    name: str = Query(..., description="字典名称"),
+    tenant_id: str = Query(..., description="租户ID"),
+    description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
-) -> DictionaryResponse:
-    """
-    创建字典
-    
-    Args:
-        dictionary_data: 字典数据
-        db: 数据库会话
-    
-    Returns:
-        DictionaryResponse: 创建的字典对象
-    
-    Raises:
-        HTTPException: 字典编码已存在
-    """
-    dict_service = DictService(db)
+):
+    """创建字典"""
+    logger.info(f"创建字典: type={type}, name={name}")
     
     try:
-        dictionary = dict_service.create_dictionary(dictionary_data.model_dump())
-        return DictionaryResponse.model_validate(dictionary)
+        dict_service = DictService(db)
+        
+        dict_data = {
+            "type": type,
+            "name": name,
+            "tenant_id": tenant_id,
+            "description": description
+        }
+        
+        new_dict = dict_service.create_dict(dict_data)
+        
+        logger.info(f"创建字典成功: type={type}, dict_id={new_dict.id}")
+        
+        return {
+            "id": new_dict.id,
+            "type": new_dict.type,
+            "name": new_dict.name,
+            "tenant_id": new_dict.tenant_id,
+            "description": new_dict.description,
+            "status": new_dict.status,
+            "created_at": new_dict.created_at.isoformat() if new_dict.created_at else None,
+            "updated_at": new_dict.updated_at.isoformat() if new_dict.updated_at else None,
+        }
     except ValueError as e:
-        logger.error(f"创建字典失败: {str(e)}")
+        logger.warning(f"创建字典失败: type={type}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        logger.error(f"创建字典异常: type={type}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建字典失败，请稍后重试")
 
 
-@router.get("/{dictionary_id}", response_model=DictionaryResponse)
-def get_dictionary(
-    dictionary_id: str,
-    db: Session = Depends(get_db)
-) -> DictionaryResponse:
-    """
-    获取字典
-    
-    Args:
-        dictionary_id: 字典ID
-        db: 数据库会话
-    
-    Returns:
-        DictionaryResponse: 字典对象
-    
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
-    
-    dictionary = dict_service.get_dictionary(dictionary_id)
-    if not dictionary:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
-    
-    return DictionaryResponse.model_validate(dictionary)
-
-
-@router.put("/{dictionary_id}", response_model=DictionaryResponse)
-def update_dictionary(
-    dictionary_id: str,
-    dictionary_data: DictionaryUpdate,
-    db: Session = Depends(get_db)
-) -> DictionaryResponse:
-    """
-    更新字典
-    
-    Args:
-        dictionary_id: 字典ID
-        dictionary_data: 更新数据
-        db: 数据库会话
-    
-    Returns:
-        DictionaryResponse: 更新后的字典对象
-    
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
-    
-    dictionary = dict_service.update_dictionary(
-        dictionary_id,
-        dictionary_data.model_dump(exclude_none=True)
-    )
-    if not dictionary:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
-    
-    return DictionaryResponse.model_validate(dictionary)
-
-
-@router.delete("/{dictionary_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_dictionary(
-    dictionary_id: str,
-    db: Session = Depends(get_db)
-) -> None:
-    """
-    删除字典
-    
-    Args:
-        dictionary_id: 字典ID
-        db: 数据库会话
-    
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
-    
-    success = dict_service.delete_dictionary(dictionary_id)
-    if not success:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
-
-
-@router.get("/", response_model=List[DictionaryResponse])
-def list_dictionaries(
+@router.get("", summary="获取字典列表")
+async def get_dictionaries(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
     tenant_id: Optional[str] = Query(None, description="租户ID"),
-    status: Optional[str] = Query(None, description="状态"),
-    page: int = Query(1, ge=1, description="页码"),
-    page_size: int = Query(10, ge=1, le=100, description="每页数量"),
+    keyword: Optional[str] = Query(None, description="搜索关键词"),
     db: Session = Depends(get_db)
-) -> List[DictionaryResponse]:
-    """
-    获取字典列表
-    
-    Args:
-        tenant_id: 租户ID
-        status: 状态
-        page: 页码
-        page_size: 每页数量
-        db: 数据库会话
-    
-    Returns:
-        List[DictionaryResponse]: 字典列表
-    """
-    dict_service = DictService(db)
-    
-    dictionaries = dict_service.list_dictionaries(
-        tenant_id=tenant_id,
-        status=status,
-        page=page,
-        page_size=page_size
-    )
-    
-    return [DictionaryResponse.model_validate(d) for d in dictionaries]
-
-
-@router.get("/{dictionary_id}/items", response_model=List[DictionaryItemResponse])
-def get_dictionary_items(
-    dictionary_id: str,
-    status: Optional[str] = Query(None, description="状态"),
-    db: Session = Depends(get_db)
-) -> List[DictionaryItemResponse]:
-    """
-    获取字典项列表
-    
-    Args:
-        dictionary_id: 字典ID
-        status: 状态
-        db: 数据库会话
-    
-    Returns:
-        List[DictionaryItemResponse]: 字典项列表
-    
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
-    
-    items = dict_service.get_dictionary_items(dictionary_id, status=status)
-    return [DictionaryItemResponse.model_validate(item) for item in items]
-
-
-@router.post("/{dictionary_id}/items", response_model=DictionaryItemResponse, status_code=status.HTTP_201_CREATED)
-def create_dictionary_item(
-    dictionary_id: str,
-    item_data: DictionaryItemCreate,
-    db: Session = Depends(get_db)
-) -> DictionaryItemResponse:
-    """
-    创建字典项
-    
-    Args:
-        dictionary_id: 字典ID
-        item_data: 字典项数据
-        db: 数据库会话
-    
-    Returns:
-        DictionaryItemResponse: 创建的字典项对象
-    
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
+):
+    """获取字典列表"""
+    logger.info(f"获取字典列表: page={page}")
     
     try:
-        item = dict_service.create_dictionary_item(dictionary_id, item_data.model_dump())
-        return DictionaryItemResponse.model_validate(item)
-    except ValueError as e:
-        logger.error(f"创建字典项失败: {str(e)}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        dict_service = DictService(db)
+        
+        dicts = dict_service.list_dicts(
+            tenant_id=tenant_id,
+            keyword=keyword,
+            page=page,
+            page_size=page_size
+        )
+        
+        total = dict_service.count_dicts(tenant_id=tenant_id)
+        items = [
+            {
+                "id": d.id,
+                "type": d.type,
+                "name": d.name,
+                "tenant_id": d.tenant_id,
+                "description": d.description,
+                "status": d.status,
+                "created_at": d.created_at.isoformat() if d.created_at else None,
+                "updated_at": d.updated_at.isoformat() if d.updated_at else None,
+            }
+            for d in dicts
+        ]
+        
+        return {
+            "total": total,
+            "items": items,
+            "page": page,
+            "page_size": page_size
+        }
+    except Exception as e:
+        logger.error(f"获取字典列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典列表失败，请稍后重试")
 
 
-@router.put("/{dictionary_id}/items/{item_id}", response_model=DictionaryItemResponse)
-def update_dictionary_item(
-    dictionary_id: str,
-    item_id: str,
-    item_data: DictionaryItemUpdate,
+@router.get("/{dict_id}", summary="获取字典详情")
+async def get_dictionary(
+    dict_id: str,
     db: Session = Depends(get_db)
-) -> DictionaryItemResponse:
-    """
-    更新字典项
+):
+    """获取字典详情"""
+    logger.info(f"获取字典详情: dict_id={dict_id}")
     
-    Args:
-        dictionary_id: 字典ID
-        item_id: 字典项ID
-        item_data: 更新数据
-        db: 数据库会话
-    
-    Returns:
-        DictionaryItemResponse: 更新后的字典项对象
-    
-    Raises:
-        HTTPException: 字典项不存在
-    """
-    dict_service = DictService(db)
-    
-    item = dict_service.update_dictionary_item(
-        dictionary_id,
-        item_id,
-        item_data.model_dump(exclude_none=True)
-    )
-    if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典项不存在")
-    
-    return DictionaryItemResponse.model_validate(item)
+    try:
+        dict_service = DictService(db)
+        dict_obj = dict_service.get_dict(dict_id)
+        
+        if not dict_obj:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
+        
+        return {
+            "id": dict_obj.id,
+            "type": dict_obj.type,
+            "name": dict_obj.name,
+            "tenant_id": dict_obj.tenant_id,
+            "description": dict_obj.description,
+            "status": dict_obj.status,
+            "created_at": dict_obj.created_at.isoformat() if dict_obj.created_at else None,
+            "updated_at": dict_obj.updated_at.isoformat() if dict_obj.updated_at else None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取字典详情异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典详情失败，请稍后重试")
 
 
-@router.delete("/{dictionary_id}/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_dictionary_item(
-    dictionary_id: str,
-    item_id: str,
-    db: Session = Depends(get_db)
-) -> None:
-    """
-    删除字典项
-    
-    Args:
-        dictionary_id: 字典ID
-        item_id: 字典项ID
-        db: 数据库会话
-    
-    Raises:
-        HTTPException: 字典项不存在
-    """
-    dict_service = DictService(db)
-    
-    success = dict_service.delete_dictionary_item(dictionary_id, item_id)
-    if not success:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典项不存在")
-
-
-@router.get("/code/{code}", response_model=List[DictionaryItemResponse])
-def get_dictionary_by_code(
-    code: str,
+@router.put("/{dict_id}", summary="更新字典")
+async def update_dictionary(
+    dict_id: str,
+    name: Optional[str] = Query(None, description="字典名称"),
+    description: Optional[str] = Query(None, description="描述"),
     status: Optional[str] = Query(None, description="状态"),
     db: Session = Depends(get_db)
-) -> List[DictionaryItemResponse]:
-    """
-    根据编码获取字典项
+):
+    """更新字典"""
+    logger.info(f"更新字典: dict_id={dict_id}")
     
-    Args:
-        code: 字典编码
-        status: 状态
-        db: 数据库会话
+    try:
+        dict_service = DictService(db)
+        
+        existing_dict = dict_service.get_dict(dict_id)
+        if not existing_dict:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
+        
+        update_data = {}
+        if name is not None:
+            update_data["name"] = name
+        if description is not None:
+            update_data["description"] = description
+        if status is not None:
+            update_data["status"] = status
+        
+        updated_dict = dict_service.update_dict(dict_id, update_data)
+        
+        logger.info(f"更新字典成功: dict_id={dict_id}")
+        
+        return {
+            "id": updated_dict.id,
+            "type": updated_dict.type,
+            "name": updated_dict.name,
+            "tenant_id": updated_dict.tenant_id,
+            "description": updated_dict.description,
+            "status": updated_dict.status,
+            "created_at": updated_dict.created_at.isoformat() if updated_dict.created_at else None,
+            "updated_at": updated_dict.updated_at.isoformat() if updated_dict.updated_at else None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"更新字典异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新字典失败，请稍后重试")
+
+
+@router.delete("/{dict_id}", summary="删除字典")
+async def delete_dictionary(
+    dict_id: str,
+    db: Session = Depends(get_db)
+):
+    """删除字典"""
+    logger.info(f"删除字典: dict_id={dict_id}")
     
-    Returns:
-        List[DictionaryItemResponse]: 字典项列表
+    try:
+        dict_service = DictService(db)
+        
+        existing_dict = dict_service.get_dict(dict_id)
+        if not existing_dict:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
+        
+        dict_service.delete_dict(dict_id)
+        
+        logger.info(f"删除字典成功: dict_id={dict_id}")
+        
+        return {"message": "删除成功"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"删除字典异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除字典失败，请稍后重试")
+
+
+@router.post("/{dict_id}/items", summary="创建字典项")
+async def create_dict_item(
+    dict_id: str,
+    label: str = Query(..., description="字典项标签"),
+    value: str = Query(..., description="字典项值"),
+    sort_order: int = Query(0, description="排序"),
+    description: Optional[str] = Query(None, description="描述"),
+    db: Session = Depends(get_db)
+):
+    """创建字典项"""
+    logger.info(f"创建字典项: dict_id={dict_id}, label={label}")
     
-    Raises:
-        HTTPException: 字典不存在
-    """
-    dict_service = DictService(db)
+    try:
+        dict_service = DictService(db)
+        
+        dict_item_data = {
+            "label": label,
+            "value": value,
+            "sort_order": sort_order,
+            "description": description
+        }
+        
+        new_dict_item = dict_service.create_dict_item(dict_id, dict_item_data)
+        
+        logger.info(f"创建字典项成功: dict_id={dict_id}, dict_item_id={new_dict_item.id}")
+        
+        return {
+            "id": new_dict_item.id,
+            "dict_id": new_dict_item.dict_id,
+            "label": new_dict_item.label,
+            "value": new_dict_item.value,
+            "sort_order": new_dict_item.sort_order,
+            "description": new_dict_item.description,
+            "status": new_dict_item.status,
+            "created_at": new_dict_item.created_at.isoformat() if new_dict_item.created_at else None,
+            "updated_at": new_dict_item.updated_at.isoformat() if new_dict_item.updated_at else None,
+        }
+    except ValueError as e:
+        logger.warning(f"创建字典项失败: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        logger.error(f"创建字典项异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建字典项失败，请稍后重试")
+
+
+@router.get("/{dict_id}/items", summary="获取字典项列表")
+async def get_dict_items(
+    dict_id: str,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """获取字典项列表"""
+    logger.info(f"获取字典项列表: dict_id={dict_id}")
     
-    items = dict_service.get_dictionary_by_code(code, status=status)
-    return [DictionaryItemResponse.model_validate(item) for item in items]
+    try:
+        dict_service = DictService(db)
+        
+        dict_items = dict_service.get_dict_items(dict_id, page, page_size)
+        
+        total = dict_service.count_dict_items(dict_id)
+        items = [
+            {
+                "id": item.id,
+                "dict_id": item.dict_id,
+                "label": item.label,
+                "value": item.value,
+                "sort_order": item.sort_order,
+                "description": item.description,
+                "status": item.status,
+                "created_at": item.created_at.isoformat() if item.created_at else None,
+                "updated_at": item.updated_at.isoformat() if item.updated_at else None,
+            }
+            for item in dict_items
+        ]
+        
+        return {
+            "total": total,
+            "items": items,
+            "page": page,
+            "page_size": page_size
+        }
+    except Exception as e:
+        logger.error(f"获取字典项列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典项列表失败，请稍后重试")
