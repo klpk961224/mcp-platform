@@ -13,7 +13,7 @@
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .base import BaseModel
+from ..base import BaseModel
 
 
 class WorkflowDefinition(BaseModel):

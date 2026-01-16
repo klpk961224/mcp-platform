@@ -8,7 +8,7 @@
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from .base import BaseModel
+from ..base import BaseModel
 
 
 class Announcement(BaseModel):

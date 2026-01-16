@@ -4,7 +4,7 @@
 导出所有数据库模型
 """
 
-from .base import BaseModel
+from ..base import BaseModel
 from .tenant import Tenant
 from .user import User, Department, Role
 from .permission import Permission, Menu

@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy import Column, String, Integer, Text
-from .base import BaseModel
+from ..base import BaseModel
 
 
 class SensitiveWord(BaseModel):

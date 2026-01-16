@@ -21,7 +21,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from .base import BaseModel
+from ..base import BaseModel
 
 
 class Position(BaseModel):

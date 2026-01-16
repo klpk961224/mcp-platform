@@ -11,7 +11,7 @@
 from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .base import BaseModel
+from ..base import BaseModel
 
 
 # 用户角色关联表
