@@ -10,7 +10,7 @@
 - TodoReminder: 任务提醒表
 """
 
-from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime, Table, Date
+from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime, Table, Date, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..base import BaseModel

@@ -8,7 +8,7 @@
 - UserRole: 用户角色关联表
 """
 
-from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Table
+from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..base import BaseModel

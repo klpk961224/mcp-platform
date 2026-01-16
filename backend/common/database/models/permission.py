@@ -8,7 +8,7 @@
 - RoleMenu: 角色菜单关联表
 """
 
-from sqlalchemy import Column, String, Text, Boolean, Integer, ForeignKey, Table
+from sqlalchemy import Column, String, Text, Boolean, Integer, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..base import BaseModel

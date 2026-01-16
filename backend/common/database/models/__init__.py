@@ -15,7 +15,7 @@ from .workflow import (
 )
 from .todo import (
     TodoTask, TodoTag, TodoAttachment, 
-    DailyPlan, DailyPlanTask, TodoReminder
+    DailyPlan, TodoReminder
 )
 
 __all__ = [
@@ -55,6 +55,5 @@ __all__ = [
     'TodoTag',
     'TodoAttachment',
     'DailyPlan',
-    'DailyPlanTask',
     'TodoReminder',
 ]
