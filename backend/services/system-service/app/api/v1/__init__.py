@@ -6,7 +6,7 @@ API v1模块
 """
 
 from fastapi import APIRouter
-from app.api.v1.routers import mcp_tools, datasources, dictionaries
+from app.api.v1.routers import mcp_tools, datasources, dictionaries, error_codes, regions
 
 # 创建v1路由器
 router = APIRouter(prefix="/api/v1")
@@ -15,5 +15,7 @@ router = APIRouter(prefix="/api/v1")
 router.include_router(mcp_tools.router, prefix="/mcp-tools", tags=["MCP工具"])
 router.include_router(datasources.router, prefix="/datasources", tags=["数据源"])
 router.include_router(dictionaries.router, prefix="/dictionaries", tags=["字典"])
+router.include_router(error_codes.router, prefix="/error-codes", tags=["错误码"])
+router.include_router(regions.router, prefix="/regions", tags=["地区"])
 
 __all__ = ["router"]

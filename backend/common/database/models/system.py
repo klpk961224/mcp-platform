@@ -95,9 +95,9 @@ class DictItem(BaseModel):
 
 class Notification(BaseModel):
     """通知表"""
-    
+
     __tablename__ = 'notifications'
-    
+
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     type = Column(String(50), nullable=False)
     title = Column(String(200), nullable=False)
@@ -105,3 +105,16 @@ class Notification(BaseModel):
     sender_id = Column(String(50))
     receiver_ids = Column(JSON)
     status = Column(String(20), nullable=False, default='unread')
+
+
+class ErrorCode(BaseModel):
+    """错误码表"""
+
+    __tablename__ = 'error_codes'
+
+    code = Column(String(50), unique=True, nullable=False, comment='错误码')
+    message = Column(String(500), nullable=False, comment='错误信息')
+    level = Column(String(20), nullable=False, default='error', comment='错误级别')
+    module = Column(String(50), nullable=False, comment='模块')
+    description = Column(Text, comment='描述')
+    status = Column(String(20), nullable=False, default='active', comment='状态')

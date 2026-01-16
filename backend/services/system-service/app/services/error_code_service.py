@@ -1,0 +1,182 @@
+"""
+错误码Service
+
+提供错误码业务逻辑层
+"""
+
+from typing import List, Optional, Dict, Any
+from sqlalchemy.orm import Session
+
+from common.database.models.system import ErrorCode
+from app.repositories.error_code_repository import ErrorCodeRepository
+
+
+class ErrorCodeService:
+    """错误码Service"""
+
+    # 错误级别常量
+    LEVEL_INFO = "info"
+    LEVEL_WARNING = "warning"
+    LEVEL_ERROR = "error"
+    LEVEL_CRITICAL = "critical"
+
+    # 状态常量
+    STATUS_ACTIVE = "active"
+    STATUS_INACTIVE = "inactive"
+
+    def __init__(self, db: Session):
+        self.db = db
+        self.repository = ErrorCodeRepository(db)
+
+    def get_error_code_by_id(self, error_code_id: str) -> Optional[Dict[str, Any]]:
+        """根据ID获取错误码"""
+        error_code = self.repository.get_by_id(error_code_id)
+        if not error_code:
+            return None
+        return self._to_dict(error_code)
+
+    def get_error_code_by_code(self, code: str) -> Optional[Dict[str, Any]]:
+        """根据错误码获取"""
+        error_code = self.repository.get_by_code(code)
+        if not error_code:
+            return None
+        return self._to_dict(error_code)
+
+    def get_all_error_codes(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+        """获取所有错误码"""
+        error_codes = self.repository.get_all(skip=skip, limit=limit)
+        total = self.repository.count()
+        return {
+            "items": [self._to_dict(ec) for ec in error_codes],
+            "total": total
+        }
+
+    def get_error_codes_by_module(self, module: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+        """根据模块获取错误码"""
+        error_codes = self.repository.get_by_module(module, skip=skip, limit=limit)
+        total = self.repository.count_by_module(module)
+        return {
+            "items": [self._to_dict(ec) for ec in error_codes],
+            "total": total
+        }
+
+    def get_error_codes_by_level(self, level: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+        """根据错误级别获取错误码"""
+        error_codes = self.repository.get_by_level(level, skip=skip, limit=limit)
+        total = self.repository.count_by_level(level)
+        return {
+            "items": [self._to_dict(ec) for ec in error_codes],
+            "total": total
+        }
+
+    def search_error_codes(
+        self,
+        query_params: Dict[str, Any],
+        skip: int = 0,
+        limit: int = 100
+    ) -> Dict[str, Any]:
+        """搜索错误码"""
+        error_codes, total = self.repository.search(query_params, skip=skip, limit=limit)
+        return {
+            "items": [self._to_dict(ec) for ec in error_codes],
+            "total": total
+        }
+
+    def create_error_code(
+        self,
+        code: str,
+        message: str,
+        module: str,
+        level: str = LEVEL_ERROR,
+        description: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """创建错误码"""
+        # 检查错误码是否已存在
+        existing = self.repository.get_by_code(code)
+        if existing:
+            raise ValueError(f"错误码 {code} 已存在")
+
+        # 创建错误码
+        error_code = ErrorCode(
+            code=code,
+            message=message,
+            level=level,
+            module=module,
+            description=description,
+            status=self.STATUS_ACTIVE
+        )
+
+        error_code = self.repository.create(error_code)
+        return self._to_dict(error_code)
+
+    def update_error_code(
+        self,
+        error_code_id: str,
+        code: Optional[str] = None,
+        message: Optional[str] = None,
+        level: Optional[str] = None,
+        module: Optional[str] = None,
+        description: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
+        """更新错误码"""
+        error_code = self.repository.get_by_id(error_code_id)
+        if not error_code:
+            return None
+
+        # 更新字段
+        if code is not None:
+            error_code.code = code
+        if message is not None:
+            error_code.message = message
+        if level is not None:
+            error_code.level = level
+        if module is not None:
+            error_code.module = module
+        if description is not None:
+            error_code.description = description
+        if status is not None:
+            error_code.status = status
+
+        error_code = self.repository.update(error_code)
+        return self._to_dict(error_code)
+
+    def delete_error_code(self, error_code_id: str) -> bool:
+        """删除错误码"""
+        return self.repository.delete(error_code_id)
+
+    def get_statistics(self) -> Dict[str, Any]:
+        """获取错误码统计信息"""
+        total = self.repository.count()
+
+        # 按级别统计
+        level_stats = {}
+        for level in [self.LEVEL_INFO, self.LEVEL_WARNING, self.LEVEL_ERROR, self.LEVEL_CRITICAL]:
+            level_stats[level] = self.repository.count_by_level(level)
+
+        # 按状态统计
+        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
+        inactive_count = self.repository.search({"status": self.STATUS_INACTIVE}, skip=0, limit=999999)[1]
+
+        return {
+            "total": total,
+            "by_level": level_stats,
+            "by_status": {
+                "active": active_count,
+                "inactive": inactive_count
+            }
+        }
+
+    def _to_dict(self, error_code: ErrorCode) -> Dict[str, Any]:
+        """转换为字典"""
+        return {
+            "id": error_code.id,
+            "code": error_code.code,
+            "message": error_code.message,
+            "level": error_code.level,
+            "module": error_code.module,
+            "description": error_code.description,
+            "status": error_code.status,
+            "created_at": error_code.created_at.isoformat() if error_code.created_at else None,
+            "updated_at": error_code.updated_at.isoformat() if error_code.updated_at else None
+        }
