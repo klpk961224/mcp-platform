@@ -205,3 +205,248 @@ async def delete_role(
     except Exception as e:
         logger.error(f"删除角色异常: role_id={role_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除角色失败，请稍后重试")
+
+
+@router.post("/{role_id}/permissions", response_model=RoleResponse, summary="分配权限")
+async def assign_permissions(
+    role_id: str,
+    permission_ids: list[str],
+    db: Session = Depends(get_db)
+):
+    """
+    分配权限给角色
+    
+    功能：
+    - 清空角色现有权限
+    - 添加新的权限列表
+    
+    Args:
+        role_id: 角色ID
+        permission_ids: 权限ID列表
+    
+    Returns:
+        RoleResponse: 更新后的角色信息
+    
+    Raises:
+        HTTPException: 角色不存在时抛出404错误
+    """
+    logger.info(f"分配权限: role_id={role_id}, permission_count={len(permission_ids)}")
+    
+    try:
+        role_service = RoleService(db)
+        
+        existing_role = role_service.get_by_id(role_id)
+        if not existing_role:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+        
+        updated_role = role_service.assign_permissions(role_id, permission_ids)
+        
+        logger.info(f"分配权限成功: role_id={role_id}, permission_count={len(permission_ids)}")
+        
+        return RoleResponse(
+            id=updated_role.id,
+            tenant_id=updated_role.tenant_id,
+            name=updated_role.name,
+            code=updated_role.code,
+            description=updated_role.description,
+            is_system=updated_role.is_system,
+            status=updated_role.status,
+            created_at=updated_role.created_at.isoformat() if updated_role.created_at else None,
+            updated_at=updated_role.updated_at.isoformat() if updated_role.updated_at else None
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"分配权限异常: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="分配权限失败，请稍后重试")
+
+
+@router.get("/{role_id}/permissions", summary="获取角色权限")
+async def get_role_permissions(
+    role_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    获取角色权限列表
+    
+    Args:
+        role_id: 角色ID
+    
+    Returns:
+        list: 权限列表
+    
+    Raises:
+        HTTPException: 角色不存在时抛出404错误
+    """
+    logger.info(f"获取角色权限: role_id={role_id}")
+    
+    try:
+        role_service = RoleService(db)
+        
+        existing_role = role_service.get_by_id(role_id)
+        if not existing_role:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+        
+        permissions = role_service.get_role_permissions(role_id)
+        
+        return [
+            {
+                "id": perm.id,
+                "name": perm.name,
+                "code": perm.code,
+                "resource": perm.resource,
+                "action": perm.action,
+                "description": perm.description
+            }
+            for perm in permissions
+        ]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取角色权限异常: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色权限失败，请稍后重试")
+
+
+@router.post("/{role_id}/menus", response_model=RoleResponse, summary="分配菜单")
+async def assign_menus(
+    role_id: str,
+    menu_ids: list[str],
+    db: Session = Depends(get_db)
+):
+    """
+    分配菜单给角色
+    
+    功能：
+    - 清空角色现有菜单
+    - 添加新的菜单列表
+    
+    Args:
+        role_id: 角色ID
+        menu_ids: 菜单ID列表
+    
+    Returns:
+        RoleResponse: 更新后的角色信息
+    
+    Raises:
+        HTTPException: 角色不存在时抛出404错误
+    """
+    logger.info(f"分配菜单: role_id={role_id}, menu_count={len(menu_ids)}")
+    
+    try:
+        role_service = RoleService(db)
+        
+        existing_role = role_service.get_by_id(role_id)
+        if not existing_role:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+        
+        updated_role = role_service.assign_menus(role_id, menu_ids)
+        
+        logger.info(f"分配菜单成功: role_id={role_id}, menu_count={len(menu_ids)}")
+        
+        return RoleResponse(
+            id=updated_role.id,
+            tenant_id=updated_role.tenant_id,
+            name=updated_role.name,
+            code=updated_role.code,
+            description=updated_role.description,
+            is_system=updated_role.is_system,
+            status=updated_role.status,
+            created_at=updated_role.created_at.isoformat() if updated_role.created_at else None,
+            updated_at=updated_role.updated_at.isoformat() if updated_role.updated_at else None
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"分配菜单异常: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="分配菜单失败，请稍后重试")
+
+
+@router.get("/{role_id}/menus", summary="获取角色菜单")
+async def get_role_menus(
+    role_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    获取角色菜单列表
+    
+    Args:
+        role_id: 角色ID
+    
+    Returns:
+        list: 菜单列表
+    
+    Raises:
+        HTTPException: 角色不存在时抛出404错误
+    """
+    logger.info(f"获取角色菜单: role_id={role_id}")
+    
+    try:
+        role_service = RoleService(db)
+        
+        existing_role = role_service.get_by_id(role_id)
+        if not existing_role:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+        
+        menus = role_service.get_role_menus(role_id)
+        
+        return [
+            {
+                "id": menu.id,
+                "name": menu.name,
+                "code": menu.code,
+                "path": menu.path,
+                "icon": menu.icon,
+                "parent_id": menu.parent_id,
+                "level": menu.level,
+                "sort_order": menu.sort_order,
+                "description": menu.description
+            }
+            for menu in menus
+        ]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取角色菜单异常: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色菜单失败，请稍后重试")
+
+
+@router.get("/{role_id}/check-permission/{permission_code}", summary="检查角色权限")
+async def check_role_permission(
+    role_id: str,
+    permission_code: str,
+    db: Session = Depends(get_db)
+):
+    """
+    检查角色是否拥有指定权限
+    
+    Args:
+        role_id: 角色ID
+        permission_code: 权限编码
+    
+    Returns:
+        dict: 检查结果
+    
+    Raises:
+        HTTPException: 角色不存在时抛出404错误
+    """
+    logger.info(f"检查角色权限: role_id={role_id}, permission_code={permission_code}")
+    
+    try:
+        role_service = RoleService(db)
+        
+        existing_role = role_service.get_by_id(role_id)
+        if not existing_role:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+        
+        has_permission = role_service.check_permission(role_id, permission_code)
+        
+        return {
+            "role_id": role_id,
+            "permission_code": permission_code,
+            "has_permission": has_permission
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"检查角色权限异常: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="检查角色权限失败，请稍后重试")

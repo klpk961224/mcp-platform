@@ -3,8 +3,9 @@
 ## 📋 文档信息
 
 - **项目名称**：企业级AI综合管理平台
-- **文档版本**：v1.0
+- **文档版本**：v1.1
 - **创建日期**：2026-01-13
+- **最后更新**：2026-01-16
 - **文档类型**：API接口设计文档
 
 ---
@@ -536,7 +537,9 @@ async def version_fallback(request: Request, call_next):
 | 创建租户 | POST | /api/v1/tenants | 创建新租户 |
 | 更新租户 | PUT | /api/v1/tenants/{id} | 更新租户信息 |
 | 删除租户 | DELETE | /api/v1/tenants/{id} | 删除租户 |
-| 配置租户套餐 | POST | /api/v1/tenants/{id}/package | 配置租户套餐 |
+| 检查租户配额 | GET | /api/v1/tenants/{id}/quota/{quota_type} | 检查租户资源配额 |
+| 获取所有套餐 | GET | /api/v1/tenants/packages | 获取所有套餐信息 |
+| 续费租户 | POST | /api/v1/tenants/{id}/renew | 续费租户 |
 
 #### 7.2.4 岗位管理
 
@@ -560,7 +563,10 @@ async def version_fallback(request: Request, call_next):
 | 更新角色 | PUT | /api/v1/roles/{id} | 更新角色信息 |
 | 删除角色 | DELETE | /api/v1/roles/{id} | 删除角色 |
 | 分配权限 | POST | /api/v1/roles/{id}/permissions | 为角色分配权限 |
+| 获取角色权限 | GET | /api/v1/roles/{id}/permissions | 获取角色的所有权限 |
+| 检查角色权限 | GET | /api/v1/roles/{id}/check-permission/{permission_code} | 检查角色是否有指定权限 |
 | 分配菜单 | POST | /api/v1/roles/{id}/menus | 为角色分配菜单 |
+| 获取角色菜单 | GET | /api/v1/roles/{id}/menus | 获取角色的所有菜单 |
 
 #### 7.3.2 权限管理
 
@@ -819,7 +825,204 @@ graph TB
 
 ---
 
-## 10. 请求流程图
+## 10. 新增接口详细说明
+
+### 10.1 租户管理新增接口
+
+#### 10.1.1 检查租户配额
+
+**接口路径**：`GET /api/v1/tenants/{id}/quota/{quota_type}`
+
+**请求参数**：
+- `id`：租户ID
+- `quota_type`：配额类型（users/departments/storage）
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "quota_type": "users",
+    "used": 50,
+    "max": 100,
+    "available": 50,
+    "percentage": 50.0
+  }
+}
+```
+
+#### 10.1.2 获取所有套餐
+
+**接口路径**：`GET /api/v1/tenants/packages`
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "查询成功",
+  "data": [
+    {
+      "package_id": "free",
+      "name": "免费版",
+      "description": "基础功能，适合小型团队",
+      "max_users": 10,
+      "max_departments": 5,
+      "max_storage": 1024,
+      "price": 0,
+      "duration_days": 365
+    },
+    {
+      "package_id": "basic",
+      "name": "基础版",
+      "description": "标准功能，适合中型团队",
+      "max_users": 50,
+      "max_departments": 20,
+      "max_storage": 5120,
+      "price": 999,
+      "duration_days": 365
+    },
+    {
+      "package_id": "professional",
+      "name": "专业版",
+      "description": "完整功能，适合大型团队",
+      "max_users": 200,
+      "max_departments": 100,
+      "max_storage": 20480,
+      "price": 2999,
+      "duration_days": 365
+    },
+    {
+      "package_id": "enterprise",
+      "name": "企业版",
+      "description": "全部功能，支持定制",
+      "max_users": 1000,
+      "max_departments": 500,
+      "max_storage": 102400,
+      "price": 9999,
+      "duration_days": 365
+    }
+  ]
+}
+```
+
+#### 10.1.3 续费租户
+
+**接口路径**：`POST /api/v1/tenants/{id}/renew`
+
+**请求Body**：
+```json
+{
+  "package_id": "professional",
+  "duration_days": 365
+}
+```
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "续费成功",
+  "data": {
+    "tenant_id": "tenant_001",
+    "expires_at": "2027-01-16T12:00:00",
+    "package_id": "professional"
+  }
+}
+```
+
+### 10.2 角色管理新增接口
+
+#### 10.2.1 获取角色权限
+
+**接口路径**：`GET /api/v1/roles/{id}/permissions`
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "role_id": "role_001",
+    "role_name": "管理员",
+    "permissions": [
+      {
+        "id": "perm_001",
+        "name": "用户管理",
+        "code": "user:manage",
+        "type": "menu"
+      },
+      {
+        "id": "perm_002",
+        "name": "角色管理",
+        "code": "role:manage",
+        "type": "menu"
+      }
+    ]
+  }
+}
+```
+
+#### 10.2.2 检查角色权限
+
+**接口路径**：`GET /api/v1/roles/{id}/check-permission/{permission_code}`
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "role_id": "role_001",
+    "permission_code": "user:manage",
+    "has_permission": true
+  }
+}
+```
+
+#### 10.2.3 获取角色菜单
+
+**接口路径**：`GET /api/v1/roles/{id}/menus`
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "role_id": "role_001",
+    "role_name": "管理员",
+    "menus": [
+      {
+        "id": "menu_001",
+        "name": "系统管理",
+        "code": "system",
+        "path": "/system",
+        "icon": "setting",
+        "children": [
+          {
+            "id": "menu_002",
+            "name": "用户管理",
+            "code": "system:user",
+            "path": "/system/user",
+            "icon": "user"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 11. 请求流程图
 
 ```mermaid
 sequenceDiagram
@@ -860,6 +1063,16 @@ sequenceDiagram
 ---
 
 **文档版本历史**：
+
+| 版本 | 日期 | 更新内容 | 更新人 |
+|-----|------|---------|-------|
+| v1.0 | 2026-01-13 | 初始版本，定义API设计规范 | AI |
+| v1.1 | 2026-01-16 | 新增租户管理接口（检查配额、获取套餐、续费）<br>新增角色管理接口（获取权限、检查权限、获取菜单）<br>完善接口详细说明 | AI |
+
+---
+
+**最后更新时间**：2026-01-16
+**下次更新时间**：完成P1重要功能后
 
 | 版本 | 日期 | 作者 | 变更说明 |
 |-----|------|------|---------|

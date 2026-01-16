@@ -123,11 +123,15 @@ class TenantRepository:
         Returns:
             List[Tenant]: 租户列表
         """
+        from datetime import datetime
         offset = (page - 1) * page_size
         return self.db.query(Tenant).filter(
             and_(
-                Tenant.is_active == True,
-                Tenant.status == "active"
+                Tenant.status == "active",
+                or_(
+                    Tenant.expires_at.is_(None),
+                    Tenant.expires_at > datetime.now()
+                )
             )
         ).offset(offset).limit(page_size).all()
     
@@ -144,7 +148,12 @@ class TenantRepository:
         """
         from datetime import datetime
         offset = (page - 1) * page_size
-        return self.db.query(Tenant).filter(Tenant.expire_at < datetime.now()).offset(offset).limit(page_size).all()
+        return self.db.query(Tenant).filter(
+            and_(
+                Tenant.expires_at.isnot(None),
+                Tenant.expires_at < datetime.now()
+            )
+        ).offset(offset).limit(page_size).all()
     
     def search(self, keyword: str, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
@@ -242,10 +251,14 @@ class TenantRepository:
         Returns:
             int: 租户数量
         """
+        from datetime import datetime
         return self.db.query(Tenant).filter(
             and_(
-                Tenant.is_active == True,
-                Tenant.status == "active"
+                Tenant.status == "active",
+                or_(
+                    Tenant.expires_at.is_(None),
+                    Tenant.expires_at > datetime.now()
+                )
             )
         ).count()
     
@@ -257,7 +270,12 @@ class TenantRepository:
             int: 租户数量
         """
         from datetime import datetime
-        return self.db.query(Tenant).filter(Tenant.expire_at < datetime.now()).count()
+        return self.db.query(Tenant).filter(
+            and_(
+                Tenant.expires_at.isnot(None),
+                Tenant.expires_at < datetime.now()
+            )
+        ).count()
     
     def count_all(self) -> int:
         """
