@@ -74,20 +74,15 @@ class TodoService:
         """
         logger.info(f"创建待办任务: title={title}, user_id={user_id}")
         
-        import json
         todo = TodoTask(
             tenant_id=tenant_id,
             user_id=user_id,
-            username=f"User_{user_id}",
             title=title,
             description=description,
             task_type=task_type,
             priority=priority,
             status="pending",
-            due_date=due_date,
-            due_time=due_time,
-            tags=json.dumps(tags) if tags else None,
-            attachment=attachment
+            due_date=due_date
         )
         
         return self.todo_repo.create_todo(todo)
@@ -201,17 +196,11 @@ class TodoService:
         """
         logger.info(f"创建每日计划: user_id={user_id}, plan_date={plan_date}")
         
-        import json
         daily_plan = DailyPlan(
             tenant_id=tenant_id,
             user_id=user_id,
-            username=f"User_{user_id}",
             plan_date=datetime.combine(plan_date, datetime.min.time()),
-            tasks=json.dumps(tasks),
-            notes=notes,
-            total_tasks=len(tasks),
-            completed_tasks=0,
-            completion_rate=0
+            status='active'
         )
         
         return self.todo_repo.create_daily_plan(daily_plan)
@@ -277,7 +266,7 @@ class TodoService:
         # 获取所有未完成的任务
         all_todos = self.todo_repo.get_tenant_todos(tenant_id=None, page=1, page_size=10000)
         for todo in all_todos:
-            if todo.due_date and not todo.is_completed():
+            if todo.due_date and todo.status != 'completed':
                 # 检查是否在提醒时间范围内
                 time_diff = (todo.due_date - datetime.now()).total_seconds()
                 if 0 < time_diff <= hours_before * 3600:

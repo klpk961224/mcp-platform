@@ -8,7 +8,7 @@ from ..base import BaseModel
 from .tenant import Tenant
 from .user import User, Department, Role
 from .permission import Permission, Menu
-from .system import MCPTool, LoginLog, OperationLog, Dict, DictItem, Notification
+from .system import MCPTool, LoginLog, OperationLog, Dict, DictItem, SystemNotification
 from .workflow import (
     WorkflowDefinition, WorkflowInstance, 
     WorkflowNode, WorkflowTask, WorkflowLog, WorkflowTemplate
@@ -40,7 +40,7 @@ __all__ = [
     'OperationLog',
     'Dict',
     'DictItem',
-    'Notification',
+    'SystemNotification',
     
     # 工作流
     'WorkflowDefinition',

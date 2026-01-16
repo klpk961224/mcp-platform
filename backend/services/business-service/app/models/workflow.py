@@ -20,6 +20,7 @@
 from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from typing import Optional
 
 from common.database.base import BaseModel
 

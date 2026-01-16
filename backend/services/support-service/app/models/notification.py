@@ -19,8 +19,9 @@
 """
 
 from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
+from typing import Optional
 
 from common.database.base import BaseModel
 
@@ -53,36 +54,34 @@ class Notification(BaseModel):
     - created_at: 创建时间
     """
     
-    __tablename__ = "notifications"
-    
     # 基本信息
-    tenant_id = Column(String(64), nullable=False, index=True, comment="租户ID")
-    sender_id = Column(String(64), nullable=True, comment="发送者ID")
-    sender_name = Column(String(50), nullable=True, comment="发送者名称")
+    tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="租户ID")
+    sender_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, comment="发送者ID")
+    sender_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, comment="发送者名称")
     
     # 内容信息
-    title = Column(String(255), nullable=False, comment="标题")
-    content = Column(Text, nullable=False, comment="内容")
+    title: Mapped[str] = mapped_column(String(255), nullable=False, comment="标题")
+    content: Mapped[str] = mapped_column(Text, nullable=False, comment="内容")
     
     # 类型信息
-    notification_type = Column(String(20), nullable=False, comment="通知类型")
-    priority = Column(String(20), nullable=False, default="normal", comment="优先级")
-    status = Column(String(20), nullable=False, default="sent", comment="状态")
+    notification_type: Mapped[str] = mapped_column(String(20), nullable=False, comment="通知类型")
+    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="normal", comment="优先级")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="sent", comment="状态")
     
     # 时间信息
-    send_time = Column(DateTime, nullable=False, default=datetime.now, comment="发送时间")
+    send_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, comment="发送时间")
     
     # 目标信息
-    is_system = Column(Boolean, nullable=False, default=False, comment="是否系统通知")
-    target_type = Column(String(20), nullable=True, comment="目标类型")
-    target_ids = Column(Text, nullable=True, comment="目标ID列表（JSON）")
+    is_system: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="是否系统通知")
+    target_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, comment="目标类型")
+    target_ids: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="目标ID列表（JSON）")
     
     # 扩展信息
-    attachment = Column(String(255), nullable=True, comment="附件URL")
+    attachment: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="附件URL")
     
     # 统计信息
-    read_count = Column(Integer, nullable=False, default=0, comment="已读数量")
-    total_count = Column(Integer, nullable=False, default=0, comment="总数量")
+    read_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="已读数量")
+    total_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="总数量")
     
     # 关系
     reads = relationship("NotificationRead", back_populates="notification", cascade="all, delete-orphan")
@@ -142,16 +141,14 @@ class NotificationRead(BaseModel):
     - created_at: 创建时间
     """
     
-    __tablename__ = "notification_reads"
-    
     # 基本信息
-    notification_id = Column(String(64), ForeignKey("notifications.id"), nullable=False, index=True, comment="通知ID")
-    user_id = Column(String(64), nullable=False, index=True, comment="用户ID")
-    username = Column(String(50), nullable=False, comment="用户名")
+    notification_id: Mapped[str] = mapped_column(String(64), ForeignKey("notification.id"), nullable=False, index=True, comment="通知ID")
+    user_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="用户ID")
+    username: Mapped[str] = mapped_column(String(50), nullable=False, comment="用户名")
     
     # 阅读状态
-    is_read = Column(Boolean, nullable=False, default=False, comment="是否已读")
-    read_time = Column(DateTime, nullable=True, comment="阅读时间")
+    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="是否已读")
+    read_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="阅读时间")
     
     # 关系
     notification = relationship("Notification", back_populates="reads")

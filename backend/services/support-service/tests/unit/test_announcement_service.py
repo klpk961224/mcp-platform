@@ -249,6 +249,9 @@ class TestAnnouncementService:
         """测试标记通知公告为已读（已读过）"""
         # 模拟检查是否已读过（已读过）
         announcement_service.repository.get_read_record = Mock(return_value=Mock())
+        # 创建一个Mock对象来模拟create_read_record
+        mock_create = Mock()
+        announcement_service.repository.create_read_record = mock_create
         
         # 执行标记已读
         result = announcement_service.mark_as_read("test_announcement_id", "user_002")
@@ -256,7 +259,7 @@ class TestAnnouncementService:
         # 验证结果
         assert result is True
         # 不应该创建新的阅读记录
-        announcement_service.repository.create_read_record.assert_not_called()
+        mock_create.assert_not_called()
     
     def test_get_read_count_success(self, announcement_service):
         """测试获取阅读数量成功"""

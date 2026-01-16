@@ -7,7 +7,7 @@
 - OperationLog: 操作日志表
 - Dict: 字典表
 - DictItem: 字典项表
-- Notification: 通知表
+- SystemNotification: 系统通知表
 """
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
@@ -93,8 +93,8 @@ class DictItem(BaseModel):
     status = Column(String(20), nullable=False, default='active')
 
 
-class Notification(BaseModel):
-    """通知表"""
+class SystemNotification(BaseModel):
+    """系统通知表"""
 
     __tablename__ = 'notifications'
 

@@ -7,7 +7,9 @@
 """
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from datetime import datetime
+from typing import Optional
 from ..base import BaseModel
 
 
@@ -21,19 +23,17 @@ class Message(BaseModel):
     - 站内信状态
     """
 
-    __tablename__ = "messages"
-
-    tenant_id = Column(String(64), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, comment="租户ID")
-    type = Column(String(50), nullable=False, comment="类型")
-    title = Column(String(200), nullable=False, comment="标题")
-    content = Column(Text, nullable=True, comment="内容")
-    sender_id = Column(String(50), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, comment="发送者ID")
-    receiver_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, comment="接收者ID")
-    receiver_type = Column(String(20), nullable=False, default="user", comment="接收者类型")
-    priority = Column(Integer, nullable=False, default=0, comment="优先级")
-    status = Column(String(20), nullable=False, default="unread", comment="状态")
-    read_at = Column(DateTime, nullable=True, comment="阅读时间")
-    extra_data = Column(JSON, nullable=True, comment="额外数据")
+    tenant_id: Mapped[str] = mapped_column(String(64), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, comment="租户ID")
+    type: Mapped[str] = mapped_column(String(50), nullable=False, comment="类型")
+    title: Mapped[str] = mapped_column(String(200), nullable=False, comment="标题")
+    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="内容")
+    sender_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, comment="发送者ID")
+    receiver_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, comment="接收者ID")
+    receiver_type: Mapped[str] = mapped_column(String(20), nullable=False, default="user", comment="接收者类型")
+    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="优先级")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="unread", comment="状态")
+    read_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="阅读时间")
+    extra_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="额外数据")
 
     # 关系
     sender = relationship("User", foreign_keys=[sender_id], backref="sent_messages")
@@ -49,11 +49,9 @@ class MessageRead(BaseModel):
     - 支持批量发送的阅读记录
     """
 
-    __tablename__ = "message_reads"
-
-    message_id = Column(String(50), ForeignKey("messages.id", ondelete="CASCADE"), nullable=False, comment="站内信ID")
-    user_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, comment="用户ID")
-    read_at = Column(DateTime, nullable=False, comment="阅读时间")
+    message_id: Mapped[str] = mapped_column(String(50), ForeignKey("message.id", ondelete="CASCADE"), nullable=False, comment="站内信ID")
+    user_id: Mapped[str] = mapped_column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, comment="用户ID")
+    read_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="阅读时间")
 
     # 关系
     message = relationship("Message", backref="read_records")

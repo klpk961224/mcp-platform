@@ -20,6 +20,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 from app.models.workflow import Workflow
+from app.models.workflow_task import WorkflowTask
 from app.repositories.workflow_repository import WorkflowRepository
 from app.repositories.workflow_task_repository import WorkflowTaskRepository
 from app.repositories.workflow_template_repository import WorkflowTemplateRepository
