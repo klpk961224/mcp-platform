@@ -16,9 +16,9 @@
 
 from sqlalchemy.orm import Session
 from loguru import logger
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict as DictType, Any, List
 
-from common.database.models.system import Dict, DictItem
+from common.database.models.system import Dict as DictModel, DictItem
 from app.repositories.dict_repository import DictRepository, DictItemRepository
 
 
@@ -47,7 +47,7 @@ class DictService:
         self.dict_repo = DictRepository(db)
         self.dict_item_repo = DictItemRepository(db)
     
-    def create_dict(self, dict_data: Dict[str, Any]) -> Dict:
+    def create_dict(self, dict_data: DictType[str, Any]) -> DictModel:
         """
         创建字典
         
@@ -55,7 +55,7 @@ class DictService:
             dict_data: 字典数据
         
         Returns:
-            Dict: 创建的字典对象
+            DictModel: 创建的字典对象
         
         Raises:
             ValueError: 字典类型已存在
@@ -68,10 +68,10 @@ class DictService:
             raise ValueError("字典类型已存在")
         
         # 创建字典
-        dict_obj = Dict(**dict_data)
+        dict_obj = DictModel(**dict_data)
         return self.dict_repo.create(dict_obj)
     
-    def get_dict(self, dict_id: str) -> Optional[Dict]:
+    def get_dict(self, dict_id: str) -> Optional[DictModel]:
         """
         获取字典
         
@@ -79,11 +79,11 @@ class DictService:
             dict_id: 字典ID
         
         Returns:
-            Optional[Dict]: 字典对象，不存在返回None
+            Optional[DictModel]: 字典对象，不存在返回None
         """
         return self.dict_repo.get_by_id(dict_id)
     
-    def get_dict_by_type(self, dict_type: str) -> Optional[Dict]:
+    def get_dict_by_type(self, dict_type: str) -> Optional[DictModel]:
         """
         根据类型获取字典
         
@@ -91,11 +91,11 @@ class DictService:
             dict_type: 字典类型
         
         Returns:
-            Optional[Dict]: 字典对象，不存在返回None
+            Optional[DictModel]: 字典对象，不存在返回None
         """
         return self.dict_repo.get_by_type(dict_type)
     
-    def update_dict(self, dict_id: str, dict_data: Dict[str, Any]) -> Optional[Dict]:
+    def update_dict(self, dict_id: str, dict_data: DictType[str, Any]) -> Optional[DictModel]:
         """
         更新字典
         
@@ -104,7 +104,7 @@ class DictService:
             dict_data: 字典数据
         
         Returns:
-            Optional[Dict]: 更新后的字典对象，不存在返回None
+            Optional[DictModel]: 更新后的字典对象，不存在返回None
         """
         logger.info(f"更新字典: dict_id={dict_id}")
         
@@ -133,7 +133,7 @@ class DictService:
         return self.dict_repo.delete(dict_id)
     
     def list_dicts(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None,
-                   page: int = 1, page_size: int = 10) -> List[Dict]:
+                   page: int = 1, page_size: int = 10) -> List[DictModel]:
         """
         获取字典列表
         
@@ -144,7 +144,7 @@ class DictService:
             page_size: 每页数量
         
         Returns:
-            List[Dict]: 字典列表
+            List[DictModel]: 字典列表
         """
         if keyword:
             return self.dict_repo.search(keyword, tenant_id, page, page_size)
@@ -168,7 +168,7 @@ class DictService:
         else:
             return self.dict_repo.count_all()
     
-    def create_dict_item(self, dict_id: str, dict_item_data: Dict[str, Any]) -> DictItem:
+    def create_dict_item(self, dict_id: str, dict_item_data: DictType[str, Any]) -> DictItem:
         """
         创建字典项
         
@@ -232,7 +232,7 @@ class DictService:
         """
         return self.dict_item_repo.get_by_dict_type(dict_type)
     
-    def update_dict_item(self, dict_item_id: str, dict_item_data: Dict[str, Any]) -> Optional[DictItem]:
+    def update_dict_item(self, dict_item_id: str, dict_item_data: DictType[str, Any]) -> Optional[DictItem]:
         """
         更新字典项
         
