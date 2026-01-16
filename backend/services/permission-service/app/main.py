@@ -11,12 +11,12 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from app.core.config import settings
-from app.api.v1 import roles, permissions, menus
+from app.api.v1 import roles, permissions, menus, data_scopes
 from common.database.connection import datasource_manager
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="权限域服务 - 角色管理、权限管理、菜单管理",
+    description="权限域服务 - 角色管理、权限管理、菜单管理、数据范围权限",
     version="1.0.0",
     debug=settings.APP_DEBUG
 )
@@ -32,6 +32,7 @@ app.add_middleware(
 app.include_router(roles.router, prefix="/api/v1")
 app.include_router(permissions.router, prefix="/api/v1")
 app.include_router(menus.router, prefix="/api/v1")
+app.include_router(data_scopes.router, prefix="/api/v1")
 
 
 @app.get("/")

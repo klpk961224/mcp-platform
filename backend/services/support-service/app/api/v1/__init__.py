@@ -6,12 +6,13 @@ API v1模块
 """
 
 from fastapi import APIRouter
-from app.api.v1.routers import todos
+from app.api.v1.routers import todos, logs
 
 # 创建v1路由器
 router = APIRouter(prefix="/api/v1")
 
 # 注册所有路由
 router.include_router(todos.router, prefix="/todos", tags=["待办任务"])
+router.include_router(logs.router, prefix="/logs", tags=["日志审计"])
 
 __all__ = ["router"]

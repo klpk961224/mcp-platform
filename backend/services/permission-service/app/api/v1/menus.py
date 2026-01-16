@@ -35,7 +35,7 @@ async def create_menu(
     
     try:
         menu_service = MenuService(db)
-        new_menu = menu_service.create_menu(menu.dict())
+        new_menu = menu_service.create_menu(menu.model_dump())
         
         logger.info(f"创建菜单成功: name={menu.name}, menu_id={new_menu.id}")
         
@@ -47,10 +47,10 @@ async def create_menu(
             icon=new_menu.icon,
             parent_id=new_menu.parent_id,
             sort_order=new_menu.sort_order,
-            is_visible=new_menu.visible,
+            is_visible=new_menu.is_visible == "1",
             status=new_menu.status,
-            created_at=new_menu.created_at.isoformat() if new_menu.created_at else None,
-            updated_at=new_menu.updated_at.isoformat() if new_menu.updated_at else None
+            created_at=new_menu.created_at,
+            updated_at=new_menu.updated_at
         )
     except ValueError as e:
         logger.warning(f"创建菜单失败: name={menu.name}, error={str(e)}")
@@ -74,12 +74,14 @@ async def get_menus(
     try:
         menu_service = MenuService(db)
         
-        query_params = {"tenant_id": tenant_id, "status": status}
-        menus, total = menu_service.search_menus(
-            query_params=query_params,
-            offset=(page - 1) * page_size,
-            limit=page_size
+        menus = menu_service.list_menus(
+            tenant_id=tenant_id,
+            page=page,
+            page_size=page_size
         )
+        
+        # 统计总数
+        total = menu_service.count_menus(tenant_id=tenant_id)
         
         items = [
             MenuResponse(
@@ -90,10 +92,10 @@ async def get_menus(
                 icon=menu.icon,
                 parent_id=menu.parent_id,
                 sort_order=menu.sort_order,
-                is_visible=menu.visible,
+                is_visible=menu.is_visible == "1",
                 status=menu.status,
-                created_at=menu.created_at.isoformat() if menu.created_at else None,
-                updated_at=menu.updated_at.isoformat() if menu.updated_at else None
+                created_at=menu.created_at,
+                updated_at=menu.updated_at
             )
             for menu in menus
         ]
@@ -115,7 +117,30 @@ async def get_menu_tree(
     try:
         menu_service = MenuService(db)
         menu_tree = menu_service.get_menu_tree(tenant_id=tenant_id)
-        return menu_tree
+        
+        # 转换为树形结构
+        def build_tree(menus: list) -> list:
+            result = []
+            for menu in menus:
+                result.append(
+                    MenuTreeResponse(
+                        id=menu.id,
+                        tenant_id=menu.tenant_id,
+                        name=menu.name,
+                        path=menu.path,
+                        icon=menu.icon,
+                        parent_id=menu.parent_id,
+                        sort_order=menu.sort_order,
+                        is_visible=menu.is_visible == "1",
+                        status=menu.status,
+                        created_at=menu.created_at,
+                        updated_at=menu.updated_at,
+                        children=build_tree(menu.children)
+                    )
+                )
+            return result
+        
+        return build_tree(menu_tree)
     except Exception as e:
         logger.error(f"获取菜单树异常: error={str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取菜单树失败，请稍后重试")
@@ -131,7 +156,7 @@ async def get_menu(
     
     try:
         menu_service = MenuService(db)
-        menu = menu_service.get_by_id(menu_id)
+        menu = menu_service.get_menu(menu_id)
         
         if not menu:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="菜单不存在")
@@ -144,10 +169,10 @@ async def get_menu(
             icon=menu.icon,
             parent_id=menu.parent_id,
             sort_order=menu.sort_order,
-            is_visible=menu.visible,
+            is_visible=menu.is_visible == "1",
             status=menu.status,
-            created_at=menu.created_at.isoformat() if menu.created_at else None,
-            updated_at=menu.updated_at.isoformat() if menu.updated_at else None
+            created_at=menu.created_at,
+            updated_at=menu.updated_at
         )
     except HTTPException:
         raise
@@ -168,11 +193,11 @@ async def update_menu(
     try:
         menu_service = MenuService(db)
         
-        existing_menu = menu_service.get_by_id(menu_id)
+        existing_menu = menu_service.get_menu(menu_id)
         if not existing_menu:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="菜单不存在")
         
-        update_data = menu.dict(exclude_unset=True)
+        update_data = menu.model_dump(exclude_unset=True)
         updated_menu = menu_service.update_menu(menu_id, update_data)
         
         logger.info(f"更新菜单成功: menu_id={menu_id}")
@@ -185,10 +210,10 @@ async def update_menu(
             icon=updated_menu.icon,
             parent_id=updated_menu.parent_id,
             sort_order=updated_menu.sort_order,
-            is_visible=updated_menu.visible,
+            is_visible=updated_menu.is_visible == "1",
             status=updated_menu.status,
-            created_at=updated_menu.created_at.isoformat() if updated_menu.created_at else None,
-            updated_at=updated_menu.updated_at.isoformat() if updated_menu.updated_at else None
+            created_at=updated_menu.created_at,
+            updated_at=updated_menu.updated_at
         )
     except HTTPException:
         raise
@@ -211,7 +236,7 @@ async def delete_menu(
     try:
         menu_service = MenuService(db)
         
-        existing_menu = menu_service.get_by_id(menu_id)
+        existing_menu = menu_service.get_menu(menu_id)
         if not existing_menu:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="菜单不存在")
         

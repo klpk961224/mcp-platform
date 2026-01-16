@@ -272,3 +272,35 @@ class MenuService:
             return self.menu_repo.count_by_tenant(tenant_id)
         else:
             return self.menu_repo.count_all()
+    
+    def search_menus(self, query_params: Dict[str, Any], offset: int = 0, limit: int = 10) -> tuple:
+        """
+        搜索菜单
+        
+        Args:
+            query_params: 查询参数
+            offset: 偏移量
+            limit: 限制数量
+        
+        Returns:
+            tuple: (菜单列表, 总数)
+        """
+        from sqlalchemy import and_
+        
+        query = self.db.query(Menu)
+        
+        # 租户ID过滤
+        if query_params.get("tenant_id"):
+            query = query.filter(Menu.tenant_id == query_params["tenant_id"])
+        
+        # 状态过滤
+        if query_params.get("status"):
+            query = query.filter(Menu.status == query_params["status"])
+        
+        # 统计总数
+        total = query.count()
+        
+        # 分页
+        menus = query.offset(offset).limit(limit).all()
+        
+        return menus, total
