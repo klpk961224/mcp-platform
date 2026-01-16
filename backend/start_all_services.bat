@@ -1,0 +1,51 @@
+@echo off
+REM ??????
+
+echo ========================================
+echo ?????AI??????
+echo ========================================
+
+cd /d %~dp0
+
+echo.
+echo [1/3] ??Docker??...
+docker --version
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo ???Docker????????
+    pause
+    exit /b 1
+)
+
+echo.
+echo [2/3] ?????????...
+docker-compose up -d --build
+
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo ??????????
+    pause
+    exit /b 1
+)
+
+echo.
+echo [3/3] ??????...
+timeout /t 10 /nobreak > nul
+
+echo.
+echo ========================================
+echo ???????
+echo ========================================
+echo.
+echo ?????
+echo   - MySQL: localhost:3306
+echo   - Redis: localhost:6379
+echo   - ????: http://localhost:8001
+echo   - ????: http://localhost:8002
+echo   - ????: http://localhost:8003
+echo.
+echo ?????docker-compose logs -f
+echo ?????docker-compose down
+echo ========================================
+
+pause

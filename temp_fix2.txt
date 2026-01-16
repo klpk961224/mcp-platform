@@ -1,0 +1,20 @@
+﻿    def test_refresh_token_success(self, auth_service):
+        """测试刷新Token成功"""
+        # 模拟Token验证
+        with patch('common.security.jwt.verify_token', return_value={"user_id": "test_user_id"}):
+            # 模拟生成新Token
+            with patch('app.services.auth_service.create_access_token', return_value='new_access_token'):
+                # 执行刷新Token
+                result = auth_service.refresh_token("refresh_token")
+                
+                # 验证结果
+                assert result["access_token"] == "new_access_token"
+                assert result["token_type"] == "bearer"
+    
+    def test_refresh_token_invalid(self, auth_service):
+        """测试刷新Token无效"""
+        # 模拟Token验证失败
+        with patch('common.security.jwt.verify_token', return_value=None):
+            # 执行刷新Token并验证异常
+            with pytest.raises(ValueError, match="Token无效或已过期"):
+                auth_service.refresh_token("invalid_token")
