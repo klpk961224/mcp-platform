@@ -267,7 +267,7 @@ class DataScopeService:
         Returns:
             bool: 是否是子部门
         """
-        from app.models.department import Department
+        from common.database.models.user import Department
         
         # 获取父部门的所有子部门
         child_departments = self.db.query(Department).filter(
@@ -298,12 +298,12 @@ class DataScopeService:
         """
         if module == "user":
             # 查询用户的部门ID
-            from app.models.user import User
+            from common.database.models.user import User
             user = self.db.query(User).filter(User.id == target_id).first()
             return user.department_id if user else None
         elif module == "department":
             # 查询部门的父部门ID
-            from app.models.department import Department
+            from common.database.models.user import Department
             department = self.db.query(Department).filter(Department.id == target_id).first()
             return department.parent_id if department else None
         else:

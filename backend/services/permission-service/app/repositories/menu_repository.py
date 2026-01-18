@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.menu import Menu
+from common.database.models.permission import Menu
 
 
 class MenuRepository:

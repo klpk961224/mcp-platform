@@ -69,12 +69,16 @@ async def get_permissions(
     try:
         perm_service = PermissionService(db)
         
-        query_params = {"type": type, "keyword": keyword}
-        permissions, total = perm_service.search_permissions(
-            query_params=query_params,
-            offset=(page - 1) * page_size,
-            limit=page_size
+        # 查询权限列表
+        permissions = perm_service.list_permissions(
+            permission_type=type,
+            keyword=keyword,
+            page=page,
+            page_size=page_size
         )
+        
+        # 统计总数
+        total = perm_service.count_permissions()
         
         items = [
             PermissionResponse(
@@ -92,7 +96,7 @@ async def get_permissions(
         return PermissionListResponse(total=total, items=items, page=page, page_size=page_size)
     except Exception as e:
         logger.error(f"获取权限列表异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取权限列表失败，请稍后重试")
+        raise HTTPException(status_code=500, detail="获取权限列表失败，请稍后重试")
 
 
 @router.get("/{permission_id}", response_model=PermissionResponse, summary="获取权限详情")

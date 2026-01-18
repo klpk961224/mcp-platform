@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from typing import Optional, Dict, Any, List
 
-from app.models.workflow_template import WorkflowTemplate
+from common.database.models.workflow import WorkflowTemplate
 from app.repositories.workflow_template_repository import WorkflowTemplateRepository
 
 

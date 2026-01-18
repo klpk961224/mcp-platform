@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.user import User
+from common.database.models.user import User
 
 
 class UserRepository:
@@ -125,7 +125,7 @@ class UserRepository:
             List[User]: 用户列表
         """
         offset = (page - 1) * page_size
-        return self.db.query(User).filter(User.department_id == department_id).offset(offset).limit(page_size).all()
+        return self.db.query(User).filter(User.dept_id == department_id).offset(offset).limit(page_size).all()
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[User]:
         """

@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.role import Role
+from common.database.models.user import Role
 
 
 class RoleRepository:
@@ -229,7 +229,7 @@ class RoleRepository:
         role.permissions.clear()
         
         # 添加新权限
-        from app.models.permission import Permission
+        from common.database.models.permission import Permission
         for permission_id in permission_ids:
             permission = self.db.query(Permission).filter(Permission.id == permission_id).first()
             if permission:
@@ -259,7 +259,7 @@ class RoleRepository:
         role.menus.clear()
         
         # 添加新菜单
-        from app.models.menu import Menu
+        from common.database.models.permission import Menu
         for menu_id in menu_ids:
             menu = self.db.query(Menu).filter(Menu.id == menu_id).first()
             if menu:

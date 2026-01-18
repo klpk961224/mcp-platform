@@ -11,7 +11,7 @@
 from sqlalchemy import Column, String, Text, Boolean, Integer, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
 # 角色权限关联表
@@ -38,7 +38,7 @@ role_menus = Table(
 )
 
 
-class Permission(BaseModel):
+class Permission(BaseModel, TimestampMixin):
     """权限表"""
     
     __tablename__ = 'permissions'
@@ -52,7 +52,7 @@ class Permission(BaseModel):
         return f"<Permission(id={self.id}, name={self.name}, code={self.code})>"
 
 
-class Menu(BaseModel):
+class Menu(BaseModel, TimestampMixin):
     """菜单表"""
     
     __tablename__ = 'menus'

@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from typing import Optional, Dict, Any, List
 
-from app.models.role import Role
+from common.database.models.user import Role
 from app.repositories.role_repository import RoleRepository
 from app.repositories.permission_repository import PermissionRepository
 from app.repositories.menu_repository import MenuRepository

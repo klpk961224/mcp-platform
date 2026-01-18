@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.department import Department
+from common.database.models import Department
 
 
 class DepartmentRepository:

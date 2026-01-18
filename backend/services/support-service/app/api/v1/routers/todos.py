@@ -188,7 +188,7 @@ def delete_todo(
 
 @router.get("/", response_model=List[TodoTaskResponse])
 def list_todos(
-    user_id: str = Query(..., description="用户ID"),
+    user_id: Optional[str] = Query(None, description="用户ID"),
     status: Optional[str] = Query(None, description="状态"),
     task_type: Optional[str] = Query(None, description="任务类型"),
     priority: Optional[str] = Query(None, description="优先级"),
@@ -201,7 +201,7 @@ def list_todos(
     获取待办任务列表
     
     Args:
-        user_id: 用户ID
+        user_id: 用户ID（可选）
         status: 状态
         task_type: 任务类型
         priority: 优先级
@@ -214,6 +214,10 @@ def list_todos(
         List[TodoTaskResponse]: 待办任务列表
     """
     todo_service = TodoService(db)
+    
+    # 如果没有提供user_id，返回空列表
+    if not user_id:
+        return []
     
     todos = todo_service.list_todos(
         user_id=user_id,

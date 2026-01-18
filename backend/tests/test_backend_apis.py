@@ -30,9 +30,9 @@ class APITester:
     
     def __init__(self):
         self.base_urls = {
-            "auth": "http://localhost:8001/api/v1",
-            "user": "http://localhost:8002/api/v1",
-            "permission": "http://localhost:8003/api/v1"
+            "auth": "http://localhost:28001/api/v1",
+            "user": "http://localhost:28002/api/v1",
+            "permission": "http://localhost:28003/api/v1"
         }
         self.results = []
         self.session = requests.Session()
@@ -77,11 +77,11 @@ class APITester:
     def get_service_port(self, service_name: str) -> int:
         """获取服务端口"""
         ports = {
-            "auth": 8001,
-            "user": 8002,
-            "permission": 8003
+            "auth": 28001,
+            "user": 28002,
+            "permission": 28003
         }
-        return ports.get(service_name, 8000)
+        return ports.get(service_name, 28000)
     
     def test_api(
         self,

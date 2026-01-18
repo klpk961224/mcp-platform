@@ -39,6 +39,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from loguru import logger
+from typing import Optional
 import sys
 import os
 
@@ -247,19 +248,19 @@ async def refresh_token(
 
 @router.post("/logout", response_model=LogoutResponse, summary="用户登出")
 async def logout(
-    request: RefreshTokenRequest,
+    request: Optional[RefreshTokenRequest] = None,
     db: Session = Depends(get_db)
 ):
     """
     用户登出
     
     功能说明：
-    1. 验证Token
+    1. 验证Token（可选）
     2. 吊销所有Token
     3. 返回登出成功消息
     
     Args:
-        request: 包含Token的请求
+        request: 包含Token的请求（可选）
         db: 数据库会话
     
     Returns:
@@ -270,25 +271,30 @@ async def logout(
         {
             "refresh_token": "xxx"
         }
+        
+        或
+        
+        POST /api/v1/auth/logout
     """
     logger.info("用户登出请求")
     
     try:
-        # 验证Token并获取用户ID
-        payload = verify_token(request.refresh_token)
-        if not payload:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token无效或已过期"
-            )
-        
-        user_id = payload.get("user_id")
-        
-        # 使用AuthService进行登出
-        auth_service = AuthService(db)
-        auth_service.logout(user_id)
-        
-        logger.info(f"用户登出成功: user_id={user_id}")
+        # 如果提供了refresh_token，则验证并登出
+        if request and request.refresh_token:
+            # 验证Token并获取用户ID
+            payload = verify_token(request.refresh_token)
+            if payload:
+                user_id = payload.get("user_id")
+                
+                # 使用AuthService进行登出
+                auth_service = AuthService(db)
+                auth_service.logout(user_id)
+                
+                logger.info(f"用户登出成功: user_id={user_id}")
+            else:
+                logger.warning("Token无效，但仍然返回登出成功")
+        else:
+            logger.info("未提供Token，直接返回登出成功")
         
         return LogoutResponse(message="登出成功")
     except HTTPException:

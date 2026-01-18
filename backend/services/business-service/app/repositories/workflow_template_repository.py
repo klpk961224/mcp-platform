@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.workflow_template import WorkflowTemplate
+from common.database.models.workflow import WorkflowTemplate
 
 
 class WorkflowTemplateRepository:

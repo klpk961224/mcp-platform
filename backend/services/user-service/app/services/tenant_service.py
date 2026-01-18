@@ -24,7 +24,7 @@ from typing import Optional, List, Dict
 from datetime import datetime, timedelta
 from loguru import logger
 
-from app.models.tenant import Tenant
+from common.database.models import Tenant
 from app.repositories.tenant_repository import TenantRepository
 
 

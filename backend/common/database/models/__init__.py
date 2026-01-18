@@ -7,7 +7,7 @@
 from ..base import BaseModel
 from .tenant import Tenant
 from .user import User, Department, Role
-from .permission import Permission, Menu
+from .permission import Permission, Menu, role_permissions, role_menus
 from .system import MCPTool, LoginLog, OperationLog, Dict, DictItem, SystemNotification
 from .workflow import (
     WorkflowDefinition, WorkflowInstance, 
@@ -33,6 +33,8 @@ __all__ = [
     # 权限
     'Permission',
     'Menu',
+    'role_permissions',
+    'role_menus',
     
     # 系统
     'MCPTool',

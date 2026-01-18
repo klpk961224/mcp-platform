@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.workflow import Workflow
+from common.database.models.workflow import WorkflowInstance
 
 
 class WorkflowRepository:
@@ -45,7 +45,7 @@ class WorkflowRepository:
         """
         self.db = db
     
-    def create(self, workflow: Workflow) -> Workflow:
+    def create(self, workflow: WorkflowInstance) -> WorkflowInstance:
         """
         创建工作流
         
@@ -61,7 +61,7 @@ class WorkflowRepository:
         self.db.refresh(workflow)
         return workflow
     
-    def get_by_id(self, workflow_id: str) -> Optional[Workflow]:
+    def get_by_id(self, workflow_id: str) -> Optional[WorkflowInstance]:
         """
         根据ID获取工作流
         
@@ -69,12 +69,12 @@ class WorkflowRepository:
             workflow_id: 工作流ID
         
         Returns:
-            Optional[Workflow]: 工作流对象，不存在返回None
+            Optional[WorkflowInstance]: 工作流对象，不存在返回None
         """
-        return self.db.query(Workflow).filter(Workflow.id == workflow_id).first()
+        return self.db.query(WorkflowInstance).filter(WorkflowInstance.id == workflow_id).first()
     
     def get_user_workflows(self, user_id: str, status: Optional[str] = None,
-                           page: int = 1, page_size: int = 10) -> List[Workflow]:
+                           page: int = 1, page_size: int = 10) -> List[WorkflowInstance]:
         """
         获取用户工作流
         
@@ -85,18 +85,18 @@ class WorkflowRepository:
             page_size: 每页数量
         
         Returns:
-            List[Workflow]: 工作流列表
+            List[WorkflowInstance]: 工作流列表
         """
         offset = (page - 1) * page_size
-        query = self.db.query(Workflow).filter(Workflow.initiator_id == user_id)
+        query = self.db.query(WorkflowInstance).filter(WorkflowInstance.initiator_id == user_id)
         
         if status:
-            query = query.filter(Workflow.status == status)
+            query = query.filter(WorkflowInstance.status == status)
         
-        return query.order_by(Workflow.started_at.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(WorkflowInstance.started_at.desc()).offset(offset).limit(page_size).all()
     
     def get_tenant_workflows(self, tenant_id: str, status: Optional[str] = None,
-                             page: int = 1, page_size: int = 10) -> List[Workflow]:
+                             page: int = 1, page_size: int = 10) -> List[WorkflowInstance]:
         """
         获取租户工作流
         
@@ -107,17 +107,17 @@ class WorkflowRepository:
             page_size: 每页数量
         
         Returns:
-            List[Workflow]: 工作流列表
+            List[WorkflowInstance]: 工作流列表
         """
         offset = (page - 1) * page_size
-        query = self.db.query(Workflow).filter(Workflow.tenant_id == tenant_id)
+        query = self.db.query(WorkflowInstance).filter(WorkflowInstance.tenant_id == tenant_id)
         
         if status:
-            query = query.filter(Workflow.status == status)
+            query = query.filter(WorkflowInstance.status == status)
         
-        return query.order_by(Workflow.started_at.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(WorkflowInstance.started_at.desc()).offset(offset).limit(page_size).all()
     
-    def get_running_workflows(self, page: int = 1, page_size: int = 10) -> List[Workflow]:
+    def get_running_workflows(self, page: int = 1, page_size: int = 10) -> List[WorkflowInstance]:
         """
         获取运行中的工作流
         
@@ -126,15 +126,15 @@ class WorkflowRepository:
             page_size: 每页数量
         
         Returns:
-            List[Workflow]: 工作流列表
+            List[WorkflowInstance]: 工作流列表
         """
         offset = (page - 1) * page_size
-        return self.db.query(Workflow).filter(
-            Workflow.status == "running"
-        ).order_by(Workflow.started_at.asc()).offset(offset).limit(page_size).all()
+        return self.db.query(WorkflowInstance).filter(
+            WorkflowInstance.status == "running"
+        ).order_by(WorkflowInstance.started_at.asc()).offset(offset).limit(page_size).all()
     
     def search_workflows(self, keyword: str, tenant_id: Optional[str] = None,
-                         page: int = 1, page_size: int = 10) -> List[Workflow]:
+                         page: int = 1, page_size: int = 10) -> List[WorkflowInstance]:
         """
         搜索工作流
         
@@ -145,22 +145,22 @@ class WorkflowRepository:
             page_size: 每页数量
         
         Returns:
-            List[Workflow]: 工作流列表
+            List[WorkflowInstance]: 工作流列表
         """
         offset = (page - 1) * page_size
-        query = self.db.query(Workflow).filter(
+        query = self.db.query(WorkflowInstance).filter(
             or_(
-                Workflow.name.like(f"%{keyword}%"),
-                Workflow.initiator_name.like(f"%{keyword}%")
+                WorkflowInstance.name.like(f"%{keyword}%"),
+                WorkflowInstance.initiator_name.like(f"%{keyword}%")
             )
         )
         
         if tenant_id:
-            query = query.filter(Workflow.tenant_id == tenant_id)
+            query = query.filter(WorkflowInstance.tenant_id == tenant_id)
         
-        return query.order_by(Workflow.started_at.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(WorkflowInstance.started_at.desc()).offset(offset).limit(page_size).all()
     
-    def update(self, workflow: Workflow) -> Workflow:
+    def update(self, workflow: WorkflowInstance) -> WorkflowInstance:
         """
         更新工作流
         
@@ -209,9 +209,9 @@ class WorkflowRepository:
         Returns:
             int: 工作流数量
         """
-        query = self.db.query(Workflow).filter(Workflow.tenant_id == tenant_id)
+        query = self.db.query(WorkflowInstance).filter(WorkflowInstance.tenant_id == tenant_id)
         if status:
-            query = query.filter(Workflow.status == status)
+            query = query.filter(WorkflowInstance.status == status)
         return query.count()
     
     def count_all(self) -> int:
@@ -221,4 +221,4 @@ class WorkflowRepository:
         Returns:
             int: 工作流数量
         """
-        return self.db.query(Workflow).count()
+        return self.db.query(WorkflowInstance).count()

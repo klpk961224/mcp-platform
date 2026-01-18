@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from typing import Optional, Dict, Any, List
 
-from app.models.permission import Permission
+from common.database.models.permission import Permission
 from app.repositories.permission_repository import PermissionRepository
 
 
@@ -188,7 +188,7 @@ class PermissionService:
             bool: 是否拥有权限
         """
         # 获取用户的所有角色
-        from app.models.role import Role
+        from common.database.models.user import Role
         roles = self.db.query(Role).join("users").filter(users.id == user_id).all()
         
         # 检查任一角色是否拥有该权限

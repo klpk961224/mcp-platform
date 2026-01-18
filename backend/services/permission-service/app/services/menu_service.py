@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from typing import Optional, Dict, Any, List
 
-from app.models.menu import Menu
+from common.database.models.permission import Menu
 from app.repositories.menu_repository import MenuRepository
 
 
@@ -237,7 +237,7 @@ class MenuService:
             List[Menu]: 用户菜单列表
         """
         # 获取用户的所有角色
-        from app.models.role import Role
+        from common.database.models.user import Role
         roles = self.db.query(Role).join("users").filter(users.id == user_id).all()
         
         # 收集所有菜单ID

@@ -26,7 +26,7 @@ from typing import Optional
 
 from app.core.deps import get_db
 from app.repositories.workflow_repository import WorkflowRepository
-from app.models.workflow import Workflow
+from common.database.models.workflow import WorkflowInstance
 
 router = APIRouter(prefix="/workflows", tags=["工作流"])
 
@@ -189,7 +189,7 @@ async def create_workflow(
         from datetime import datetime
         
         # 创建工作流实例
-        workflow = Workflow(
+        workflow = WorkflowInstance(
             id=str(uuid.uuid4()),
             tenant_id="default",  # TODO: 从token中获取
             name=name,

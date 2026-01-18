@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from typing import Optional, List, Dict
 from loguru import logger
 
-from app.models.department import Department
+from common.database.models import Department
 from app.repositories.department_repository import DepartmentRepository
 
 

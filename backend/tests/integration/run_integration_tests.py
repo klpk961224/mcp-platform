@@ -23,12 +23,12 @@ class IntegrationTester:
     
     def __init__(self):
         self.services = {
-            "auth": "http://localhost:8001",
-            "user": "http://localhost:8002",
-            "permission": "http://localhost:8003",
-            "system": "http://localhost:8004",
-            "support": "http://localhost:8005",
-            "business": "http://localhost:8006"
+            "auth": "http://localhost:28001",
+            "user": "http://localhost:28002",
+            "permission": "http://localhost:28003",
+            "system": "http://localhost:28004",
+            "support": "http://localhost:28005",
+            "business": "http://localhost:28006"
         }
         self.results = []
         self.session = requests.Session()

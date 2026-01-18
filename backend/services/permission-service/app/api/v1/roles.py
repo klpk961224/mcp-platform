@@ -72,17 +72,16 @@ async def get_roles(
     try:
         role_service = RoleService(db)
         
-        query_params = {
-            "tenant_id": tenant_id,
-            "status": status,
-            "keyword": keyword
-        }
-        
-        roles, total = role_service.search_roles(
-            query_params=query_params,
-            offset=(page - 1) * page_size,
-            limit=page_size
+        # 查询角色列表
+        roles = role_service.list_roles(
+            tenant_id=tenant_id,
+            keyword=keyword,
+            page=page,
+            page_size=page_size
         )
+        
+        # 统计总数
+        total = role_service.count_roles(tenant_id=tenant_id)
         
         items = [
             RoleResponse(
@@ -102,7 +101,7 @@ async def get_roles(
         return RoleListResponse(total=total, items=items, page=page, page_size=page_size)
     except Exception as e:
         logger.error(f"获取角色列表异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色列表失败，请稍后重试")
+        raise HTTPException(status_code=500, detail="获取角色列表失败，请稍后重试")
 
 
 @router.get("/{role_id}", response_model=RoleResponse, summary="获取角色详情")

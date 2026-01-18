@@ -15,12 +15,12 @@ class TestHealthCheck:
     
     def __init__(self):
         self.services = {
-            "auth": "http://localhost:8001/health",
-            "user": "http://localhost:8002/health",
-            "permission": "http://localhost:8003/health",
-            "system": "http://localhost:8004/health",
-            "support": "http://localhost:8005/health",
-            "business": "http://localhost:8006/health"
+            "auth": "http://localhost:28001/health",
+            "user": "http://localhost:28002/health",
+            "permission": "http://localhost:28003/health",
+            "system": "http://localhost:28004/health",
+            "support": "http://localhost:28005/health",
+            "business": "http://localhost:28006/health"
         }
         self.session = requests.Session()
     

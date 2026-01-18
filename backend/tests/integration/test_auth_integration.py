@@ -20,8 +20,8 @@ class TestAuthIntegration:
     """认证服务集成测试"""
     
     def __init__(self):
-        self.base_url = "http://localhost:8001/api/v1"
-        self.user_service_url = "http://localhost:8002/api/v1"
+        self.base_url = "http://localhost:28001/api/v1"
+        self.user_service_url = "http://localhost:28002/api/v1"
         self.session = requests.Session()
         self.test_user_id = None
         self.test_tenant_id = None
@@ -56,7 +56,7 @@ class TestAuthIntegration:
         
         for i in range(max_retries):
             try:
-                response = self.session.get(f"http://localhost:8001/health", timeout=2)
+                response = self.session.get(f"http://localhost:28001/health", timeout=2)
                 if response.status_code == 200:
                     print("✓ 认证服务已启动")
                     return

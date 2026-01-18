@@ -19,8 +19,8 @@ from loguru import logger
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
-from app.models.workflow import Workflow
-from app.models.workflow_task import WorkflowTask
+from common.database.models.workflow import WorkflowInstance
+from common.database.models.workflow import WorkflowTask
 from app.repositories.workflow_repository import WorkflowRepository
 from app.repositories.workflow_task_repository import WorkflowTaskRepository
 from app.repositories.workflow_template_repository import WorkflowTemplateRepository
@@ -54,7 +54,7 @@ class WorkflowService:
     
     def start_workflow(self, template_id: str, initiator_id: str, initiator_name: str,
                       tenant_id: str, business_data: Optional[Dict[str, Any]] = None,
-                      variables: Optional[Dict[str, Any]] = None) -> Workflow:
+                      variables: Optional[Dict[str, Any]] = None) -> WorkflowInstance:
         """
         启动工作流
         
@@ -67,7 +67,7 @@ class WorkflowService:
             variables: 变量（可选）
         
         Returns:
-            Workflow: 创建的工作流对象
+            WorkflowInstance: 创建的工作流对象
         """
         logger.info(f"启动工作流: template_id={template_id}, initiator_id={initiator_id}")
         
@@ -84,7 +84,7 @@ class WorkflowService:
         self.template_repo.update(template)
         
         import json
-        workflow = Workflow(
+        workflow = WorkflowInstance(
             tenant_id=tenant_id,
             name=template.name,
             template_id=template_id,
@@ -104,7 +104,7 @@ class WorkflowService:
         logger.info(f"工作流启动成功: workflow_id={workflow.id}")
         return workflow
     
-    def _create_tasks_from_definition(self, workflow: Workflow, definition: Dict[str, Any]):
+    def _create_tasks_from_definition(self, workflow: WorkflowInstance, definition: Dict[str, Any]):
         """从流程定义创建任务"""
         nodes = definition.get("nodes", [])
         for node in nodes:
@@ -120,7 +120,7 @@ class WorkflowService:
                 )
                 self.task_repo.create(task)
     
-    def get_workflow(self, workflow_id: str) -> Optional[Workflow]:
+    def get_workflow(self, workflow_id: str) -> Optional[WorkflowInstance]:
         """
         获取工作流
         
@@ -128,12 +128,12 @@ class WorkflowService:
             workflow_id: 工作流ID
         
         Returns:
-            Optional[Workflow]: 工作流对象，不存在返回None
+            Optional[WorkflowInstance]: 工作流对象，不存在返回None
         """
         return self.workflow_repo.get_by_id(workflow_id)
     
     def get_user_workflows(self, user_id: str, status: Optional[str] = None,
-                           page: int = 1, page_size: int = 10) -> List[Workflow]:
+                           page: int = 1, page_size: int = 10) -> List[WorkflowInstance]:
         """
         获取用户工作流
         
@@ -144,11 +144,11 @@ class WorkflowService:
             page_size: 每页数量
         
         Returns:
-            List[Workflow]: 工作流列表
+            List[WorkflowInstance]: 工作流列表
         """
         return self.workflow_repo.get_user_workflows(user_id, status, page, page_size)
     
-    def terminate_workflow(self, workflow_id: str) -> Optional[Workflow]:
+    def terminate_workflow(self, workflow_id: str) -> Optional[WorkflowInstance]:
         """
         终止工作流
         
@@ -156,7 +156,7 @@ class WorkflowService:
             workflow_id: 工作流ID
         
         Returns:
-            Optional[Workflow]: 更新后的工作流对象，不存在返回None
+            Optional[WorkflowInstance]: 更新后的工作流对象，不存在返回None
         """
         logger.info(f"终止工作流: workflow_id={workflow_id}")
         

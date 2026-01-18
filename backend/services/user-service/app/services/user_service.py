@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from typing import Optional, Dict, Any, List
 
-from app.models.user import User
+from common.database.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.repositories.department_repository import DepartmentRepository
 from app.repositories.tenant_repository import TenantRepository
@@ -89,9 +89,9 @@ class UserService:
                 raise ValueError("租户用户数已达上限")
         
         # 验证部门
-        department_id = user_data.get("department_id")
-        if department_id:
-            department = self.dept_repo.get_by_id(department_id)
+        dept_id = user_data.get("dept_id")
+        if dept_id:
+            department = self.dept_repo.get_by_id(dept_id)
             if not department:
                 raise ValueError("部门不存在")
             if tenant_id and department.tenant_id != tenant_id:

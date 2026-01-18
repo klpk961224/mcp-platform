@@ -19,7 +19,7 @@ from sqlalchemy import or_, and_
 from typing import Optional, List
 from loguru import logger
 
-from app.models.tenant import Tenant
+from common.database.models import Tenant
 
 
 class TenantRepository:

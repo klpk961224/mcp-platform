@@ -16,7 +16,8 @@ from unittest.mock import Mock
 from sqlalchemy.orm import Session
 
 # 导入所有模型以初始化SQLAlchemy mapper
-from app.models import Role, Permission, Menu, role_permissions, role_menus
+from common.database.models.user import Role
+from common.database.models.permission import Permission, Menu
 
 # 手动配置SQLAlchemy mapper
 from sqlalchemy.orm import configure_mappers

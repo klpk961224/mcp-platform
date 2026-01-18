@@ -90,19 +90,16 @@ async def get_users(
     try:
         user_service = UserService(db)
         
-        # 查询参数
-        query_params = {
-            "tenant_id": tenant_id,
-            "status": status,
-            "keyword": keyword
-        }
-        
         # 查询用户列表
-        users, total = user_service.search_users(
-            query_params=query_params,
-            offset=(page - 1) * page_size,
-            limit=page_size
+        users = user_service.list_users(
+            tenant_id=tenant_id,
+            keyword=keyword,
+            page=page,
+            page_size=page_size
         )
+        
+        # 统计总数
+        total = user_service.count_users(tenant_id=tenant_id)
         
         # 转换为响应格式
         items = [
@@ -112,8 +109,8 @@ async def get_users(
                 username=user.username,
                 email=user.email,
                 phone=user.phone,
-                dept_id=user.department_id,
-                position_id=getattr(user, 'position_id', None),
+                dept_id=user.dept_id,
+                position_id=user.position_id,
                 status=user.status,
                 created_at=user.created_at.isoformat() if user.created_at else None,
                 updated_at=user.updated_at.isoformat() if user.updated_at else None
@@ -128,10 +125,11 @@ async def get_users(
             page_size=page_size
         )
     except Exception as e:
-        logger.error(f"获取用户列表异常: error={str(e)}")
+        logger.error(f"获取用户列表异常: error={str(e)}", exc_info=True)
+        import traceback
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="获取用户列表失败，请稍后重试"
+            status_code=500,
+            detail=f"获取用户列表失败: {str(e)}"
         )
 
 
