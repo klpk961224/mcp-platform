@@ -1,7 +1,7 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 echo ========================================
-echo 杩愯鍚庣鎺ュ彛娴嬭瘯
+echo 运行后端接口测试
 echo ========================================
 echo.
 
@@ -11,8 +11,9 @@ python test_backend_apis.py
 
 echo.
 echo ========================================
-echo 娴嬭瘯瀹屾垚锛?echo ========================================
+echo 测试完成！
+echo ========================================
 echo.
-echo 娴嬭瘯鎶ュ憡宸茬敓鎴愶細D:\WorkSpace\mcp-platform\backend\tests\娴嬭瘯鎶ュ憡.json
+echo 测试报告已生成：D:\WorkSpace\mcp-platform\backend\tests\测试报告.json
 echo.
 pause

@@ -1,82 +1,84 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 echo ========================================
-echo 鍚姩浼佷笟绾I缁煎悎绠＄悊骞冲彴Docker鏈嶅姟
+echo 启动企业级AI综合管理平台Docker服务
 echo ========================================
 
 cd /d %~dp0
 
 echo.
-echo [1/3] 妫€鏌ocker鏄惁宸插畨瑁?..
+echo [1/3] 检查Docker是否已安装...
 docker --version
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo 閿欒: 鏈娴嬪埌Docker锛岃鍏堝畨瑁匘ocker
+    echo 错误: 未检测到Docker，请先安装Docker
     pause
     exit /b 1
 )
 
 echo.
-echo [2/3] 妫€鏌ySQL鍜孯edis鏄惁宸插惎鍔?..
-echo 妫€鏌ySQL (localhost:3306)...
+echo [2/3] 检查MySQL和Redis是否已启动...
+echo 检查MySQL (localhost:3306)...
 netstat -ano | findstr "3306" >nul
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo 璀﹀憡: MySQL鏈惎鍔ㄦ垨绔彛3306涓嶅彲璁块棶
-    echo 璇风‘淇滿ySQL宸插惎鍔ㄥ苟鐩戝惉鍦?306绔彛
+    echo 警告: MySQL未启动或端口3306不可访问
+    echo 请确保MySQL已启动并监听在3306端口
     pause
     exit /b 1
 )
-echo MySQL宸插惎鍔?
-echo 妫€鏌edis (localhost:6379)...
+echo MySQL已启动
+echo 检查Redis (localhost:6379)...
 netstat -ano | findstr "6379" >nul
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo 璀﹀憡: Redis鏈惎鍔ㄦ垨绔彛6379涓嶅彲璁块棶
-    echo 璇风‘淇漅edis宸插惎鍔ㄥ苟鐩戝惉鍦?379绔彛
+    echo 警告: Redis未启动或端口6379不可访问
+    echo 请确保Redis已启动并监听在6379端口
     pause
     exit /b 1
 )
-echo Redis宸插惎鍔?
+echo Redis已启动
 echo.
-echo [3/3] 鍚姩鎵€鏈夋湇鍔?..
+echo [3/3] 启动所有服务...
 docker-compose up -d --build
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo 閿欒: 鏈嶅姟鍚姩澶辫触
+    echo 错误: 服务启动失败
     pause
     exit /b 1
 )
 
 echo.
-echo 绛夊緟鏈嶅姟鍚姩...
+echo 等待服务启动...
 timeout /t 10 /nobreak > nul
 
 echo.
 echo ========================================
-echo 鎵€鏈夋湇鍔″凡鍚姩锛?echo ========================================
+echo 所有服务已启动！
+echo ========================================
 echo.
-echo 鏈嶅姟鍦板潃锛堟墍鏈夋湇鍔￠兘鍦ㄥ涓绘満IP涓婏級锛?echo   - 璁よ瘉鏈嶅姟: http://localhost:228001
-echo   - 鐢ㄦ埛鏈嶅姟: http://localhost:228002
-echo   - 鏉冮檺鏈嶅姟: http://localhost:228003
-echo   - 绯荤粺鏈嶅姟: http://localhost:228004
-echo   - 鏀拺鏈嶅姟: http://localhost:228005
-echo   - 涓氬姟鏈嶅姟: http://localhost:228006
+echo 服务地址（所有服务都在宿主机IP上）：
+echo   - 认证服务: http://localhost:28001
+echo   - 用户服务: http://localhost:28002
+echo   - 权限服务: http://localhost:28003
+echo   - 系统服务: http://localhost:28004
+echo   - 支撑服务: http://localhost:28005
+echo   - 业务服务: http://localhost:28006
 echo.
-echo 鍋ュ悍妫€鏌ワ細
-echo   - http://localhost:228001/health
-echo   - http://localhost:228002/health
-echo   - http://localhost:228003/health
-echo   - http://localhost:228004/health
-echo   - http://localhost:228005/health
-echo   - http://localhost:228006/health
+echo 健康检查：
+echo   - http://localhost:28001/health
+echo   - http://localhost:28002/health
+echo   - http://localhost:28003/health
+echo   - http://localhost:28004/health
+echo   - http://localhost:28005/health
+echo   - http://localhost:28006/health
 echo.
-echo 鏌ョ湅鏃ュ織: docker-compose logs -f
-echo 鏌ョ湅鐘舵€? docker-compose ps
-echo 鍋滄鏈嶅姟: stop_all_services.bat
+echo 查看日志: docker-compose logs -f
+echo 查看状态: docker-compose ps
+echo 停止服务: stop_all_services.bat
 echo.
-echo 璇︾粏鏂囨。: DOCKER_LOCAL_DEPLOYMENT.md
+echo 详细文档: DOCKER_LOCAL_DEPLOYMENT.md
 echo ========================================
 
 pause
