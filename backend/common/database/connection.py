@@ -3,7 +3,7 @@
 
 鍔熻兘璇存槑锛?1. 鏀寔澶氭暟鎹簮绠＄悊锛圡ySQL銆丳ostgreSQL銆丱racle锛?2. 鎻愪緵 SQLAlchemy Engine 鍜?Session 绠＄悊
 3. 闆嗘垚 Pandas read_sql/read_sql_query/read_sql_table 鏂规硶
-4. 鑷姩璁板綍鏌ヨ鏃ュ織锛圫QL璇彞鍜屽弬鏁帮級
+4. 鑷姩璁板綍查询鏃ュ織锛圫QL璇彞鍜屽弬鏁帮級
 
 浣跨敤绀轰緥锛?    # 鍒濆鍖栨暟鎹簮
     from common.database.connection import datasource_manager
@@ -49,7 +49,7 @@ class DataSourceManager:
     鍔熻兘锛?    - 绠＄悊澶氫釜鏁版嵁婧愮殑杩炴帴
     - 鎻愪緵 Session 鍜?Engine 璁块棶
     - 闆嗘垚 Pandas 鏁版嵁璇诲彇鏂规硶
-    - 鑷姩璁板綍鏌ヨ鏃ュ織
+    - 鑷姩璁板綍查询鏃ュ織
     
     浣跨敤鏂规硶锛?        1. 娉ㄥ唽鏁版嵁婧愶細register_datasource()
         2. 鑾峰彇 Session锛歡et_session() 鎴?get_session_context()
@@ -78,9 +78,9 @@ class DataSourceManager:
         娉ㄥ唽鏁版嵁婧?        
         Args:
             name: 鏁版嵁婧愬悕绉帮紙濡?'mysql', 'oracle', 'postgresql'锛?                  - 浣跨敤绀轰緥锛歞atasource_manager.register_datasource(name='mysql', ...)
-            db_type: 鏁版嵁搴撶被鍨嬶紙'mysql', 'postgresql', 'oracle'锛?            host: 涓绘満鍦板潃锛堝 'localhost', '192.168.1.100'锛?            port: 绔彛鍙凤紙MySQL:3306, PostgreSQL:5432, Oracle:1521锛?            username: 鏁版嵁搴撶敤鎴峰悕
+            db_type: 鏁版嵁搴撶被鍨嬶紙'mysql', 'postgresql', 'oracle'锛?            host: 涓绘満地址锛堝 'localhost', '192.168.1.100'锛?            port: 绔彛鍙凤紙MySQL:3306, PostgreSQL:5432, Oracle:1521锛?            username: 鏁版嵁搴撶敤鎴峰悕
             password: 鏁版嵁搴撳瘑鐮?            database: 鏁版嵁搴撳悕锛圤racle 浣跨敤 service_name锛?            **kwargs: 鍏朵粬杩炴帴鍙傛暟锛堝 pool_size, max_overflow, echo 绛夛級
-                      - pool_size: 杩炴帴姹犲ぇ灏忥紝榛樿 5
+                      - pool_size: 杩炴帴姹犲ぇ灏忥紝默认 5
                       - max_overflow: 鏈€澶ф孩鍑鸿繛鎺ユ暟锛岄粯璁?10
                       - echo: 鏄惁鎵撳嵃 SQL 璇彞锛岄粯璁?False锛堝紑鍙戠幆澧冨彲璁句负 True锛?        
         浣跨敤绀轰緥锛?            # 娉ㄥ唽 MySQL 鏁版嵁婧?            datasource_manager.register_datasource(
@@ -108,7 +108,7 @@ class DataSourceManager:
                 max_overflow=10
             )
         """
-        # 鏍规嵁鏁版嵁搴撶被鍨嬫瀯寤鸿繛鎺RL
+        # 根据鏁版嵁搴撶被鍨嬫瀯寤鸿繛鎺RL
         if db_type == 'mysql':
             url = f"mysql+pymysql://{username}:{password}@{host}:{port}/{database}"
             logger.info(f"娉ㄥ唽 MySQL 鏁版嵁婧? {name} -> {host}:{port}/{database}")
@@ -119,15 +119,15 @@ class DataSourceManager:
             url = f"oracle+oracledb://{username}:{password}@{host}:{port}/{database}"
             logger.info(f"娉ㄥ唽 Oracle 鏁版嵁婧? {name} -> {host}:{port}/{database}")
         else:
-            raise ValueError(f"涓嶆敮鎸佺殑鏁版嵁搴撶被鍨? {db_type}锛屾敮鎸佺殑绫诲瀷锛歮ysql, postgresql, oracle")
+            raise ValueError(f"涓嶆敮鎸佺殑鏁版嵁搴撶被鍨? {db_type}锛屾敮鎸佺殑类型锛歮ysql, postgresql, oracle")
         
-        # 鍒涘缓寮曟搸
+        # 创建寮曟搸
         engine = create_engine(url, **kwargs)
         
-        # 鍒涘缓 Session Maker
+        # 创建 Session Maker
         session_maker = sessionmaker(bind=engine)
         
-        # 淇濆瓨鍒扮鐞嗗櫒
+        # 保存鍒扮鐞嗗櫒
         self._engines[name] = engine
         self._session_makers[name] = session_maker
         
@@ -210,9 +210,9 @@ class DataSourceManager:
         **kwargs
     ) -> pd.DataFrame:
         """
-        浣跨敤 pandas 璇诲彇 SQL 鏌ヨ缁撴灉锛堥€氱敤鏂规硶锛?        
+        浣跨敤 pandas 璇诲彇 SQL 查询缁撴灉锛堥€氱敤鏂规硶锛?        
         Args:
-            sql: SQL 鏌ヨ璇彞锛堝彲浠ユ槸 SELECT 鏌ヨ鎴栬〃鍚嶏級
+            sql: SQL 查询璇彞锛堝彲浠ユ槸 SELECT 查询鎴栬〃鍚嶏級
                  - 绀轰緥1锛歋ELECT * FROM users WHERE status = %s
                  - 绀轰緥2锛歋ELECT * FROM orders WHERE order_date > :start_date
             datasource_name: 鏁版嵁婧愬悕绉帮紙濡?'mysql', 'oracle'锛?            params: SQL 鍙傛暟锛堥槻姝?SQL 娉ㄥ叆锛?                    - 绀轰緥1锛歿'status': 'active'}
@@ -220,15 +220,15 @@ class DataSourceManager:
             **kwargs: 浼犻€掔粰 pd.read_sql 鐨勫叾浠栧弬鏁?                    - index_col: 鎸囧畾绱㈠紩鍒?                    - parse_dates: 瑙ｆ瀽鏃ユ湡鍒?                    - columns: 鎸囧畾璇诲彇鐨勫垪
         
         Returns:
-            pd.DataFrame: 鏌ヨ缁撴灉
+            pd.DataFrame: 查询缁撴灉
         
-        浣跨敤绀轰緥锛?            # 鍩烘湰鏌ヨ
+        浣跨敤绀轰緥锛?            # 鍩烘湰查询
             df = datasource_manager.read_sql(
                 "SELECT * FROM users",
                 datasource_name='mysql'
             )
             
-            # 甯﹀弬鏁扮殑鏌ヨ锛堟帹鑽愶紝闃叉 SQL 娉ㄥ叆锛?            df = datasource_manager.read_sql(
+            # 甯﹀弬鏁扮殑查询锛堟帹鑽愶紝闃叉 SQL 娉ㄥ叆锛?            df = datasource_manager.read_sql(
                 "SELECT * FROM users WHERE status = %s AND age > %s",
                 datasource_name='mysql',
                 params={'status': 'active', 'age': 18}
@@ -247,16 +247,16 @@ class DataSourceManager:
                 parse_dates=['order_date', 'created_at']
             )
         """
-        # 璁板綍鏌ヨ鏃ュ織
-        logger.info(f"鎵ц SQL 鏌ヨ [鏁版嵁婧? {datasource_name}]")
+        # 璁板綍查询鏃ュ織
+        logger.info(f"鎵ц SQL 查询 [鏁版嵁婧? {datasource_name}]")
         logger.info(f"SQL 璇彞: {sql}")
         if params:
-            logger.info(f"鏌ヨ鍙傛暟: {params}")
+            logger.info(f"查询鍙傛暟: {params}")
         
         engine = self.get_engine(datasource_name)
         df = pd.read_sql(sql, engine, params=params, **kwargs)
         
-        logger.success(f"鏌ヨ鎴愬姛锛岃繑鍥?{len(df)} 鏉¤褰?)
+        logger.success(f"查询鎴愬姛锛岃繑鍥?{len(df)} 鏉¤褰?)
         return df
     
     def read_sql_query(
@@ -267,22 +267,22 @@ class DataSourceManager:
         **kwargs
     ) -> pd.DataFrame:
         """
-        浣跨敤 pandas 璇诲彇 SQL 鏌ヨ缁撴灉锛堜粎鏌ヨ璇彞锛?        
+        浣跨敤 pandas 璇诲彇 SQL 查询缁撴灉锛堜粎查询璇彞锛?        
         涓?read_sql 鐨勫尯鍒細
-        - read_sql_query: 鍙兘鎵ц SELECT 鏌ヨ
-        - read_sql: 鍙互鎵ц SELECT 鏌ヨ鎴栬鍙栬〃鍚?        
+        - read_sql_query: 鍙兘鎵ц SELECT 查询
+        - read_sql: 鍙互鎵ц SELECT 查询鎴栬鍙栬〃鍚?        
         Args:
-            sql: SQL 鏌ヨ璇彞锛堝繀椤绘槸 SELECT 璇彞锛?                 - 绀轰緥锛歋ELECT id, username, email FROM users WHERE status = %s
+            sql: SQL 查询璇彞锛堝繀椤绘槸 SELECT 璇彞锛?                 - 绀轰緥锛歋ELECT id, username, email FROM users WHERE status = %s
             datasource_name: 鏁版嵁婧愬悕绉帮紙濡?'mysql', 'oracle'锛?            params: SQL 鍙傛暟锛堥槻姝?SQL 娉ㄥ叆锛?            **kwargs: 浼犻€掔粰 pd.read_sql_query 鐨勫叾浠栧弬鏁?        
         Returns:
-            pd.DataFrame: 鏌ヨ缁撴灉
+            pd.DataFrame: 查询缁撴灉
         
         浣跨敤绀轰緥锛?            # 绠€鍗曟煡璇?            df = datasource_manager.read_sql_query(
                 "SELECT id, username FROM users",
                 datasource_name='mysql'
             )
             
-            # 澶嶆潅鏌ヨ锛圝OIN锛?            df = datasource_manager.read_sql_query(
+            # 澶嶆潅查询锛圝OIN锛?            df = datasource_manager.read_sql_query(
                 \"\"\"
                 SELECT u.id, u.username, o.order_id, o.amount
                 FROM users u
@@ -293,7 +293,7 @@ class DataSourceManager:
                 params={'status': 'active'}
             )
             
-            # 鑱氬悎鏌ヨ
+            # 鑱氬悎查询
             df = datasource_manager.read_sql_query(
                 \"\"\"
                 SELECT user_id, COUNT(*) as order_count, SUM(amount) as total_amount
@@ -305,16 +305,16 @@ class DataSourceManager:
                 params={'start_date': '2024-01-01'}
             )
         """
-        # 璁板綍鏌ヨ鏃ュ織
-        logger.info(f"鎵ц SQL 鏌ヨ [鏁版嵁婧? {datasource_name}]")
+        # 璁板綍查询鏃ュ織
+        logger.info(f"鎵ц SQL 查询 [鏁版嵁婧? {datasource_name}]")
         logger.info(f"SQL 璇彞: {sql}")
         if params:
-            logger.info(f"鏌ヨ鍙傛暟: {params}")
+            logger.info(f"查询鍙傛暟: {params}")
         
         engine = self.get_engine(datasource_name)
         df = pd.read_sql_query(sql, engine, params=params, **kwargs)
         
-        logger.success(f"鏌ヨ鎴愬姛锛岃繑鍥?{len(df)} 鏉¤褰?)
+        logger.success(f"查询鎴愬姛锛岃繑鍥?{len(df)} 鏉¤褰?)
         return df
     
     def read_sql_table(
@@ -353,7 +353,7 @@ class DataSourceManager:
                 parse_dates=['order_date', 'created_at']
             )
         """
-        # 璁板綍鏌ヨ鏃ュ織
+        # 璁板綍查询鏃ュ織
         logger.info(f"璇诲彇琛ㄦ暟鎹?[鏁版嵁婧? {datasource_name}, 琛? {table_name}]")
         if columns:
             logger.info(f"鎸囧畾鍒? {columns}")

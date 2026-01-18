@@ -1,7 +1,7 @@
 ﻿"""
-璁よ瘉鍩熸湇鍔?- FastAPI搴旂敤鍏ュ彛
+认证域服务?- FastAPI搴旂敤鍏ュ彛
 
-鍔熻兘璇存槑锛?1. 鍒涘缓FastAPI搴旂敤
+鍔熻兘璇存槑锛?1. 创建FastAPI搴旂敤
 2. 閰嶇疆涓棿浠?3. 娉ㄥ唽璺敱
 4. 鍚姩鏈嶅姟
 
@@ -21,10 +21,10 @@ from app.core.config import settings
 from app.api.v1 import auth
 from common.database.connection import datasource_manager
 
-# 鍒涘缓FastAPI搴旂敤
+# 创建FastAPI搴旂敤
 app = FastAPI(
     title=settings.APP_NAME,
-    description="璁よ瘉鍩熸湇鍔?- JWT璁よ瘉銆乀oken绠＄悊",
+    description="认证域服务?- JWT璁よ瘉銆乀oken绠＄悊",
     version="1.0.0",
     debug=settings.APP_DEBUG
 )
@@ -45,7 +45,7 @@ async def root():
     """
     鍋ュ悍妫€鏌ユ帴鍙?    
     Returns:
-        dict: 鏈嶅姟鐘舵€佷俊鎭?    
+        dict: 鏈嶅姟状态佷俊鎭?    
     浣跨敤绀轰緥锛?        GET /
     """
     return {
@@ -60,7 +60,7 @@ async def health():
     """
     鍋ュ悍妫€鏌ユ帴鍙?    
     Returns:
-        dict: 鏈嶅姟鍋ュ悍鐘舵€?    
+        dict: 鏈嶅姟鍋ュ悍状态?    
     浣跨敤绀轰緥锛?        GET /health
     """
     return {

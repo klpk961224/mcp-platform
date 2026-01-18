@@ -37,13 +37,13 @@ class DataSourceRepository:
     
     def create(self, datasource: DataSource) -> DataSource:
         """
-        鍒涘缓鏁版嵁婧?        
+        创建鏁版嵁婧?        
         Args:
             datasource: 鏁版嵁婧愬璞?        
         Returns:
-            DataSource: 鍒涘缓鐨勬暟鎹簮瀵硅薄
+            DataSource: 创建鐨勬暟鎹簮瀵硅薄
         """
-        logger.info(f"鍒涘缓鏁版嵁婧? name={datasource.name}, type={datasource.type}")
+        logger.info(f"创建鏁版嵁婧? name={datasource.name}, type={datasource.type}")
         self.db.add(datasource)
         self.db.commit()
         self.db.refresh(datasource)
@@ -51,7 +51,7 @@ class DataSourceRepository:
     
     def get_by_id(self, datasource_id: str) -> Optional[DataSource]:
         """
-        鏍规嵁ID鑾峰彇鏁版嵁婧?        
+        根据ID鑾峰彇鏁版嵁婧?        
         Args:
             datasource_id: 鏁版嵁婧怚D
         
@@ -62,9 +62,9 @@ class DataSourceRepository:
     
     def get_by_name(self, name: str, tenant_id: str) -> Optional[DataSource]:
         """
-        鏍规嵁鍚嶇О鑾峰彇鏁版嵁婧?        
+        根据名称鑾峰彇鏁版嵁婧?        
         Args:
-            name: 鏁版嵁婧愬悕绉?            tenant_id: 绉熸埛ID
+            name: 鏁版嵁婧愬悕绉?            tenant_id: 租户ID
         
         Returns:
             Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
@@ -78,11 +78,11 @@ class DataSourceRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇鏁版嵁婧愬垪琛?        
+        根据租户ID鑾峰彇鏁版嵁婧愬垪琛?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -91,10 +91,10 @@ class DataSourceRepository:
     
     def get_by_type(self, data_type: str, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        鏍规嵁绫诲瀷鑾峰彇鏁版嵁婧愬垪琛?        
+        根据类型鑾峰彇鏁版嵁婧愬垪琛?        
         Args:
             data_type: 鏁版嵁婧愮被鍨?            page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -106,7 +106,7 @@ class DataSourceRepository:
         鑾峰彇绉熸埛鐨勯粯璁ゆ暟鎹簮
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
@@ -123,9 +123,9 @@ class DataSourceRepository:
         鑾峰彇绉熸埛鐨勬椿璺冩暟鎹簮鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -141,9 +141,9 @@ class DataSourceRepository:
         """
         鎼滅储鏁版嵁婧?        
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -167,7 +167,7 @@ class DataSourceRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -176,32 +176,32 @@ class DataSourceRepository:
     
     def update(self, datasource: DataSource) -> DataSource:
         """
-        鏇存柊鏁版嵁婧?        
+        更新鏁版嵁婧?        
         Args:
             datasource: 鏁版嵁婧愬璞?        
         Returns:
-            DataSource: 鏇存柊鍚庣殑鏁版嵁婧愬璞?        """
-        logger.info(f"鏇存柊鏁版嵁婧? datasource_id={datasource.id}")
+            DataSource: 更新鍚庣殑鏁版嵁婧愬璞?        """
+        logger.info(f"更新鏁版嵁婧? datasource_id={datasource.id}")
         self.db.commit()
         self.db.refresh(datasource)
         return datasource
     
     def delete(self, datasource_id: str) -> bool:
         """
-        鍒犻櫎鏁版嵁婧?        
+        删除鏁版嵁婧?        
         Args:
             datasource_id: 鏁版嵁婧怚D
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鏁版嵁婧? datasource_id={datasource_id}")
+        logger.info(f"删除鏁版嵁婧? datasource_id={datasource_id}")
         datasource = self.get_by_id(datasource_id)
         if not datasource:
             return False
         
-        # 妫€鏌ユ槸鍚︿负榛樿鏁版嵁婧?        if datasource.is_default:
-            raise ValueError("鏃犳硶鍒犻櫎榛樿鏁版嵁婧?)
+        # 妫€鏌ユ槸鍚︿负默认鏁版嵁婧?        if datasource.is_default:
+            raise ValueError("鏃犳硶删除默认鏁版嵁婧?)
         
         self.db.delete(datasource)
         self.db.commit()
@@ -211,7 +211,7 @@ class DataSourceRepository:
         """
         缁熻绉熸埛鏁版嵁婧愭暟閲?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             int: 鏁版嵁婧愭暟閲?        """
@@ -219,7 +219,7 @@ class DataSourceRepository:
     
     def count_by_type(self, data_type: str) -> int:
         """
-        缁熻鏁版嵁婧愮被鍨嬬殑鏁伴噺
+        缁熻鏁版嵁婧愮被鍨嬬殑数量
         
         Args:
             data_type: 鏁版嵁婧愮被鍨?        
@@ -229,7 +229,7 @@ class DataSourceRepository:
     
     def count_all(self) -> int:
         """
-        缁熻鎵€鏈夋暟鎹簮鏁伴噺
+        缁熻鎵€鏈夋暟鎹簮数量
         
         Returns:
             int: 鏁版嵁婧愭暟閲?        """
@@ -237,10 +237,10 @@ class DataSourceRepository:
     
     def exists_by_name(self, name: str, tenant_id: str) -> bool:
         """
-        妫€鏌ユ暟鎹簮鍚嶇О鏄惁瀛樺湪
+        妫€鏌ユ暟鎹簮名称鏄惁瀛樺湪
         
         Args:
-            name: 鏁版嵁婧愬悕绉?            tenant_id: 绉熸埛ID
+            name: 鏁版嵁婧愬悕绉?            tenant_id: 租户ID
         
         Returns:
             bool: 鏄惁瀛樺湪

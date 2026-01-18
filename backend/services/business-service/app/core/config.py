@@ -22,13 +22,13 @@ class Settings(BaseSettings):
     鍔熻兘锛?    - 涓氬姟鏈嶅姟鐗瑰畾鐨勯厤缃?    - 瑕嗙洊閫氱敤閰嶇疆鐨勯粯璁ゅ€?    - 鎻愪緵涓氬姟鏈嶅姟鐗规湁鐨勯厤缃」
     """
     
-    # ========== 搴旂敤閰嶇疆 ==========
-    APP_NAME: str = Field(default="涓氬姟鍩熸湇鍔?, description="搴旂敤鍚嶇О")
+    # ========== 应用配置 ==========
+    APP_NAME: str = Field(default="业务域服务?, description="搴旂敤名称")
     APP_ENV: str = Field(default="development", description="杩愯鐜")
     APP_DEBUG: bool = Field(default=True, description="璋冭瘯妯″紡")
     APP_PORT: int = Field(default=228006, description="搴旂敤绔彛")
     
-    # ========== 鏁版嵁搴撻厤缃?==========
+    # ========== 数据库配置?==========
     DB_TYPE: str = Field(default="mysql", description="鏁版嵁搴撶被鍨?)
     DB_HOST: str = Field(default="localhost", description="鏁版嵁搴撲富鏈?)
     DB_PORT: int = Field(default=3306, description="鏁版嵁搴撶鍙?)

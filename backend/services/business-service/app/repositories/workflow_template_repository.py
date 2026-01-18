@@ -37,13 +37,13 @@ class WorkflowTemplateRepository:
     
     def create(self, template: WorkflowTemplate) -> WorkflowTemplate:
         """
-        鍒涘缓宸ヤ綔娴佹ā鏉?        
+        创建宸ヤ綔娴佹ā鏉?        
         Args:
             template: 宸ヤ綔娴佹ā鏉垮璞?        
         Returns:
-            WorkflowTemplate: 鍒涘缓鐨勫伐浣滄祦妯℃澘瀵硅薄
+            WorkflowTemplate: 创建鐨勫伐浣滄祦妯℃澘瀵硅薄
         """
-        logger.info(f"鍒涘缓宸ヤ綔娴佹ā鏉? name={template.name}, code={template.code}")
+        logger.info(f"创建宸ヤ綔娴佹ā鏉? name={template.name}, code={template.code}")
         self.db.add(template)
         self.db.commit()
         self.db.refresh(template)
@@ -51,7 +51,7 @@ class WorkflowTemplateRepository:
     
     def get_by_id(self, template_id: str) -> Optional[WorkflowTemplate]:
         """
-        鏍规嵁ID鑾峰彇宸ヤ綔娴佹ā鏉?        
+        根据ID鑾峰彇宸ヤ綔娴佹ā鏉?        
         Args:
             template_id: 妯℃澘ID
         
@@ -62,9 +62,9 @@ class WorkflowTemplateRepository:
     
     def get_by_code(self, code: str) -> Optional[WorkflowTemplate]:
         """
-        鏍规嵁缂栫爜鑾峰彇宸ヤ綔娴佹ā鏉?        
+        根据编码鑾峰彇宸ヤ綔娴佹ā鏉?        
         Args:
-            code: 妯℃澘缂栫爜
+            code: 妯℃澘编码
         
         Returns:
             Optional[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
@@ -76,10 +76,10 @@ class WorkflowTemplateRepository:
         """
         鑾峰彇绉熸埛宸ヤ綔娴佹ā鏉?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             category: 鍒嗙被锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
@@ -98,7 +98,7 @@ class WorkflowTemplateRepository:
         Args:
             category: 鍒嗙被锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
@@ -115,9 +115,9 @@ class WorkflowTemplateRepository:
         """
         鑾峰彇婵€娲荤殑宸ヤ綔娴佹ā鏉?        
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
@@ -134,9 +134,9 @@ class WorkflowTemplateRepository:
         """
         鎼滅储宸ヤ綔娴佹ā鏉?        
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
@@ -156,33 +156,33 @@ class WorkflowTemplateRepository:
     
     def update(self, template: WorkflowTemplate) -> WorkflowTemplate:
         """
-        鏇存柊宸ヤ綔娴佹ā鏉?        
+        更新宸ヤ綔娴佹ā鏉?        
         Args:
             template: 宸ヤ綔娴佹ā鏉垮璞?        
         Returns:
-            WorkflowTemplate: 鏇存柊鍚庣殑宸ヤ綔娴佹ā鏉垮璞?        """
-        logger.info(f"鏇存柊宸ヤ綔娴佹ā鏉? template_id={template.id}")
+            WorkflowTemplate: 更新鍚庣殑宸ヤ綔娴佹ā鏉垮璞?        """
+        logger.info(f"更新宸ヤ綔娴佹ā鏉? template_id={template.id}")
         self.db.commit()
         self.db.refresh(template)
         return template
     
     def delete(self, template_id: str) -> bool:
         """
-        鍒犻櫎宸ヤ綔娴佹ā鏉?        
+        删除宸ヤ綔娴佹ā鏉?        
         Args:
             template_id: 妯℃澘ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎宸ヤ綔娴佹ā鏉? template_id={template_id}")
+        logger.info(f"删除宸ヤ綔娴佹ā鏉? template_id={template_id}")
         template = self.get_by_id(template_id)
         if not template:
             return False
         
         # 妫€鏌ユ槸鍚︿负绯荤粺妯℃澘
         if template.is_system:
-            raise ValueError("鏃犳硶鍒犻櫎绯荤粺妯℃澘")
+            raise ValueError("鏃犳硶删除绯荤粺妯℃澘")
         
         self.db.delete(template)
         self.db.commit()
@@ -190,13 +190,13 @@ class WorkflowTemplateRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛妯℃澘鏁伴噺
+        缁熻绉熸埛妯℃澘数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 妯℃澘鏁伴噺
+            int: 妯℃澘数量
         """
         return self.db.query(WorkflowTemplate).filter(WorkflowTemplate.tenant_id == tenant_id).count()
     
@@ -204,6 +204,6 @@ class WorkflowTemplateRepository:
         """
         缁熻鎵€鏈夋ā鏉挎暟閲?        
         Returns:
-            int: 妯℃澘鏁伴噺
+            int: 妯℃澘数量
         """
         return self.db.query(WorkflowTemplate).count()

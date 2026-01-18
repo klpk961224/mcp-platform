@@ -18,9 +18,9 @@ from typing import Optional
 class LoginRequest(BaseModel):
     """鐧诲綍璇锋眰"""
     
-    username: str = Field(..., description="鐢ㄦ埛鍚?, min_length=4, max_length=50)
+    username: str = Field(..., description="用户名?, min_length=4, max_length=50)
     password: str = Field(..., description="瀵嗙爜", min_length=6)
-    tenant_code: Optional[str] = Field(None, description="绉熸埛缂栫爜")
+    tenant_code: Optional[str] = Field(None, description="绉熸埛编码")
     
     class Config:
         json_schema_extra = {
@@ -37,7 +37,7 @@ class LoginResponse(BaseModel):
     
     access_token: str = Field(..., description="璁块棶Token")
     refresh_token: str = Field(..., description="鍒锋柊Token")
-    token_type: str = Field(default="bearer", description="Token绫诲瀷")
+    token_type: str = Field(default="bearer", description="Token类型")
     expires_in: int = Field(..., description="杩囨湡鏃堕棿锛堢锛?)
     user_info: dict = Field(..., description="鐢ㄦ埛淇℃伅")
     
@@ -74,7 +74,7 @@ class RefreshTokenResponse(BaseModel):
     """鍒锋柊Token鍝嶅簲"""
     
     access_token: str = Field(..., description="鏂扮殑璁块棶Token")
-    token_type: str = Field(default="bearer", description="Token绫诲瀷")
+    token_type: str = Field(default="bearer", description="Token类型")
     expires_in: int = Field(..., description="杩囨湡鏃堕棿锛堢锛?)
     
     class Config:
@@ -103,11 +103,11 @@ class LogoutResponse(BaseModel):
 class RegisterRequest(BaseModel):
     """娉ㄥ唽璇锋眰"""
     
-    username: str = Field(..., description="鐢ㄦ埛鍚?, min_length=4, max_length=50)
+    username: str = Field(..., description="用户名?, min_length=4, max_length=50)
     password: str = Field(..., description="瀵嗙爜", min_length=6)
-    email: EmailStr = Field(..., description="閭")
-    phone: Optional[str] = Field(None, description="鎵嬫満鍙?)
-    tenant_code: Optional[str] = Field(None, description="绉熸埛缂栫爜")
+    email: EmailStr = Field(..., description="邮箱")
+    phone: Optional[str] = Field(None, description="手机号)
+    tenant_code: Optional[str] = Field(None, description="绉熸埛编码")
     
     class Config:
         json_schema_extra = {
@@ -125,9 +125,9 @@ class RegisterResponse(BaseModel):
     """娉ㄥ唽鍝嶅簲"""
     
     message: str = Field(default="娉ㄥ唽鎴愬姛", description="娑堟伅")
-    user_id: str = Field(..., description="鐢ㄦ埛ID")
-    username: str = Field(..., description="鐢ㄦ埛鍚?)
-    email: str = Field(..., description="閭")
+    user_id: str = Field(..., description="用户ID")
+    username: str = Field(..., description="用户名?)
+    email: str = Field(..., description="邮箱")
     
     class Config:
         json_schema_extra = {

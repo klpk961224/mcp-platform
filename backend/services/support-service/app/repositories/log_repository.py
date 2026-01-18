@@ -3,7 +3,7 @@
 鏃ュ織鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 鐧诲綍鏃ュ織CRUD鎿嶄綔
 2. 鎿嶄綔鏃ュ織CRUD鎿嶄綔
-3. 鏃ュ織鏌ヨ鍜岀粺璁?
+3. 鏃ュ織查询鍜岀粺璁?
 浣跨敤绀轰緥锛?    from app.repositories.log_repository import LogRepository
     
     log_repo = LogRepository(db)
@@ -24,7 +24,7 @@ class LogRepository:
     鏃ュ織鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 鐧诲綍鏃ュ織CRUD鎿嶄綔
     - 鎿嶄綔鏃ュ織CRUD鎿嶄綔
-    - 鏃ュ織鏌ヨ鍜岀粺璁?    
+    - 鏃ュ織查询鍜岀粺璁?    
     浣跨敤鏂规硶锛?        log_repo = LogRepository(db)
         logs = log_repo.get_user_login_logs(user_id="123")
     """
@@ -40,14 +40,14 @@ class LogRepository:
     # 鐧诲綍鏃ュ織鐩稿叧鏂规硶
     def create_login_log(self, login_log: LoginLog) -> LoginLog:
         """
-        鍒涘缓鐧诲綍鏃ュ織
+        创建鐧诲綍鏃ュ織
         
         Args:
             login_log: 鐧诲綍鏃ュ織瀵硅薄
         
         Returns:
-            LoginLog: 鍒涘缓鐨勭櫥褰曟棩蹇楀璞?        """
-        logger.info(f"鍒涘缓鐧诲綍鏃ュ織: user_id={login_log.user_id}, login_status={login_log.login_status}")
+            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
+        logger.info(f"创建鐧诲綍鏃ュ織: user_id={login_log.user_id}, login_status={login_log.login_status}")
         self.db.add(login_log)
         self.db.commit()
         self.db.refresh(login_log)
@@ -55,7 +55,7 @@ class LogRepository:
     
     def get_login_log_by_id(self, log_id: str) -> Optional[LoginLog]:
         """
-        鏍规嵁ID鑾峰彇鐧诲綍鏃ュ織
+        根据ID鑾峰彇鐧诲綍鏃ュ織
         
         Args:
             log_id: 鏃ュ織ID
@@ -70,9 +70,9 @@ class LogRepository:
         鑾峰彇鐢ㄦ埛鐧诲綍鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
@@ -88,11 +88,11 @@ class LogRepository:
         鑾峰彇绉熸埛鐧诲綍鏃ュ織
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
             end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
@@ -115,7 +115,7 @@ class LogRepository:
             start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
             end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[LoginLog]: 澶辫触鐨勭櫥褰曟棩蹇楀垪琛?        """
@@ -135,9 +135,9 @@ class LogRepository:
         鎼滅储鐧诲綍鏃ュ織
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
@@ -158,15 +158,15 @@ class LogRepository:
     
     def update_login_log(self, login_log: LoginLog) -> LoginLog:
         """
-        鏇存柊鐧诲綍鏃ュ織
+        更新鐧诲綍鏃ュ織
         
         Args:
             login_log: 鐧诲綍鏃ュ織瀵硅薄
         
         Returns:
-            LoginLog: 鏇存柊鍚庣殑鐧诲綍鏃ュ織瀵硅薄
+            LoginLog: 更新鍚庣殑鐧诲綍鏃ュ織瀵硅薄
         """
-        logger.info(f"鏇存柊鐧诲綍鏃ュ織: log_id={login_log.id}")
+        logger.info(f"更新鐧诲綍鏃ュ織: log_id={login_log.id}")
         self.db.commit()
         self.db.refresh(login_log)
         return login_log
@@ -174,14 +174,14 @@ class LogRepository:
     # 鎿嶄綔鏃ュ織鐩稿叧鏂规硶
     def create_operation_log(self, operation_log: OperationLog) -> OperationLog:
         """
-        鍒涘缓鎿嶄綔鏃ュ織
+        创建鎿嶄綔鏃ュ織
         
         Args:
             operation_log: 鎿嶄綔鏃ュ織瀵硅薄
         
         Returns:
-            OperationLog: 鍒涘缓鐨勬搷浣滄棩蹇楀璞?        """
-        logger.info(f"鍒涘缓鎿嶄綔鏃ュ織: user_id={operation_log.user_id}, operation={operation_log.operation}")
+            OperationLog: 创建鐨勬搷浣滄棩蹇楀璞?        """
+        logger.info(f"创建鎿嶄綔鏃ュ織: user_id={operation_log.user_id}, operation={operation_log.operation}")
         self.db.add(operation_log)
         self.db.commit()
         self.db.refresh(operation_log)
@@ -189,7 +189,7 @@ class LogRepository:
     
     def get_operation_log_by_id(self, log_id: str) -> Optional[OperationLog]:
         """
-        鏍规嵁ID鑾峰彇鎿嶄綔鏃ュ織
+        根据ID鑾峰彇鎿嶄綔鏃ュ織
         
         Args:
             log_id: 鏃ュ織ID
@@ -204,9 +204,9 @@ class LogRepository:
         鑾峰彇鐢ㄦ埛鎿嶄綔鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
@@ -222,11 +222,11 @@ class LogRepository:
         鑾峰彇绉熸埛鎿嶄綔鏃ュ織
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
             end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
@@ -247,9 +247,9 @@ class LogRepository:
         鎼滅储鎿嶄綔鏃ュ織
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
@@ -274,7 +274,7 @@ class LogRepository:
         鑾峰彇鎱㈡煡璇㈡棩蹇?        
         Args:
             threshold: 闃堝€硷紙姣锛?            page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[OperationLog]: 鎱㈡煡璇㈡棩蹇楀垪琛?        """
@@ -291,7 +291,7 @@ class LogRepository:
             date: 鏃ユ湡
         
         Returns:
-            int: 鐧诲綍鏃ュ織鏁伴噺
+            int: 鐧诲綍鏃ュ織数量
         """
         start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=1)
@@ -306,7 +306,7 @@ class LogRepository:
         """
         缁熻鐢ㄦ埛鍦ㄦ寚瀹氬皬鏃跺唴鐨勫け璐ョ櫥褰曟鏁?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             hours: 灏忔椂鏁?        
         Returns:
             int: 澶辫触鐧诲綍娆℃暟
@@ -327,7 +327,7 @@ class LogRepository:
             date: 鏃ユ湡
         
         Returns:
-            int: 鎿嶄綔鏃ュ織鏁伴噺
+            int: 鎿嶄綔鏃ュ織数量
         """
         start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=1)
@@ -343,7 +343,7 @@ class LogRepository:
         鑾峰彇鐧诲綍缁熻淇℃伅
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             days: 澶╂暟
         
         Returns:

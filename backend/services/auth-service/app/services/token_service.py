@@ -46,18 +46,18 @@ class TokenService:
     
     def create_token(self, user_id: str, token_type: str, token_hash: str, expires_at: Optional[datetime] = None) -> Token:
         """
-        鍒涘缓Token
+        创建Token
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            token_type: Token绫诲瀷
+            user_id: 用户ID
+            token_type: Token类型
             token_hash: Token鍝堝笇
             expires_at: 杩囨湡鏃堕棿
         
         Returns:
             Token: Token瀵硅薄
         """
-        logger.info(f"鍒涘缓Token: user_id={user_id}, token_type={token_type}")
+        logger.info(f"创建Token: user_id={user_id}, token_type={token_type}")
         
         token = self.token_repo.create_token(
             user_id=user_id,
@@ -94,10 +94,10 @@ class TokenService:
         鍚婇攢鐢ㄦ埛鎵€鏈塗oken
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鍚婇攢鐨凾oken鏁伴噺
+            int: 鍚婇攢鐨凾oken数量
         """
         logger.info(f"鍚婇攢鐢ㄦ埛鎵€鏈塗oken: user_id={user_id}")
         
@@ -115,7 +115,7 @@ class TokenService:
         娓呯悊杩囨湡Token
         
         Returns:
-            int: 娓呯悊鐨凾oken鏁伴噺
+            int: 娓呯悊鐨凾oken数量
         """
         logger.info("娓呯悊杩囨湡Token")
         

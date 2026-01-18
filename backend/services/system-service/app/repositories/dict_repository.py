@@ -3,7 +3,7 @@
 瀛楀吀鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 瀛楀吀CRUD鎿嶄綔
 2. 瀛楀吀椤笴RUD鎿嶄綔
-3. 瀛楀吀鏌ヨ鎿嶄綔
+3. 瀛楀吀查询鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.dict_repository import DictRepository
     
@@ -23,7 +23,7 @@ class DictRepository:
     """
     瀛楀吀鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 瀛楀吀CRUD鎿嶄綔
-    - 瀛楀吀鏌ヨ鎿嶄綔
+    - 瀛楀吀查询鎿嶄綔
     
     浣跨敤鏂规硶锛?        dict_repo = DictRepository(db)
         dicts = dict_repo.get_by_type("user_status")
@@ -39,14 +39,14 @@ class DictRepository:
     
     def create(self, dict_obj: Dict) -> Dict:
         """
-        鍒涘缓瀛楀吀
+        创建瀛楀吀
         
         Args:
             dict_obj: 瀛楀吀瀵硅薄
         
         Returns:
-            Dict: 鍒涘缓鐨勫瓧鍏稿璞?        """
-        logger.info(f"鍒涘缓瀛楀吀: type={dict_obj.type}, name={dict_obj.name}")
+            Dict: 创建鐨勫瓧鍏稿璞?        """
+        logger.info(f"创建瀛楀吀: type={dict_obj.type}, name={dict_obj.name}")
         self.db.add(dict_obj)
         self.db.commit()
         self.db.refresh(dict_obj)
@@ -54,7 +54,7 @@ class DictRepository:
     
     def get_by_id(self, dict_id: str) -> Optional[Dict]:
         """
-        鏍规嵁ID鑾峰彇瀛楀吀
+        根据ID鑾峰彇瀛楀吀
         
         Args:
             dict_id: 瀛楀吀ID
@@ -66,10 +66,10 @@ class DictRepository:
     
     def get_by_type(self, dict_type: str) -> Optional[Dict]:
         """
-        鏍规嵁绫诲瀷鑾峰彇瀛楀吀
+        根据类型鑾峰彇瀛楀吀
         
         Args:
-            dict_type: 瀛楀吀绫诲瀷
+            dict_type: 瀛楀吀类型
         
         Returns:
             Optional[Dict]: 瀛楀吀瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -78,12 +78,12 @@ class DictRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Dict]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇瀛楀吀鍒楄〃
+        根据租户ID鑾峰彇瀛楀吀鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Dict]: 瀛楀吀鍒楄〃
@@ -96,9 +96,9 @@ class DictRepository:
         鎼滅储瀛楀吀
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Dict]: 瀛楀吀鍒楄〃
@@ -122,7 +122,7 @@ class DictRepository:
         鑾峰彇鎵€鏈夊瓧鍏?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Dict]: 瀛楀吀鍒楄〃
@@ -132,36 +132,36 @@ class DictRepository:
     
     def update(self, dict_obj: Dict) -> Dict:
         """
-        鏇存柊瀛楀吀
+        更新瀛楀吀
         
         Args:
             dict_obj: 瀛楀吀瀵硅薄
         
         Returns:
-            Dict: 鏇存柊鍚庣殑瀛楀吀瀵硅薄
+            Dict: 更新鍚庣殑瀛楀吀瀵硅薄
         """
-        logger.info(f"鏇存柊瀛楀吀: dict_id={dict_obj.id}")
+        logger.info(f"更新瀛楀吀: dict_id={dict_obj.id}")
         self.db.commit()
         self.db.refresh(dict_obj)
         return dict_obj
     
     def delete(self, dict_id: str) -> bool:
         """
-        鍒犻櫎瀛楀吀
+        删除瀛楀吀
         
         Args:
             dict_id: 瀛楀吀ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎瀛楀吀: dict_id={dict_id}")
+        logger.info(f"删除瀛楀吀: dict_id={dict_id}")
         dict_obj = self.get_by_id(dict_id)
         if not dict_obj:
             return False
         
         # 妫€鏌ユ槸鍚︽湁瀛楀吀椤?        if dict_obj.items:
-            raise ValueError("鏃犳硶鍒犻櫎瀛楀吀锛氳瀛楀吀涓嬪瓨鍦ㄥ瓧鍏搁」")
+            raise ValueError("鏃犳硶删除瀛楀吀锛氳瀛楀吀涓嬪瓨鍦ㄥ瓧鍏搁」")
         
         self.db.delete(dict_obj)
         self.db.commit()
@@ -169,13 +169,13 @@ class DictRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛瀛楀吀鏁伴噺
+        缁熻绉熸埛瀛楀吀数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 瀛楀吀鏁伴噺
+            int: 瀛楀吀数量
         """
         return self.db.query(Dict).filter(Dict.tenant_id == tenant_id).count()
     
@@ -183,7 +183,7 @@ class DictRepository:
         """
         缁熻鎵€鏈夊瓧鍏告暟閲?        
         Returns:
-            int: 瀛楀吀鏁伴噺
+            int: 瀛楀吀数量
         """
         return self.db.query(Dict).count()
 
@@ -207,13 +207,13 @@ class DictItemRepository:
     
     def create(self, dict_item: DictItem) -> DictItem:
         """
-        鍒涘缓瀛楀吀椤?        
+        创建瀛楀吀椤?        
         Args:
             dict_item: 瀛楀吀椤瑰璞?        
         Returns:
-            DictItem: 鍒涘缓鐨勫瓧鍏搁」瀵硅薄
+            DictItem: 创建鐨勫瓧鍏搁」瀵硅薄
         """
-        logger.info(f"鍒涘缓瀛楀吀椤? label={dict_item.label}, value={dict_item.value}")
+        logger.info(f"创建瀛楀吀椤? label={dict_item.label}, value={dict_item.value}")
         self.db.add(dict_item)
         self.db.commit()
         self.db.refresh(dict_item)
@@ -221,7 +221,7 @@ class DictItemRepository:
     
     def get_by_id(self, dict_item_id: str) -> Optional[DictItem]:
         """
-        鏍规嵁ID鑾峰彇瀛楀吀椤?        
+        根据ID鑾峰彇瀛楀吀椤?        
         Args:
             dict_item_id: 瀛楀吀椤笽D
         
@@ -232,11 +232,11 @@ class DictItemRepository:
     
     def get_by_dict_id(self, dict_id: str, page: int = 1, page_size: int = 10) -> List[DictItem]:
         """
-        鏍规嵁瀛楀吀ID鑾峰彇瀛楀吀椤瑰垪琛?        
+        根据瀛楀吀ID鑾峰彇瀛楀吀椤瑰垪琛?        
         Args:
             dict_id: 瀛楀吀ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DictItem]: 瀛楀吀椤瑰垪琛?        """
@@ -247,9 +247,9 @@ class DictItemRepository:
     
     def get_by_dict_type(self, dict_type: str) -> List[DictItem]:
         """
-        鏍规嵁瀛楀吀绫诲瀷鑾峰彇瀛楀吀椤瑰垪琛?        
+        根据瀛楀吀类型鑾峰彇瀛楀吀椤瑰垪琛?        
         Args:
-            dict_type: 瀛楀吀绫诲瀷
+            dict_type: 瀛楀吀类型
         
         Returns:
             List[DictItem]: 瀛楀吀椤瑰垪琛?        """
@@ -268,7 +268,7 @@ class DictItemRepository:
         Args:
             keyword: 鍏抽敭璇?            dict_id: 瀛楀吀ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DictItem]: 瀛楀吀椤瑰垪琛?        """
@@ -287,26 +287,26 @@ class DictItemRepository:
     
     def update(self, dict_item: DictItem) -> DictItem:
         """
-        鏇存柊瀛楀吀椤?        
+        更新瀛楀吀椤?        
         Args:
             dict_item: 瀛楀吀椤瑰璞?        
         Returns:
-            DictItem: 鏇存柊鍚庣殑瀛楀吀椤瑰璞?        """
-        logger.info(f"鏇存柊瀛楀吀椤? dict_item_id={dict_item.id}")
+            DictItem: 更新鍚庣殑瀛楀吀椤瑰璞?        """
+        logger.info(f"更新瀛楀吀椤? dict_item_id={dict_item.id}")
         self.db.commit()
         self.db.refresh(dict_item)
         return dict_item
     
     def delete(self, dict_item_id: str) -> bool:
         """
-        鍒犻櫎瀛楀吀椤?        
+        删除瀛楀吀椤?        
         Args:
             dict_item_id: 瀛楀吀椤笽D
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎瀛楀吀椤? dict_item_id={dict_item_id}")
+        logger.info(f"删除瀛楀吀椤? dict_item_id={dict_item_id}")
         dict_item = self.get_by_id(dict_item_id)
         if not dict_item:
             return False
@@ -317,7 +317,7 @@ class DictItemRepository:
     
     def count_by_dict(self, dict_id: str) -> int:
         """
-        缁熻瀛楀吀鐨勫瓧鍏搁」鏁伴噺
+        缁熻瀛楀吀鐨勫瓧鍏搁」数量
         
         Args:
             dict_id: 瀛楀吀ID

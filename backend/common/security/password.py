@@ -76,7 +76,7 @@ def check_password_strength(password: str) -> tuple[bool, str]:
             print(message)
     """
     if len(password) < 8:
-        return False, "瀵嗙爜闀垮害鑷冲皯8浣?
+        return False, "瀵嗙爜长度鑷冲皯8浣?
     
     if not any(c.isupper() for c in password):
         return False, "瀵嗙爜蹇呴』鍖呭惈澶у啓瀛楁瘝"

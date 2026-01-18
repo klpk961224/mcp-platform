@@ -28,7 +28,7 @@ async def auth_middleware(request: Request, call_next):
             detail="Token鏃犳晥鎴栧凡杩囨湡"
         )
     
-    # 灏嗙敤鎴蜂俊鎭坊鍔犲埌璇锋眰鐘舵€?    request.state.user_id = payload.get("user_id")
+    # 灏嗙敤鎴蜂俊鎭坊鍔犲埌璇锋眰状态?    request.state.user_id = payload.get("user_id")
     request.state.username = payload.get("username")
     
     logger.debug(f"鐢ㄦ埛璁よ瘉鎴愬姛: {request.state.username}")

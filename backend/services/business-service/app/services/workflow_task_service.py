@@ -57,10 +57,10 @@ class WorkflowTaskService:
         鑾峰彇鐢ㄦ埛浠诲姟
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTask]: 浠诲姟鍒楄〃
@@ -76,7 +76,7 @@ class WorkflowTaskService:
             comment: 瀹℃壒鎰忚锛堝彲閫夛級
         
         Returns:
-            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"閫氳繃瀹℃壒浠诲姟: task_id={task_id}")
         
@@ -103,7 +103,7 @@ class WorkflowTaskService:
             comment: 瀹℃壒鎰忚锛堝彲閫夛級
         
         Returns:
-            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"鎷掔粷瀹℃壒浠诲姟: task_id={task_id}")
         
@@ -132,10 +132,10 @@ class WorkflowTaskService:
         Args:
             task_id: 浠诲姟ID
             new_assignee_id: 鏂板彈鐞嗕汉ID
-            new_assignee_name: 鏂板彈鐞嗕汉鍚嶇О
+            new_assignee_name: 鏂板彈鐞嗕汉名称
         
         Returns:
-            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"杞氦浠诲姟: task_id={task_id}, new_assignee_id={new_assignee_id}")
         
@@ -156,9 +156,9 @@ class WorkflowTaskService:
         
         Args:
             workflow_id: 宸ヤ綔娴両D
-            status: 鐘舵€侊紙鍙€夛級
+            status: 状态侊紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTask]: 浠诲姟鍒楄〃
@@ -170,7 +170,7 @@ class WorkflowTaskService:
         鑾峰彇寰呭鐞嗕换鍔?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTask]: 浠诲姟鍒楄〃
@@ -206,7 +206,7 @@ class WorkflowTaskService:
         鑾峰彇鐢ㄦ埛浠诲姟缁熻淇℃伅
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Dict[str, Any]: 缁熻淇℃伅
@@ -228,13 +228,13 @@ class WorkflowTaskService:
     
     def count_tasks(self, user_id: Optional[str] = None) -> int:
         """
-        缁熻浠诲姟鏁伴噺
+        缁熻浠诲姟数量
         
         Args:
-            user_id: 鐢ㄦ埛ID锛堝彲閫夛級
+            user_id: 用户ID锛堝彲閫夛級
         
         Returns:
-            int: 浠诲姟鏁伴噺
+            int: 浠诲姟数量
         """
         if user_id:
             return self.task_repo.count_by_user(user_id)

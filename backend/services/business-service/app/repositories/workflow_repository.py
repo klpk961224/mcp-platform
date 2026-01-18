@@ -37,13 +37,13 @@ class WorkflowRepository:
     
     def create(self, workflow: WorkflowInstance) -> WorkflowInstance:
         """
-        鍒涘缓宸ヤ綔娴?        
+        创建宸ヤ綔娴?        
         Args:
             workflow: 宸ヤ綔娴佸璞?        
         Returns:
-            Workflow: 鍒涘缓鐨勫伐浣滄祦瀵硅薄
+            Workflow: 创建鐨勫伐浣滄祦瀵硅薄
         """
-        logger.info(f"鍒涘缓宸ヤ綔娴? name={workflow.name}, initiator_id={workflow.initiator_id}")
+        logger.info(f"创建宸ヤ綔娴? name={workflow.name}, initiator_id={workflow.initiator_id}")
         self.db.add(workflow)
         self.db.commit()
         self.db.refresh(workflow)
@@ -51,7 +51,7 @@ class WorkflowRepository:
     
     def get_by_id(self, workflow_id: str) -> Optional[WorkflowInstance]:
         """
-        鏍规嵁ID鑾峰彇宸ヤ綔娴?        
+        根据ID鑾峰彇宸ヤ綔娴?        
         Args:
             workflow_id: 宸ヤ綔娴両D
         
@@ -65,10 +65,10 @@ class WorkflowRepository:
         """
         鑾峰彇鐢ㄦ埛宸ヤ綔娴?
         Args:
-            user_id: 鐢ㄦ埛ID
-            workflow_status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            workflow_status: 状态侊紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
 
         Returns:
             List[WorkflowInstance]: 宸ヤ綔娴佸垪琛?        """
@@ -85,10 +85,10 @@ class WorkflowRepository:
         """
         鑾峰彇绉熸埛宸ヤ綔娴?
         Args:
-            tenant_id: 绉熸埛ID
-            workflow_status: 鐘舵€侊紙鍙€夛級
+            tenant_id: 租户ID
+            workflow_status: 状态侊紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
 
         Returns:
             List[WorkflowInstance]: 宸ヤ綔娴佸垪琛?        """
@@ -105,7 +105,7 @@ class WorkflowRepository:
         鑾峰彇杩愯涓殑宸ヤ綔娴?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowInstance]: 宸ヤ綔娴佸垪琛?        """
@@ -119,9 +119,9 @@ class WorkflowRepository:
         """
         鎼滅储宸ヤ綔娴?        
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowInstance]: 宸ヤ綔娴佸垪琛?        """
@@ -140,33 +140,33 @@ class WorkflowRepository:
     
     def update(self, workflow: WorkflowInstance) -> WorkflowInstance:
         """
-        鏇存柊宸ヤ綔娴?        
+        更新宸ヤ綔娴?        
         Args:
             workflow: 宸ヤ綔娴佸璞?        
         Returns:
-            Workflow: 鏇存柊鍚庣殑宸ヤ綔娴佸璞?        """
-        logger.info(f"鏇存柊宸ヤ綔娴? workflow_id={workflow.id}")
+            Workflow: 更新鍚庣殑宸ヤ綔娴佸璞?        """
+        logger.info(f"更新宸ヤ綔娴? workflow_id={workflow.id}")
         self.db.commit()
         self.db.refresh(workflow)
         return workflow
     
     def delete(self, workflow_id: str) -> bool:
         """
-        鍒犻櫎宸ヤ綔娴?        
+        删除宸ヤ綔娴?        
         Args:
             workflow_id: 宸ヤ綔娴両D
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎宸ヤ綔娴? workflow_id={workflow_id}")
+        logger.info(f"删除宸ヤ綔娴? workflow_id={workflow_id}")
         workflow = self.get_by_id(workflow_id)
         if not workflow:
             return False
         
         # 妫€鏌ユ槸鍚﹀彲浠ュ垹闄わ紙鍙湁鏈惎鍔ㄦ垨宸茬粓姝㈢殑宸ヤ綔娴佸彲浠ュ垹闄わ級
         if workflow.is_running():
-            raise ValueError("鏃犳硶鍒犻櫎杩愯涓殑宸ヤ綔娴?)
+            raise ValueError("鏃犳硶删除杩愯涓殑宸ヤ綔娴?)
         
         self.db.delete(workflow)
         self.db.commit()
@@ -176,8 +176,8 @@ class WorkflowRepository:
         """
         缁熻绉熸埛宸ヤ綔娴佹暟閲?
         Args:
-            tenant_id: 绉熸埛ID
-            workflow_status: 鐘舵€侊紙鍙€夛級
+            tenant_id: 租户ID
+            workflow_status: 状态侊紙鍙€夛級
 
         Returns:
             int: 宸ヤ綔娴佹暟閲?        """
@@ -188,7 +188,7 @@ class WorkflowRepository:
     
     def count_all(self) -> int:
         """
-        缁熻鎵€鏈夊伐浣滄祦鏁伴噺
+        缁熻鎵€鏈夊伐浣滄祦数量
         
         Returns:
             int: 宸ヤ綔娴佹暟閲?        """

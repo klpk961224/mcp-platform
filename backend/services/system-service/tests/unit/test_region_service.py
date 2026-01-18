@@ -2,10 +2,10 @@
 """
 RegionService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓鍦板尯
+娴嬭瘯鍐呭锛?1. 创建鍦板尯
 2. 鑾峰彇鍦板尯
-3. 鏇存柊鍦板尯
-4. 鍒犻櫎鍦板尯
+3. 更新鍦板尯
+4. 删除鍦板尯
 5. 鑾峰彇鍦板尯鍒楄〃
 6. 鑾峰彇瀛愬湴鍖?7. 鑾峰彇鍦板尯鏍?8. 鎼滅储鍦板尯
 9. 鑾峰彇缁熻淇℃伅
@@ -43,7 +43,7 @@ def mock_region():
 
 @pytest.fixture
 def region_service(mock_db):
-    """鍒涘缓RegionService瀹炰緥"""
+    """创建RegionService瀹炰緥"""
     return RegionService(mock_db)
 
 
@@ -57,11 +57,11 @@ class TestRegionService:
         assert service.repository is not None
     
     def test_get_region_by_id_success(self, region_service, mock_region):
-        """娴嬭瘯鏍规嵁ID鑾峰彇鍦板尯鎴愬姛"""
-        # 妯℃嫙鏌ヨ鍦板尯
+        """娴嬭瘯根据ID鑾峰彇鍦板尯鎴愬姛"""
+        # 妯℃嫙查询鍦板尯
         region_service.repository.get_by_id = Mock(return_value=mock_region)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_region_by_id("test_region_id")
         
         # 楠岃瘉缁撴灉
@@ -70,22 +70,22 @@ class TestRegionService:
         assert result["name"] == "鍖椾含甯?
     
     def test_get_region_by_id_not_found(self, region_service):
-        """娴嬭瘯鏍规嵁ID鑾峰彇鍦板尯澶辫触"""
-        # 妯℃嫙鏌ヨ鍦板尯杩斿洖None
+        """娴嬭瘯根据ID鑾峰彇鍦板尯澶辫触"""
+        # 妯℃嫙查询鍦板尯杩斿洖None
         region_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_region_by_id("nonexistent_id")
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_get_region_by_code_success(self, region_service, mock_region):
-        """娴嬭瘯鏍规嵁鍦板尯缂栫爜鑾峰彇鎴愬姛"""
-        # 妯℃嫙鏌ヨ鍦板尯
+        """娴嬭瘯根据鍦板尯编码鑾峰彇鎴愬姛"""
+        # 妯℃嫙查询鍦板尯
         region_service.repository.get_by_code = Mock(return_value=mock_region)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_region_by_code("110000")
         
         # 楠岃瘉缁撴灉
@@ -94,11 +94,11 @@ class TestRegionService:
     
     def test_get_all_regions_success(self, region_service, mock_region):
         """娴嬭瘯鑾峰彇鎵€鏈夊湴鍖烘垚鍔?""
-        # 妯℃嫙鏌ヨ鍦板尯鍒楄〃
+        # 妯℃嫙查询鍦板尯鍒楄〃
         region_service.repository.get_all = Mock(return_value=[mock_region])
         region_service.repository.count = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_all_regions()
         
         # 楠岃瘉缁撴灉
@@ -108,11 +108,11 @@ class TestRegionService:
     
     def test_get_regions_by_level_success(self, region_service, mock_region):
         """娴嬭瘯鎸夌骇鍒幏鍙栧湴鍖烘垚鍔?""
-        # 妯℃嫙鏌ヨ鍦板尯鍒楄〃
+        # 妯℃嫙查询鍦板尯鍒楄〃
         region_service.repository.get_by_level = Mock(return_value=[mock_region])
         region_service.repository.count_by_level = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_regions_by_level("province")
         
         # 楠岃瘉缁撴灉
@@ -121,11 +121,11 @@ class TestRegionService:
     
     def test_get_regions_by_parent_success(self, region_service, mock_region):
         """娴嬭瘯鎸夌埗绾D鑾峰彇瀛愬湴鍖烘垚鍔?""
-        # 妯℃嫙鏌ヨ鍦板尯鍒楄〃
+        # 妯℃嫙查询鍦板尯鍒楄〃
         region_service.repository.get_by_parent_id = Mock(return_value=[mock_region])
         region_service.repository.count_by_parent = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_regions_by_parent("parent_id")
         
         # 楠岃瘉缁撴灉
@@ -133,10 +133,10 @@ class TestRegionService:
     
     def test_get_children_success(self, region_service, mock_region):
         """娴嬭瘯鑾峰彇瀛愬湴鍖烘垚鍔?""
-        # 妯℃嫙鏌ヨ瀛愬湴鍖?        region_service.repository.get_children = Mock(return_value=[mock_region])
+        # 妯℃嫙查询瀛愬湴鍖?        region_service.repository.get_children = Mock(return_value=[mock_region])
         region_service.repository.count_by_parent = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_children("test_region_id")
         
         # 楠岃瘉缁撴灉
@@ -145,10 +145,10 @@ class TestRegionService:
     
     def test_get_all_children_success(self, region_service, mock_region):
         """娴嬭瘯鑾峰彇鎵€鏈夊瓙鍦板尯锛堥€掑綊锛夋垚鍔?""
-        # 妯℃嫙鏌ヨ鎵€鏈夊瓙鍦板尯
+        # 妯℃嫙查询鎵€鏈夊瓙鍦板尯
         region_service.repository.get_all_children = Mock(return_value=[mock_region])
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_all_children("test_region_id")
         
         # 楠岃瘉缁撴灉
@@ -160,7 +160,7 @@ class TestRegionService:
         # 妯℃嫙鑾峰彇鍦板尯鏍?        mock_tree = [{"id": "1", "name": "鍖椾含甯?, "children": [{"id": "2", "name": "鏈濋槼鍖?}]}]
         region_service.repository.get_tree = Mock(return_value=mock_tree)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = region_service.get_region_tree()
         
         # 楠岃瘉缁撴灉
@@ -180,12 +180,12 @@ class TestRegionService:
         assert len(result["items"]) == 1
     
     def test_create_region_success(self, region_service, mock_region):
-        """娴嬭瘯鍒涘缓鍦板尯鎴愬姛"""
-        # 妯℃嫙鍦板尯缂栫爜涓嶅瓨鍦?        region_service.repository.get_by_code = Mock(return_value=None)
-        # 妯℃嫙鍒涘缓鍦板尯
+        """娴嬭瘯创建鍦板尯鎴愬姛"""
+        # 妯℃嫙鍦板尯编码涓嶅瓨鍦?        region_service.repository.get_by_code = Mock(return_value=None)
+        # 妯℃嫙创建鍦板尯
         region_service.repository.create = Mock(return_value=mock_region)
         
-        # 鎵ц鍒涘缓鍦板尯
+        # 鎵ц创建鍦板尯
         result = region_service.create_region(
             name="鍖椾含甯?,
             code="110000",
@@ -199,10 +199,10 @@ class TestRegionService:
         region_service.repository.create.assert_called_once()
     
     def test_create_region_code_exists(self, region_service, mock_region):
-        """娴嬭瘯鍒涘缓鍦板尯锛堝湴鍖虹紪鐮佸凡瀛樺湪锛?""
-        # 妯℃嫙鍦板尯缂栫爜宸插瓨鍦?        region_service.repository.get_by_code = Mock(return_value=mock_region)
+        """娴嬭瘯创建鍦板尯锛堝湴鍖虹紪鐮佸凡瀛樺湪锛?""
+        # 妯℃嫙鍦板尯编码宸插瓨鍦?        region_service.repository.get_by_code = Mock(return_value=mock_region)
         
-        # 鎵ц鍒涘缓鍦板尯骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="鍦板尯缂栫爜 110000 宸插瓨鍦?):
+        # 鎵ц创建鍦板尯骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="鍦板尯编码 110000 宸插瓨鍦?):
             region_service.create_region(
                 name="鍖椾含甯?,
                 code="110000",
@@ -210,11 +210,11 @@ class TestRegionService:
             )
     
     def test_create_region_parent_not_found(self, region_service):
-        """娴嬭瘯鍒涘缓鍦板尯锛堢埗绾у湴鍖轰笉瀛樺湪锛?""
-        # 妯℃嫙鍦板尯缂栫爜涓嶅瓨鍦?        region_service.repository.get_by_code = Mock(return_value=None)
+        """娴嬭瘯创建鍦板尯锛堢埗绾у湴鍖轰笉瀛樺湪锛?""
+        # 妯℃嫙鍦板尯编码涓嶅瓨鍦?        region_service.repository.get_by_code = Mock(return_value=None)
         # 妯℃嫙鐖剁骇鍦板尯涓嶅瓨鍦?        region_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鍒涘缓鍦板尯骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="鐖剁骇鍦板尯 nonexistent_id 涓嶅瓨鍦?):
+        # 鎵ц创建鍦板尯骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="鐖剁骇鍦板尯 nonexistent_id 涓嶅瓨鍦?):
             region_service.create_region(
                 name="鏈濋槼鍖?,
                 code="110100",
@@ -223,16 +223,16 @@ class TestRegionService:
             )
     
     def test_update_region_success(self, region_service, mock_region):
-        """娴嬭瘯鏇存柊鍦板尯鎴愬姛"""
-        # 妯℃嫙鏌ヨ鍦板尯
+        """娴嬭瘯更新鍦板尯鎴愬姛"""
+        # 妯℃嫙查询鍦板尯
         region_service.repository.get_by_id = Mock(return_value=mock_region)
-        # 妯℃嫙鏇存柊鍦板尯
+        # 妯℃嫙更新鍦板尯
         region_service.repository.update = Mock(return_value=mock_region)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = region_service.update_region(
             "test_region_id",
-            name="鏇存柊鍚庣殑鍚嶇О"
+            name="更新鍚庣殑名称"
         )
         
         # 楠岃瘉缁撴灉
@@ -241,25 +241,25 @@ class TestRegionService:
         region_service.repository.update.assert_called_once()
     
     def test_update_region_not_found(self, region_service):
-        """娴嬭瘯鏇存柊鍦板尯澶辫触锛堝湴鍖轰笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ鍦板尯杩斿洖None
+        """娴嬭瘯更新鍦板尯澶辫触锛堝湴鍖轰笉瀛樺湪锛?""
+        # 妯℃嫙查询鍦板尯杩斿洖None
         region_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = region_service.update_region(
             "nonexistent_id",
-            name="鏇存柊鍚庣殑鍚嶇О"
+            name="更新鍚庣殑名称"
         )
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_delete_region_success(self, region_service):
-        """娴嬭瘯鍒犻櫎鍦板尯鎴愬姛"""
-        # 妯℃嫙鍒犻櫎鍦板尯
+        """娴嬭瘯删除鍦板尯鎴愬姛"""
+        # 妯℃嫙删除鍦板尯
         region_service.repository.delete = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = region_service.delete_region("test_region_id")
         
         # 楠岃瘉缁撴灉

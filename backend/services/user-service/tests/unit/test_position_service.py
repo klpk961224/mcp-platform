@@ -2,12 +2,12 @@
 """
 PositionService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓宀椾綅
+娴嬭瘯鍐呭锛?1. 创建宀椾綅
 2. 鑾峰彇宀椾綅
-3. 鏇存柊宀椾綅
-4. 鍒犻櫎宀椾綅
+3. 更新宀椾綅
+4. 删除宀椾綅
 5. 鑾峰彇宀椾綅鍒楄〃
-6. 缁熻宀椾綅鏁伴噺
+6. 缁熻宀椾綅数量
 """
 
 import pytest
@@ -39,7 +39,7 @@ def mock_position():
 
 @pytest.fixture
 def position_service(mock_db):
-    """鍒涘缓PositionService瀹炰緥"""
+    """创建PositionService瀹炰緥"""
     return PositionService(mock_db)
 
 
@@ -53,12 +53,12 @@ class TestPositionService:
         assert service.position_repo is not None
     
     def test_create_position_success(self, position_service, mock_position):
-        """娴嬭瘯鍒涘缓宀椾綅鎴愬姛"""
-        # 妯℃嫙宀椾綅缂栫爜涓嶅瓨鍦?        position_service.position_repo.exists_by_code = Mock(return_value=False)
-        # 妯℃嫙鍒涘缓宀椾綅
+        """娴嬭瘯创建宀椾綅鎴愬姛"""
+        # 妯℃嫙宀椾綅编码涓嶅瓨鍦?        position_service.position_repo.exists_by_code = Mock(return_value=False)
+        # 妯℃嫙创建宀椾綅
         position_service.position_repo.create = Mock(return_value=mock_position)
         
-        # 鎵ц鍒涘缓宀椾綅
+        # 鎵ц创建宀椾綅
         position_data = {
             "name": "寮€鍙戝伐绋嬪笀",
             "code": "developer",
@@ -72,23 +72,23 @@ class TestPositionService:
         position_service.position_repo.create.assert_called_once()
     
     def test_create_position_code_exists(self, position_service):
-        """娴嬭瘯鍒涘缓宀椾綅锛堢紪鐮佸凡瀛樺湪锛?""
-        # 妯℃嫙宀椾綅缂栫爜宸插瓨鍦?        position_service.position_repo.exists_by_code = Mock(return_value=True)
+        """娴嬭瘯创建宀椾綅锛堢紪鐮佸凡瀛樺湪锛?""
+        # 妯℃嫙宀椾綅编码宸插瓨鍦?        position_service.position_repo.exists_by_code = Mock(return_value=True)
         
-        # 鎵ц鍒涘缓宀椾綅骞堕獙璇佸紓甯?        position_data = {
+        # 鎵ц创建宀椾綅骞堕獙璇佸紓甯?        position_data = {
             "name": "寮€鍙戝伐绋嬪笀",
             "code": "existing_code",
             "tenant_id": "default"
         }
-        with pytest.raises(ValueError, match="宀椾綅缂栫爜宸插瓨鍦?):
+        with pytest.raises(ValueError, match="宀椾綅编码宸插瓨鍦?):
             position_service.create_position(position_data)
     
     def test_get_position_success(self, position_service, mock_position):
         """娴嬭瘯鑾峰彇宀椾綅鎴愬姛"""
-        # 妯℃嫙鏌ヨ宀椾綅
+        # 妯℃嫙查询宀椾綅
         position_service.position_repo.get_by_id = Mock(return_value=mock_position)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = position_service.get_position("test_position_id")
         
         # 楠岃瘉缁撴灉
@@ -97,21 +97,21 @@ class TestPositionService:
     
     def test_get_position_not_found(self, position_service):
         """娴嬭瘯鑾峰彇宀椾綅澶辫触"""
-        # 妯℃嫙鏌ヨ宀椾綅杩斿洖None
+        # 妯℃嫙查询宀椾綅杩斿洖None
         position_service.position_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = position_service.get_position("nonexistent_id")
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_get_position_by_code_success(self, position_service, mock_position):
-        """娴嬭瘯鏍规嵁缂栫爜鑾峰彇宀椾綅鎴愬姛"""
-        # 妯℃嫙鏌ヨ宀椾綅
+        """娴嬭瘯根据编码鑾峰彇宀椾綅鎴愬姛"""
+        # 妯℃嫙查询宀椾綅
         position_service.position_repo.get_by_code = Mock(return_value=mock_position)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = position_service.get_position_by_code("developer")
         
         # 楠岃瘉缁撴灉
@@ -119,14 +119,14 @@ class TestPositionService:
         position_service.position_repo.get_by_code.assert_called_once_with("developer")
     
     def test_update_position_success(self, position_service, mock_position):
-        """娴嬭瘯鏇存柊宀椾綅鎴愬姛"""
-        # 妯℃嫙鏌ヨ宀椾綅
+        """娴嬭瘯更新宀椾綅鎴愬姛"""
+        # 妯℃嫙查询宀椾綅
         position_service.position_repo.get_by_id = Mock(return_value=mock_position)
-        # 妯℃嫙鏇存柊宀椾綅
+        # 妯℃嫙更新宀椾綅
         position_service.position_repo.update = Mock(return_value=mock_position)
         
-        # 鎵ц鏇存柊
-        update_data = {"description": "鏇存柊鍚庣殑鎻忚堪"}
+        # 鎵ц更新
+        update_data = {"description": "更新鍚庣殑描述"}
         result = position_service.update_position("test_position_id", update_data)
         
         # 楠岃瘉缁撴灉
@@ -134,23 +134,23 @@ class TestPositionService:
         position_service.position_repo.update.assert_called_once()
     
     def test_update_position_not_found(self, position_service):
-        """娴嬭瘯鏇存柊宀椾綅澶辫触锛堝矖浣嶄笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ宀椾綅杩斿洖None
+        """娴嬭瘯更新宀椾綅澶辫触锛堝矖浣嶄笉瀛樺湪锛?""
+        # 妯℃嫙查询宀椾綅杩斿洖None
         position_service.position_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏇存柊
-        update_data = {"description": "鏇存柊鍚庣殑鎻忚堪"}
+        # 鎵ц更新
+        update_data = {"description": "更新鍚庣殑描述"}
         result = position_service.update_position("nonexistent_id", update_data)
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_delete_position_success(self, position_service):
-        """娴嬭瘯鍒犻櫎宀椾綅鎴愬姛"""
-        # 妯℃嫙鍒犻櫎宀椾綅
+        """娴嬭瘯删除宀椾綅鎴愬姛"""
+        # 妯℃嫙删除宀椾綅
         position_service.position_repo.delete = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = position_service.delete_position("test_position_id")
         
         # 楠岃瘉缁撴灉
@@ -159,10 +159,10 @@ class TestPositionService:
     
     def test_list_positions_success(self, position_service, mock_position):
         """娴嬭瘯鑾峰彇宀椾綅鍒楄〃鎴愬姛"""
-        # 妯℃嫙鏌ヨ宀椾綅鍒楄〃
+        # 妯℃嫙查询宀椾綅鍒楄〃
         position_service.position_repo.get_by_tenant_id = Mock(return_value=[mock_position])
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = position_service.list_positions(tenant_id="default")
         
         # 楠岃瘉缁撴灉
@@ -170,7 +170,7 @@ class TestPositionService:
         assert result[0].id == "test_position_id"
     
     def test_count_positions_success(self, position_service):
-        """娴嬭瘯缁熻宀椾綅鏁伴噺鎴愬姛"""
+        """娴嬭瘯缁熻宀椾綅数量鎴愬姛"""
         # 妯℃嫙缁熻
         position_service.position_repo.count_by_tenant = Mock(return_value=10)
         

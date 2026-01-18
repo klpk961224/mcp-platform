@@ -24,19 +24,19 @@ from app.services.role_service import RoleService
 router = APIRouter(prefix="/roles", tags=["瑙掕壊绠＄悊"])
 
 
-@router.post("", response_model=RoleResponse, summary="鍒涘缓瑙掕壊")
+@router.post("", response_model=RoleResponse, summary="创建瑙掕壊")
 async def create_role(
     role: RoleCreate,
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓瑙掕壊"""
-    logger.info(f"鍒涘缓瑙掕壊: name={role.name}")
+    """创建瑙掕壊"""
+    logger.info(f"创建瑙掕壊: name={role.name}")
     
     try:
         role_service = RoleService(db)
         new_role = role_service.create_role(role.dict())
         
-        logger.info(f"鍒涘缓瑙掕壊鎴愬姛: name={role.name}, role_id={new_role.id}")
+        logger.info(f"创建瑙掕壊鎴愬姛: name={role.name}, role_id={new_role.id}")
         
         return RoleResponse(
             id=new_role.id,
@@ -50,11 +50,11 @@ async def create_role(
             updated_at=new_role.updated_at.isoformat() if new_role.updated_at else None
         )
     except ValueError as e:
-        logger.warning(f"鍒涘缓瑙掕壊澶辫触: name={role.name}, error={str(e)}")
+        logger.warning(f"创建瑙掕壊澶辫触: name={role.name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓瑙掕壊寮傚父: name={role.name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建瑙掕壊寮傚父: name={role.name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.get("", response_model=RoleListResponse, summary="鑾峰彇瑙掕壊鍒楄〃")
@@ -72,7 +72,7 @@ async def get_roles(
     try:
         role_service = RoleService(db)
         
-        # 鏌ヨ瑙掕壊鍒楄〃
+        # 查询瑙掕壊鍒楄〃
         roles = role_service.list_roles(
             tenant_id=tenant_id,
             keyword=keyword,
@@ -137,14 +137,14 @@ async def get_role(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瑙掕壊璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{role_id}", response_model=RoleResponse, summary="鏇存柊瑙掕壊")
+@router.put("/{role_id}", response_model=RoleResponse, summary="更新瑙掕壊")
 async def update_role(
     role_id: str,
     role: RoleUpdate,
     db: Session = Depends(get_db)
 ):
-    """鏇存柊瑙掕壊"""
-    logger.info(f"鏇存柊瑙掕壊: role_id={role_id}")
+    """更新瑙掕壊"""
+    logger.info(f"更新瑙掕壊: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
@@ -156,7 +156,7 @@ async def update_role(
         update_data = role.dict(exclude_unset=True)
         updated_role = role_service.update_role(role_id, update_data)
         
-        logger.info(f"鏇存柊瑙掕壊鎴愬姛: role_id={role_id}")
+        logger.info(f"更新瑙掕壊鎴愬姛: role_id={role_id}")
         
         return RoleResponse(
             id=updated_role.id,
@@ -172,20 +172,20 @@ async def update_role(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(f"鏇存柊瑙掕壊澶辫触: role_id={role_id}, error={str(e)}")
+        logger.warning(f"更新瑙掕壊澶辫触: role_id={role_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鏇存柊瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{role_id}", summary="鍒犻櫎瑙掕壊")
+@router.delete("/{role_id}", summary="删除瑙掕壊")
 async def delete_role(
     role_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎瑙掕壊"""
-    logger.info(f"鍒犻櫎瑙掕壊: role_id={role_id}")
+    """删除瑙掕壊"""
+    logger.info(f"删除瑙掕壊: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
@@ -196,14 +196,14 @@ async def delete_role(
         
         role_service.delete_role(role_id)
         
-        logger.info(f"鍒犻櫎瑙掕壊鎴愬姛: role_id={role_id}")
+        logger.info(f"删除瑙掕壊鎴愬姛: role_id={role_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.post("/{role_id}/permissions", response_model=RoleResponse, summary="鍒嗛厤鏉冮檺")
@@ -218,11 +218,11 @@ async def assign_permissions(
     - 娣诲姞鏂扮殑鏉冮檺鍒楄〃
     
     Args:
-        role_id: 瑙掕壊ID
+        role_id: 角色ID
         permission_ids: 鏉冮檺ID鍒楄〃
     
     Returns:
-        RoleResponse: 鏇存柊鍚庣殑瑙掕壊淇℃伅
+        RoleResponse: 更新鍚庣殑瑙掕壊淇℃伅
     
     Raises:
         HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
@@ -267,7 +267,7 @@ async def get_role_permissions(
     鑾峰彇瑙掕壊鏉冮檺鍒楄〃
     
     Args:
-        role_id: 瑙掕壊ID
+        role_id: 角色ID
     
     Returns:
         list: 鏉冮檺鍒楄〃
@@ -316,11 +316,11 @@ async def assign_menus(
     - 娣诲姞鏂扮殑鑿滃崟鍒楄〃
     
     Args:
-        role_id: 瑙掕壊ID
+        role_id: 角色ID
         menu_ids: 鑿滃崟ID鍒楄〃
     
     Returns:
-        RoleResponse: 鏇存柊鍚庣殑瑙掕壊淇℃伅
+        RoleResponse: 更新鍚庣殑瑙掕壊淇℃伅
     
     Raises:
         HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
@@ -365,7 +365,7 @@ async def get_role_menus(
     鑾峰彇瑙掕壊鑿滃崟鍒楄〃
     
     Args:
-        role_id: 瑙掕壊ID
+        role_id: 角色ID
     
     Returns:
         list: 鑿滃崟鍒楄〃
@@ -405,24 +405,24 @@ async def get_role_menus(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瑙掕壊鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{role_id}/check-permission/{permission_code}", summary="妫€鏌ヨ鑹叉潈闄?)
+@router.get("/{role_id}/check-permission/{permission_code}", summary="妫€查询鑹叉潈闄?)
 async def check_role_permission(
     role_id: str,
     permission_code: str,
     db: Session = Depends(get_db)
 ):
     """
-    妫€鏌ヨ鑹叉槸鍚︽嫢鏈夋寚瀹氭潈闄?    
+    妫€查询鑹叉槸鍚︽嫢鏈夋寚瀹氭潈闄?    
     Args:
-        role_id: 瑙掕壊ID
-        permission_code: 鏉冮檺缂栫爜
+        role_id: 角色ID
+        permission_code: 鏉冮檺编码
     
     Returns:
         dict: 妫€鏌ョ粨鏋?    
     Raises:
         HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"妫€鏌ヨ鑹叉潈闄? role_id={role_id}, permission_code={permission_code}")
+    logger.info(f"妫€查询鑹叉潈闄? role_id={role_id}, permission_code={permission_code}")
     
     try:
         role_service = RoleService(db)
@@ -441,5 +441,5 @@ async def check_role_permission(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"妫€鏌ヨ鑹叉潈闄愬紓甯? role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="妫€鏌ヨ鑹叉潈闄愬け璐ワ紝璇风◢鍚庨噸璇?)
+        logger.error(f"妫€查询鑹叉潈闄愬紓甯? role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="妫€查询鑹叉潈闄愬け璐ワ紝璇风◢鍚庨噸璇?)

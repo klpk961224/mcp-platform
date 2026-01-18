@@ -3,7 +3,7 @@
 鏉冮檺鏈嶅姟
 
 鍔熻兘璇存槑锛?1. 鏉冮檺CRUD鎿嶄綔
-2. 鏉冮檺鏌ヨ鎿嶄綔
+2. 鏉冮檺查询鎿嶄綔
 3. 鏉冮檺楠岃瘉鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.services.permission_service import PermissionService
@@ -25,7 +25,7 @@ class PermissionService:
     鏉冮檺鏈嶅姟
     
     鍔熻兘锛?    - 鏉冮檺CRUD鎿嶄綔
-    - 鏉冮檺鏌ヨ鎿嶄綔
+    - 鏉冮檺查询鎿嶄綔
     - 鏉冮檺楠岃瘉鎿嶄綔
     
     浣跨敤鏂规硶锛?        perm_service = PermissionService(db)
@@ -42,22 +42,22 @@ class PermissionService:
     
     def create_permission(self, permission_data: Dict[str, Any]) -> Permission:
         """
-        鍒涘缓鏉冮檺
+        创建鏉冮檺
         
         Args:
             permission_data: 鏉冮檺鏁版嵁
         
         Returns:
-            Permission: 鍒涘缓鐨勬潈闄愬璞?        
+            Permission: 创建鐨勬潈闄愬璞?        
         Raises:
-            ValueError: 鏉冮檺缂栫爜宸插瓨鍦?        """
-        logger.info(f"鍒涘缓鏉冮檺: name={permission_data.get('name')}, code={permission_data.get('code')}")
+            ValueError: 鏉冮檺编码宸插瓨鍦?        """
+        logger.info(f"创建鏉冮檺: name={permission_data.get('name')}, code={permission_data.get('code')}")
         
         # 妫€鏌ユ潈闄愮紪鐮佹槸鍚﹀凡瀛樺湪
         if self.perm_repo.exists_by_code(permission_data.get("code")):
-            raise ValueError("鏉冮檺缂栫爜宸插瓨鍦?)
+            raise ValueError("鏉冮檺编码宸插瓨鍦?)
         
-        # 鍒涘缓鏉冮檺
+        # 创建鏉冮檺
         permission = Permission(**permission_data)
         return self.perm_repo.create(permission)
     
@@ -75,10 +75,10 @@ class PermissionService:
     
     def get_permission_by_code(self, code: str) -> Optional[Permission]:
         """
-        鏍规嵁缂栫爜鑾峰彇鏉冮檺
+        根据编码鑾峰彇鏉冮檺
         
         Args:
-            code: 鏉冮檺缂栫爜
+            code: 鏉冮檺编码
         
         Returns:
             Optional[Permission]: 鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -87,22 +87,22 @@ class PermissionService:
     
     def update_permission(self, permission_id: str, permission_data: Dict[str, Any]) -> Optional[Permission]:
         """
-        鏇存柊鏉冮檺
+        更新鏉冮檺
         
         Args:
             permission_id: 鏉冮檺ID
             permission_data: 鏉冮檺鏁版嵁
         
         Returns:
-            Optional[Permission]: 鏇存柊鍚庣殑鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Permission]: 更新鍚庣殑鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"鏇存柊鏉冮檺: permission_id={permission_id}")
+        logger.info(f"更新鏉冮檺: permission_id={permission_id}")
         
         permission = self.perm_repo.get_by_id(permission_id)
         if not permission:
             return None
         
-        # 鏇存柊鏉冮檺
+        # 更新鏉冮檺
         for key, value in permission_data.items():
             if hasattr(permission, key):
                 setattr(permission, key, value)
@@ -111,15 +111,15 @@ class PermissionService:
     
     def delete_permission(self, permission_id: str) -> bool:
         """
-        鍒犻櫎鏉冮檺
+        删除鏉冮檺
         
         Args:
             permission_id: 鏉冮檺ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鏉冮檺: permission_id={permission_id}")
+        logger.info(f"删除鏉冮檺: permission_id={permission_id}")
         return self.perm_repo.delete(permission_id)
     
     def list_permissions(self, tenant_id: Optional[str] = None, resource: Optional[str] = None,
@@ -129,12 +129,12 @@ class PermissionService:
         鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
-            resource: 璧勬簮绫诲瀷锛堝彲閫夛級
-            permission_type: 鏉冮檺绫诲瀷锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
+            resource: 资源类型锛堝彲閫夛級
+            permission_type: 鏉冮檺类型锛堝彲閫夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Permission]: 鏉冮檺鍒楄〃
@@ -152,14 +152,14 @@ class PermissionService:
     
     def count_permissions(self, tenant_id: Optional[str] = None, resource: Optional[str] = None) -> int:
         """
-        缁熻鏉冮檺鏁伴噺
+        缁熻鏉冮檺数量
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
-            resource: 璧勬簮绫诲瀷锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
+            resource: 资源类型锛堝彲閫夛級
         
         Returns:
-            int: 鏉冮檺鏁伴噺
+            int: 鏉冮檺数量
         """
         if resource:
             return self.perm_repo.count_by_resource(resource)
@@ -172,8 +172,8 @@ class PermissionService:
         """
         妫€鏌ョ敤鎴锋槸鍚︽嫢鏈夋寚瀹氭潈闄?        
         Args:
-            user_id: 鐢ㄦ埛ID
-            permission_code: 鏉冮檺缂栫爜
+            user_id: 用户ID
+            permission_code: 鏉冮檺编码
         
         Returns:
             bool: 鏄惁鎷ユ湁鏉冮檺

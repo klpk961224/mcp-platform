@@ -18,7 +18,7 @@ async def logging_middleware(request: Request, call_next):
     process_time = time.time() - start_time
     logger.info(
         f"鍝嶅簲: {request.method} {request.url.path} "
-        f"鐘舵€佺爜: {response.status_code} "
+        f"状态佺爜: {response.status_code} "
         f"鑰楁椂: {process_time:.3f}s"
     )
     

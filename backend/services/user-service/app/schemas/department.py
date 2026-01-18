@@ -10,22 +10,22 @@ from datetime import datetime
 class DepartmentBase(BaseModel):
     """閮ㄩ棬鍩虹妯″瀷"""
     
-    name: str = Field(..., description="閮ㄩ棬鍚嶇О")
-    code: str = Field(..., description="閮ㄩ棬缂栫爜")
+    name: str = Field(..., description="部门名称")
+    code: str = Field(..., description="部门编码")
     parent_id: Optional[str] = Field(None, description="鐖堕儴闂↖D")
     level: int = Field(default=1, description="灞傜骇")
-    sort_order: int = Field(default=0, description="鎺掑簭")
-    status: str = Field(default="active", description="鐘舵€?)
+    sort_order: int = Field(default=0, description="排序")
+    status: str = Field(default="active", description="状态?)
 
 
 class DepartmentCreate(DepartmentBase):
-    """鍒涘缓閮ㄩ棬"""
+    """创建閮ㄩ棬"""
     
-    tenant_id: str = Field(..., description="绉熸埛ID")
+    tenant_id: str = Field(..., description="租户ID")
 
 
 class DepartmentUpdate(BaseModel):
-    """鏇存柊閮ㄩ棬"""
+    """更新閮ㄩ棬"""
     
     name: Optional[str] = None
     code: Optional[str] = None

@@ -3,8 +3,8 @@
 鐢ㄦ埛鏈嶅姟
 
 鍔熻兘璇存槑锛?1. 鐢ㄦ埛CRUD鎿嶄綔
-2. 鐢ㄦ埛鏌ヨ鎿嶄綔
-3. 鐢ㄦ埛鐘舵€佺鐞?
+2. 鐢ㄦ埛查询鎿嶄綔
+3. 鐢ㄦ埛状态佺鐞?
 浣跨敤绀轰緥锛?    from app.services.user_service import UserService
     
     user_service = UserService(db)
@@ -26,8 +26,8 @@ class UserService:
     鐢ㄦ埛鏈嶅姟
     
     鍔熻兘锛?    - 鐢ㄦ埛CRUD鎿嶄綔
-    - 鐢ㄦ埛鏌ヨ鎿嶄綔
-    - 鐢ㄦ埛鐘舵€佺鐞?    
+    - 鐢ㄦ埛查询鎿嶄綔
+    - 鐢ㄦ埛状态佺鐞?    
     浣跨敤鏂规硶锛?        user_service = UserService(db)
         user = user_service.create_user(username="admin", email="admin@example.com")
     """
@@ -44,23 +44,23 @@ class UserService:
     
     def create_user(self, user_data: Dict[str, Any]) -> User:
         """
-        鍒涘缓鐢ㄦ埛
+        创建鐢ㄦ埛
         
         Args:
             user_data: 鐢ㄦ埛鏁版嵁
         
         Returns:
-            User: 鍒涘缓鐨勭敤鎴峰璞?        
+            User: 创建鐨勭敤鎴峰璞?        
         Raises:
-            ValueError: 鐢ㄦ埛鍚嶆垨閭宸插瓨鍦?            ValueError: 閮ㄩ棬涓嶅瓨鍦?            ValueError: 绉熸埛涓嶅瓨鍦?            ValueError: 绉熸埛宸茶繃鏈?            ValueError: 绉熸埛鐢ㄦ埛鏁板凡杈句笂闄?        """
-        logger.info(f"鍒涘缓鐢ㄦ埛: username={user_data.get('username')}")
+            ValueError: 用户名嶆垨邮箱宸插瓨鍦?            ValueError: 閮ㄩ棬涓嶅瓨鍦?            ValueError: 绉熸埛涓嶅瓨鍦?            ValueError: 绉熸埛宸茶繃鏈?            ValueError: 绉熸埛鐢ㄦ埛鏁板凡杈句笂闄?        """
+        logger.info(f"创建鐢ㄦ埛: username={user_data.get('username')}")
         
         # 妫€鏌ョ敤鎴峰悕鏄惁宸插瓨鍦?        if self.user_repo.exists_by_username(user_data.get("username")):
-            raise ValueError("鐢ㄦ埛鍚嶅凡瀛樺湪")
+            raise ValueError("用户名嶅凡瀛樺湪")
         
         # 妫€鏌ラ偖绠辨槸鍚﹀凡瀛樺湪
         if self.user_repo.exists_by_email(user_data.get("email")):
-            raise ValueError("閭宸插瓨鍦?)
+            raise ValueError("邮箱宸插瓨鍦?)
         
         # 楠岃瘉绉熸埛
         tenant_id = user_data.get("tenant_id")
@@ -82,7 +82,7 @@ class UserService:
             if tenant_id and department.tenant_id != tenant_id:
                 raise ValueError("閮ㄩ棬涓嶅睘浜庤绉熸埛")
         
-        # 鍒涘缓鐢ㄦ埛
+        # 创建鐢ㄦ埛
         user = User(**user_data)
         return self.user_repo.create(user)
     
@@ -91,7 +91,7 @@ class UserService:
         鑾峰彇鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -100,9 +100,9 @@ class UserService:
     
     def get_user_by_username(self, username: str) -> Optional[User]:
         """
-        鏍规嵁鐢ㄦ埛鍚嶈幏鍙栫敤鎴?        
+        根据用户名嶈幏鍙栫敤鎴?        
         Args:
-            username: 鐢ㄦ埛鍚?        
+            username: 用户名?        
         Returns:
             Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
@@ -110,20 +110,20 @@ class UserService:
     
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Optional[User]:
         """
-        鏇存柊鐢ㄦ埛
+        更新鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             user_data: 鐢ㄦ埛鏁版嵁
         
         Returns:
-            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[User]: 更新鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         
         Raises:
-            ValueError: 閭宸茶鍏朵粬鐢ㄦ埛浣跨敤
+            ValueError: 邮箱宸茶鍏朵粬鐢ㄦ埛浣跨敤
             ValueError: 閮ㄩ棬涓嶅瓨鍦?            ValueError: 閮ㄩ棬涓嶅睘浜庤绉熸埛
         """
-        logger.info(f"鏇存柊鐢ㄦ埛: user_id={user_id}")
+        logger.info(f"更新鐢ㄦ埛: user_id={user_id}")
         
         user = self.user_repo.get_by_id(user_id)
         if not user:
@@ -132,7 +132,7 @@ class UserService:
         # 妫€鏌ラ偖绠辨槸鍚﹁鍏朵粬鐢ㄦ埛浣跨敤
         if "email" in user_data and user_data["email"] != user.email:
             if self.user_repo.exists_by_email(user_data["email"]):
-                raise ValueError("閭宸茶鍏朵粬鐢ㄦ埛浣跨敤")
+                raise ValueError("邮箱宸茶鍏朵粬鐢ㄦ埛浣跨敤")
         
         # 楠岃瘉閮ㄩ棬
         if "department_id" in user_data and user_data["department_id"]:
@@ -142,7 +142,7 @@ class UserService:
             if department.tenant_id != user.tenant_id:
                 raise ValueError("閮ㄩ棬涓嶅睘浜庤绉熸埛")
         
-        # 鏇存柊鐢ㄦ埛
+        # 更新鐢ㄦ埛
         for key, value in user_data.items():
             if hasattr(user, key):
                 setattr(user, key, value)
@@ -151,15 +151,15 @@ class UserService:
     
     def delete_user(self, user_id: str) -> bool:
         """
-        鍒犻櫎鐢ㄦ埛
+        删除鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鐢ㄦ埛: user_id={user_id}")
+        logger.info(f"删除鐢ㄦ埛: user_id={user_id}")
         return self.user_repo.delete(user_id)
     
     def list_users(self, tenant_id: Optional[str] = None, department_id: Optional[str] = None, 
@@ -168,11 +168,11 @@ class UserService:
         鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
-            department_id: 閮ㄩ棬ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
+            department_id: 部门ID锛堝彲閫夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[User]: 鐢ㄦ埛鍒楄〃
@@ -190,10 +190,10 @@ class UserService:
         """
         婵€娲荤敤鎴?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[User]: 更新鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"婵€娲荤敤鎴? user_id={user_id}")
         user = self.user_repo.get_by_id(user_id)
@@ -209,10 +209,10 @@ class UserService:
         鍋滅敤鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[User]: 更新鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"鍋滅敤鐢ㄦ埛: user_id={user_id}")
         user = self.user_repo.get_by_id(user_id)
@@ -225,14 +225,14 @@ class UserService:
     
     def count_users(self, tenant_id: Optional[str] = None, department_id: Optional[str] = None) -> int:
         """
-        缁熻鐢ㄦ埛鏁伴噺
+        缁熻鐢ㄦ埛数量
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
-            department_id: 閮ㄩ棬ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
+            department_id: 部门ID锛堝彲閫夛級
         
         Returns:
-            int: 鐢ㄦ埛鏁伴噺
+            int: 鐢ㄦ埛数量
         """
         if department_id:
             return self.user_repo.count_by_department(department_id)

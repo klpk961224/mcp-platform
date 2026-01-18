@@ -27,7 +27,7 @@ from common.database.connection import datasource_manager
 from app.api.v1 import router as v1_router
 
 
-# 鍒涘缓FastAPI搴旂敤
+# 创建FastAPI搴旂敤
 app = FastAPI(
     title="鏀拺鏈嶅姟API",
     description="浼佷笟绾I缁煎悎绠＄悊骞冲彴 - 鏀拺鏈嶅姟",

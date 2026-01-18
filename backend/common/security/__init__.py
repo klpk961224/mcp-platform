@@ -1,8 +1,8 @@
 ﻿"""
 瀹夊叏妯″潡
 
-瀵煎嚭锛?- create_access_token: 鍒涘缓璁块棶Token
-- create_refresh_token: 鍒涘缓鍒锋柊Token
+瀵煎嚭锛?- create_access_token: 创建璁块棶Token
+- create_refresh_token: 创建鍒锋柊Token
 - verify_token: 楠岃瘉Token
 - decode_token: 瑙ｇ爜Token
 - hash_password: 鍝堝笇瀵嗙爜

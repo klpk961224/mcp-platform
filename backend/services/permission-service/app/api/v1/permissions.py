@@ -24,19 +24,19 @@ from app.services.permission_service import PermissionService
 router = APIRouter(prefix="/permissions", tags=["鏉冮檺绠＄悊"])
 
 
-@router.post("", response_model=PermissionResponse, summary="鍒涘缓鏉冮檺")
+@router.post("", response_model=PermissionResponse, summary="创建鏉冮檺")
 async def create_permission(
     permission: PermissionCreate,
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓鏉冮檺"""
-    logger.info(f"鍒涘缓鏉冮檺: name={permission.name}")
+    """创建鏉冮檺"""
+    logger.info(f"创建鏉冮檺: name={permission.name}")
     
     try:
         perm_service = PermissionService(db)
         new_perm = perm_service.create_permission(permission.dict())
         
-        logger.info(f"鍒涘缓鏉冮檺鎴愬姛: name={permission.name}, permission_id={new_perm.id}")
+        logger.info(f"创建鏉冮檺鎴愬姛: name={permission.name}, permission_id={new_perm.id}")
         
         return PermissionResponse(
             id=new_perm.id,
@@ -48,11 +48,11 @@ async def create_permission(
             updated_at=new_perm.updated_at.isoformat() if new_perm.updated_at else None
         )
     except ValueError as e:
-        logger.warning(f"鍒涘缓鏉冮檺澶辫触: name={permission.name}, error={str(e)}")
+        logger.warning(f"创建鏉冮檺澶辫触: name={permission.name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓鏉冮檺寮傚父: name={permission.name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建鏉冮檺寮傚父: name={permission.name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.get("", response_model=PermissionListResponse, summary="鑾峰彇鏉冮檺鍒楄〃")
@@ -69,7 +69,7 @@ async def get_permissions(
     try:
         perm_service = PermissionService(db)
         
-        # 鏌ヨ鏉冮檺鍒楄〃
+        # 查询鏉冮檺鍒楄〃
         permissions = perm_service.list_permissions(
             permission_type=type,
             keyword=keyword,
@@ -130,14 +130,14 @@ async def get_permission(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鏉冮檺璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{permission_id}", response_model=PermissionResponse, summary="鏇存柊鏉冮檺")
+@router.put("/{permission_id}", response_model=PermissionResponse, summary="更新鏉冮檺")
 async def update_permission(
     permission_id: str,
     permission: PermissionUpdate,
     db: Session = Depends(get_db)
 ):
-    """鏇存柊鏉冮檺"""
-    logger.info(f"鏇存柊鏉冮檺: permission_id={permission_id}")
+    """更新鏉冮檺"""
+    logger.info(f"更新鏉冮檺: permission_id={permission_id}")
     
     try:
         perm_service = PermissionService(db)
@@ -149,7 +149,7 @@ async def update_permission(
         update_data = permission.dict(exclude_unset=True)
         updated_perm = perm_service.update_permission(permission_id, update_data)
         
-        logger.info(f"鏇存柊鏉冮檺鎴愬姛: permission_id={permission_id}")
+        logger.info(f"更新鏉冮檺鎴愬姛: permission_id={permission_id}")
         
         return PermissionResponse(
             id=updated_perm.id,
@@ -163,20 +163,20 @@ async def update_permission(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(f"鏇存柊鏉冮檺澶辫触: permission_id={permission_id}, error={str(e)}")
+        logger.warning(f"更新鏉冮檺澶辫触: permission_id={permission_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鏇存柊鏉冮檺寮傚父: permission_id={permission_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新鏉冮檺寮傚父: permission_id={permission_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{permission_id}", summary="鍒犻櫎鏉冮檺")
+@router.delete("/{permission_id}", summary="删除鏉冮檺")
 async def delete_permission(
     permission_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎鏉冮檺"""
-    logger.info(f"鍒犻櫎鏉冮檺: permission_id={permission_id}")
+    """删除鏉冮檺"""
+    logger.info(f"删除鏉冮檺: permission_id={permission_id}")
     
     try:
         perm_service = PermissionService(db)
@@ -187,11 +187,11 @@ async def delete_permission(
         
         perm_service.delete_permission(permission_id)
         
-        logger.info(f"鍒犻櫎鏉冮檺鎴愬姛: permission_id={permission_id}")
+        logger.info(f"删除鏉冮檺鎴愬姛: permission_id={permission_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎鏉冮檺寮傚父: permission_id={permission_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除鏉冮檺寮傚父: permission_id={permission_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")

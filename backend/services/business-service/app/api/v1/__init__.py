@@ -7,7 +7,7 @@ API v1妯″潡
 
 from fastapi import APIRouter
 
-# 鍒涘缓v1璺敱鍣?router = APIRouter(prefix="/api/v1")
+# 创建v1璺敱鍣?router = APIRouter(prefix="/api/v1")
 
 # 瀵煎叆璺敱
 from app.api.v1.routers import workflows

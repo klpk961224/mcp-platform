@@ -2,7 +2,7 @@
 """
 閮ㄩ棬鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 閮ㄩ棬CRUD鎿嶄綔
-2. 閮ㄩ棬鏍戝舰缁撴瀯鏌ヨ
+2. 閮ㄩ棬鏍戝舰缁撴瀯查询
 3. 閮ㄩ棬缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.department_repository import DepartmentRepository
@@ -23,7 +23,7 @@ class DepartmentRepository:
     """
     閮ㄩ棬鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 閮ㄩ棬CRUD鎿嶄綔
-    - 閮ㄩ棬鏍戝舰缁撴瀯鏌ヨ
+    - 閮ㄩ棬鏍戝舰缁撴瀯查询
     - 閮ㄩ棬缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        dept_repo = DepartmentRepository(db)
@@ -40,14 +40,14 @@ class DepartmentRepository:
     
     def create(self, department: Department) -> Department:
         """
-        鍒涘缓閮ㄩ棬
+        创建閮ㄩ棬
         
         Args:
             department: 閮ㄩ棬瀵硅薄
         
         Returns:
-            Department: 鍒涘缓鐨勯儴闂ㄥ璞?        """
-        logger.info(f"鍒涘缓閮ㄩ棬: name={department.name}, code={department.code}, tenant_id={department.tenant_id}")
+            Department: 创建鐨勯儴闂ㄥ璞?        """
+        logger.info(f"创建閮ㄩ棬: name={department.name}, code={department.code}, tenant_id={department.tenant_id}")
         self.db.add(department)
         self.db.commit()
         self.db.refresh(department)
@@ -55,10 +55,10 @@ class DepartmentRepository:
     
     def get_by_id(self, department_id: str) -> Optional[Department]:
         """
-        鏍规嵁ID鑾峰彇閮ㄩ棬
+        根据ID鑾峰彇閮ㄩ棬
         
         Args:
-            department_id: 閮ㄩ棬ID
+            department_id: 部门ID
         
         Returns:
             Optional[Department]: 閮ㄩ棬瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -67,10 +67,10 @@ class DepartmentRepository:
     
     def get_by_code(self, code: str) -> Optional[Department]:
         """
-        鏍规嵁缂栫爜鑾峰彇閮ㄩ棬
+        根据编码鑾峰彇閮ㄩ棬
         
         Args:
-            code: 閮ㄩ棬缂栫爜
+            code: 部门编码
         
         Returns:
             Optional[Department]: 閮ㄩ棬瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -79,12 +79,12 @@ class DepartmentRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇閮ㄩ棬鍒楄〃
+        根据租户ID鑾峰彇閮ㄩ棬鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Department]: 閮ㄩ棬鍒楄〃
@@ -94,11 +94,11 @@ class DepartmentRepository:
     
     def get_by_parent_id(self, parent_id: str, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        鏍规嵁鐖堕儴闂↖D鑾峰彇瀛愰儴闂ㄥ垪琛?        
+        根据鐖堕儴闂↖D鑾峰彇瀛愰儴闂ㄥ垪琛?        
         Args:
             parent_id: 鐖堕儴闂↖D
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Department]: 閮ㄩ棬鍒楄〃
@@ -111,9 +111,9 @@ class DepartmentRepository:
         鑾峰彇绉熸埛鐨勬牴閮ㄩ棬锛堟病鏈夌埗閮ㄩ棬鐨勯儴闂級
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Department]: 閮ㄩ棬鍒楄〃
@@ -131,7 +131,7 @@ class DepartmentRepository:
         鑾峰彇绉熸埛鐨勯儴闂ㄦ爲
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             List[Department]: 閮ㄩ棬鏍?        """
@@ -143,9 +143,9 @@ class DepartmentRepository:
         鎼滅储閮ㄩ棬
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Department]: 閮ㄩ棬鍒楄〃
@@ -169,7 +169,7 @@ class DepartmentRepository:
         鑾峰彇鎵€鏈夐儴闂?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Department]: 閮ㄩ棬鍒楄〃
@@ -179,40 +179,40 @@ class DepartmentRepository:
     
     def update(self, department: Department) -> Department:
         """
-        鏇存柊閮ㄩ棬
+        更新閮ㄩ棬
         
         Args:
             department: 閮ㄩ棬瀵硅薄
         
         Returns:
-            Department: 鏇存柊鍚庣殑閮ㄩ棬瀵硅薄
+            Department: 更新鍚庣殑閮ㄩ棬瀵硅薄
         """
-        logger.info(f"鏇存柊閮ㄩ棬: department_id={department.id}")
+        logger.info(f"更新閮ㄩ棬: department_id={department.id}")
         self.db.commit()
         self.db.refresh(department)
         return department
     
     def delete(self, department_id: str) -> bool:
         """
-        鍒犻櫎閮ㄩ棬
+        删除閮ㄩ棬
         
         Args:
-            department_id: 閮ㄩ棬ID
+            department_id: 部门ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎閮ㄩ棬: department_id={department_id}")
+        logger.info(f"删除閮ㄩ棬: department_id={department_id}")
         department = self.get_by_id(department_id)
         if not department:
             return False
         
         # 妫€鏌ユ槸鍚︽湁瀛愰儴闂?        if department.children:
-            raise ValueError("鏃犳硶鍒犻櫎閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄥ瓙閮ㄩ棬")
+            raise ValueError("鏃犳硶删除閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄥ瓙閮ㄩ棬")
         
         # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if department.users:
-            raise ValueError("鏃犳硶鍒犻櫎閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄧ敤鎴?)
+            raise ValueError("鏃犳硶删除閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄧ敤鎴?)
         
         self.db.delete(department)
         self.db.commit()
@@ -220,13 +220,13 @@ class DepartmentRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛閮ㄩ棬鏁伴噺
+        缁熻绉熸埛閮ㄩ棬数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 閮ㄩ棬鏁伴噺
+            int: 閮ㄩ棬数量
         """
         return self.db.query(Department).filter(Department.tenant_id == tenant_id).count()
     
@@ -244,7 +244,7 @@ class DepartmentRepository:
         """
         缁熻鎵€鏈夐儴闂ㄦ暟閲?        
         Returns:
-            int: 閮ㄩ棬鏁伴噺
+            int: 閮ㄩ棬数量
         """
         return self.db.query(Department).count()
     
@@ -252,7 +252,7 @@ class DepartmentRepository:
         """
         妫€鏌ラ儴闂ㄧ紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 閮ㄩ棬缂栫爜
+            code: 部门编码
         
         Returns:
             bool: 鏄惁瀛樺湪
@@ -261,11 +261,11 @@ class DepartmentRepository:
     
     def exists_by_name_in_tenant(self, name: str, tenant_id: str) -> bool:
         """
-        妫€鏌ョ鎴峰唴閮ㄩ棬鍚嶇О鏄惁瀛樺湪
+        妫€鏌ョ鎴峰唴部门名称鏄惁瀛樺湪
         
         Args:
-            name: 閮ㄩ棬鍚嶇О
-            tenant_id: 绉熸埛ID
+            name: 部门名称
+            tenant_id: 租户ID
         
         Returns:
             bool: 鏄惁瀛樺湪

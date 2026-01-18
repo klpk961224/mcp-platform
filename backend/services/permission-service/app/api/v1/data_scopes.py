@@ -63,7 +63,7 @@ async def get_user_data_scope(
                 "user_id": user_id,
                 "module": module,
                 "data_scope": None,
-                "message": "鏈厤缃暟鎹寖鍥存潈闄愶紝榛樿涓轰粎鏈汉鏁版嵁"
+                "message": "鏈厤缃暟鎹寖鍥存潈闄愶紝默认涓轰粎鏈汉鏁版嵁"
             }
         
         return user_data_scope.to_dict()
@@ -76,7 +76,7 @@ async def get_user_data_scope(
 async def set_user_data_scope(
     user_id: str,
     module: str = Query(..., description="妯″潡"),
-    data_scope_code: str = Query(..., description="鏁版嵁鑼冨洿缂栫爜"),
+    data_scope_code: str = Query(..., description="鏁版嵁鑼冨洿编码"),
     db: Session = Depends(get_db)
 ):
     """璁剧疆鐢ㄦ埛鏁版嵁鑼冨洿鏉冮檺"""
@@ -99,7 +99,7 @@ async def set_user_data_scope(
 
 @router.post("/check", summary="妫€鏌ユ暟鎹寖鍥存潈闄?)
 async def check_data_scope(
-    user_id: str = Query(..., description="鐢ㄦ埛ID"),
+    user_id: str = Query(..., description="用户ID"),
     module: str = Query(..., description="妯″潡"),
     target_id: str = Query(..., description="鐩爣鏁版嵁ID"),
     db: Session = Depends(get_db)

@@ -24,25 +24,25 @@ from app.services.tenant_service import TenantService
 router = APIRouter(prefix="/tenants", tags=["绉熸埛绠＄悊"])
 
 
-@router.post("", response_model=TenantResponse, summary="鍒涘缓绉熸埛")
+@router.post("", response_model=TenantResponse, summary="创建绉熸埛")
 async def create_tenant(
     tenant: TenantCreate,
     db: Session = Depends(get_db)
 ):
     """
-    鍒涘缓绉熸埛
+    创建绉熸埛
     
-    鍔熻兘锛?    - 楠岃瘉绉熸埛缂栫爜鍞竴鎬?    - 楠岃瘉绉熸埛鍚嶇О鍞竴鎬?    - 鑷姩搴旂敤濂楅閰嶇疆锛堥粯璁asic锛?    - 鑷姩璁＄畻杩囨湡鏃堕棿锛?65澶╋級
+    鍔熻兘锛?    - 楠岃瘉绉熸埛编码鍞竴鎬?    - 楠岃瘉绉熸埛名称鍞竴鎬?    - 鑷姩搴旂敤濂楅閰嶇疆锛堥粯璁asic锛?    - 鑷姩璁＄畻杩囨湡鏃堕棿锛?65澶╋級
     
     Args:
-        tenant: 绉熸埛鍒涘缓鏁版嵁
+        tenant: 绉熸埛创建鏁版嵁
     
     Returns:
-        TenantResponse: 鍒涘缓鐨勭鎴蜂俊鎭?    
+        TenantResponse: 创建鐨勭鎴蜂俊鎭?    
     Raises:
         HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
     """
-    logger.info(f"鍒涘缓绉熸埛: name={tenant.name}, code={tenant.code}")
+    logger.info(f"创建绉熸埛: name={tenant.name}, code={tenant.code}")
     
     try:
         tenant_service = TenantService(db)
@@ -51,18 +51,18 @@ async def create_tenant(
         # 杞崲涓哄搷搴旀牸寮?        response_data = tenant_obj.to_dict()
         return TenantResponse(**response_data)
     except ValueError as e:
-        logger.error(f"鍒涘缓绉熸埛澶辫触: {str(e)}")
+        logger.error(f"创建绉熸埛澶辫触: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鍒涘缓绉熸埛澶辫触")
+        logger.error(f"创建绉熸埛寮傚父: {str(e)}")
+        raise HTTPException(status_code=500, detail="创建绉熸埛澶辫触")
 
 
 @router.get("", response_model=TenantListResponse, summary="鑾峰彇绉熸埛鍒楄〃")
 async def get_tenants(
     page: int = Query(1, ge=1, description="椤电爜"),
-    page_size: int = Query(10, ge=1, le=100, description="姣忛〉鏁伴噺"),
-    status: Optional[str] = Query(None, description="鐘舵€佺瓫閫?),
+    page_size: int = Query(10, ge=1, le=100, description="姣忛〉数量"),
+    status: Optional[str] = Query(None, description="状态佺瓫閫?),
     keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
     db: Session = Depends(get_db)
 ):
@@ -72,8 +72,8 @@ async def get_tenants(
     鏀寔鎸夌姸鎬併€佸叧閿瘝绛涢€?    
     Args:
         page: 椤电爜
-        page_size: 姣忛〉鏁伴噺
-        status: 鐘舵€佺瓫閫夛紙鍙€夛級
+        page_size: 姣忛〉数量
+        status: 状态佺瓫閫夛紙鍙€夛級
         keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
     
     Returns:
@@ -104,7 +104,7 @@ async def get_tenant(
     鑾峰彇绉熸埛璇︽儏
     
     Args:
-        tenant_id: 绉熸埛ID
+        tenant_id: 租户ID
     
     Returns:
         TenantResponse: 绉熸埛璇︽儏
@@ -129,29 +129,29 @@ async def get_tenant(
         raise HTTPException(status_code=500, detail="鑾峰彇绉熸埛璇︽儏澶辫触")
 
 
-@router.put("/{tenant_id}", response_model=TenantResponse, summary="鏇存柊绉熸埛")
+@router.put("/{tenant_id}", response_model=TenantResponse, summary="更新绉熸埛")
 async def update_tenant(
     tenant_id: str,
     tenant: TenantUpdate,
     db: Session = Depends(get_db)
 ):
     """
-    鏇存柊绉熸埛
+    更新绉熸埛
     
-    鍔熻兘锛?    - 楠岃瘉绉熸埛缂栫爜鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-    - 楠岃瘉绉熸埛鍚嶇О鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-    - 鏇存柊濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?    - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡鐘舵€佹垨濂楅锛?    
+    鍔熻兘锛?    - 楠岃瘉绉熸埛编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
+    - 楠岃瘉绉熸埛名称鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
+    - 更新濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?    - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡状态佹垨濂楅锛?    
     Args:
-        tenant_id: 绉熸埛ID
-        tenant: 绉熸埛鏇存柊鏁版嵁
+        tenant_id: 租户ID
+        tenant: 绉熸埛更新鏁版嵁
     
     Returns:
-        TenantResponse: 鏇存柊鍚庣殑绉熸埛淇℃伅
+        TenantResponse: 更新鍚庣殑绉熸埛淇℃伅
     
     Raises:
         HTTPException: 楠岃瘉澶辫触鎴栫鎴蜂笉瀛樺湪鏃舵姏鍑?00鎴?04閿欒
     """
-    logger.info(f"鏇存柊绉熸埛: tenant_id={tenant_id}")
+    logger.info(f"更新绉熸埛: tenant_id={tenant_id}")
     
     try:
         tenant_service = TenantService(db)
@@ -160,45 +160,45 @@ async def update_tenant(
         response_data = tenant_obj.to_dict()
         return TenantResponse(**response_data)
     except ValueError as e:
-        logger.error(f"鏇存柊绉熸埛澶辫触: {str(e)}")
+        logger.error(f"更新绉熸埛澶辫触: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"鏇存柊绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鏇存柊绉熸埛澶辫触")
+        logger.error(f"更新绉熸埛寮傚父: {str(e)}")
+        raise HTTPException(status_code=500, detail="更新绉熸埛澶辫触")
 
 
-@router.delete("/{tenant_id}", summary="鍒犻櫎绉熸埛")
+@router.delete("/{tenant_id}", summary="删除绉熸埛")
 async def delete_tenant(
     tenant_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    鍒犻櫎绉熸埛
+    删除绉熸埛
     
     鍔熻兘锛?    - 妫€鏌ョ鎴锋槸鍚﹀瓨鍦?    - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
     - 妫€鏌ユ槸鍚︽湁閮ㄩ棬
     
     Args:
-        tenant_id: 绉熸埛ID
+        tenant_id: 租户ID
     
     Returns:
-        dict: 鍒犻櫎缁撴灉
+        dict: 删除缁撴灉
     
     Raises:
         HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
     """
-    logger.info(f"鍒犻櫎绉熸埛: tenant_id={tenant_id}")
+    logger.info(f"删除绉熸埛: tenant_id={tenant_id}")
     
     try:
         tenant_service = TenantService(db)
         tenant_service.delete_tenant(tenant_id)
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except ValueError as e:
-        logger.error(f"鍒犻櫎绉熸埛澶辫触: {str(e)}")
+        logger.error(f"删除绉熸埛澶辫触: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒犻櫎绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鍒犻櫎绉熸埛澶辫触")
+        logger.error(f"删除绉熸埛寮傚父: {str(e)}")
+        raise HTTPException(status_code=500, detail="删除绉熸埛澶辫触")
 
 
 @router.get("/{tenant_id}/quota/{quota_type}", summary="妫€鏌ョ鎴疯祫婧愰厤棰?)
@@ -213,14 +213,14 @@ async def check_tenant_quota(
     - users: 鐢ㄦ埛鏁伴厤棰?    - departments: 閮ㄩ棬鏁伴厤棰?    - storage: 瀛樺偍绌洪棿閰嶉
     
     Args:
-        tenant_id: 绉熸埛ID
-        quota_type: 閰嶉绫诲瀷
+        tenant_id: 租户ID
+        quota_type: 閰嶉类型
     
     Returns:
         dict: 閰嶉淇℃伅
     
     Raises:
-        HTTPException: 绉熸埛涓嶅瓨鍦ㄦ垨閰嶉绫诲瀷涓嶆敮鎸佹椂鎶涘嚭400鎴?04閿欒
+        HTTPException: 绉熸埛涓嶅瓨鍦ㄦ垨閰嶉类型涓嶆敮鎸佹椂鎶涘嚭400鎴?04閿欒
     """
     logger.info(f"妫€鏌ョ鎴烽厤棰? tenant_id={tenant_id}, quota_type={quota_type}")
     
@@ -270,7 +270,7 @@ async def renew_tenant(
     
     鍔熻兘锛?    - 濡傛灉绉熸埛宸茶繃鏈燂紝浠庡綋鍓嶆椂闂村紑濮嬭绠?    - 濡傛灉绉熸埛鏈繃鏈燂紝鍦ㄥ師鏈夎繃鏈熸椂闂村熀纭€涓婂欢闀?    
     Args:
-        tenant_id: 绉熸埛ID
+        tenant_id: 租户ID
         days: 缁垂澶╂暟锛堥粯璁?65澶╋級
     
     Returns:

@@ -29,7 +29,7 @@ class LocalCache:
         self.cache[key] = (value, expire_time)
     
     def delete(self, key: str):
-        """鍒犻櫎缂撳瓨"""
+        """删除缂撳瓨"""
         if key in self.cache:
             del self.cache[key]
     

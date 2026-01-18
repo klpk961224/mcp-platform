@@ -67,7 +67,7 @@ class TestAuthIntegration:
         """鍑嗗娴嬭瘯鏁版嵁"""
         print("鍑嗗娴嬭瘯鏁版嵁...")
         
-        # 鍒涘缓娴嬭瘯绉熸埛
+        # 创建娴嬭瘯绉熸埛
         try:
             response = self.session.post(
                 f"{self.user_service_url}/tenants",
@@ -81,9 +81,9 @@ class TestAuthIntegration:
             
             if response.status_code == 200:
                 self.test_tenant_id = response.json().get("data", {}).get("id")
-                print(f"鉁?鍒涘缓娴嬭瘯绉熸埛: {self.test_tenant_id}")
+                print(f"鉁?创建娴嬭瘯绉熸埛: {self.test_tenant_id}")
         except Exception as e:
-            print(f"鈿?鍒涘缓娴嬭瘯绉熸埛澶辫触: {str(e)}")
+            print(f"鈿?创建娴嬭瘯绉熸埛澶辫触: {str(e)}")
     
     def _cleanup_test_data(self):
         """娓呯悊娴嬭瘯鏁版嵁"""
@@ -96,9 +96,9 @@ class TestAuthIntegration:
                     f"{self.user_service_url}/users/{self.test_user_id}",
                     timeout=5
                 )
-                print(f"鉁?鍒犻櫎娴嬭瘯鐢ㄦ埛: {self.test_user_id}")
+                print(f"鉁?删除娴嬭瘯鐢ㄦ埛: {self.test_user_id}")
             except Exception as e:
-                print(f"鈿?鍒犻櫎娴嬭瘯鐢ㄦ埛澶辫触: {str(e)}")
+                print(f"鈿?删除娴嬭瘯鐢ㄦ埛澶辫触: {str(e)}")
         
         # 娓呯悊娴嬭瘯绉熸埛
         if self.test_tenant_id:
@@ -107,9 +107,9 @@ class TestAuthIntegration:
                     f"{self.user_service_url}/tenants/{self.test_tenant_id}",
                     timeout=5
                 )
-                print(f"鉁?鍒犻櫎娴嬭瘯绉熸埛: {self.test_tenant_id}")
+                print(f"鉁?删除娴嬭瘯绉熸埛: {self.test_tenant_id}")
             except Exception as e:
-                print(f"鈿?鍒犻櫎娴嬭瘯绉熸埛澶辫触: {str(e)}")
+                print(f"鈿?删除娴嬭瘯绉熸埛澶辫触: {str(e)}")
     
     def test_01_user_registration(self):
         """娴嬭瘯鐢ㄦ埛娉ㄥ唽娴佺▼"""
@@ -137,7 +137,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"鍝嶅簲鐘舵€佺爜: {response.status_code}")
+        print(f"鍝嶅簲状态佺爜: {response.status_code}")
         print(f"鍝嶅簲鍐呭: {response.text[:500]}")
         
         # 楠岃瘉鍝嶅簲
@@ -150,13 +150,13 @@ class TestAuthIntegration:
         assert "user_id" in data, "鍝嶅簲涓己灏憉ser_id"
         assert "access_token" in data, "鍝嶅簲涓己灏慳ccess_token"
         
-        # 淇濆瓨娴嬭瘯鏁版嵁
+        # 保存娴嬭瘯鏁版嵁
         self.test_user_id = data.get("user_id")
         self.access_token = data.get("access_token")
         self.refresh_token = data.get("refresh_token")
         
         print(f"鉁?鐢ㄦ埛娉ㄥ唽鎴愬姛")
-        print(f"  鐢ㄦ埛ID: {self.test_user_id}")
+        print(f"  用户ID: {self.test_user_id}")
         print(f"  Access Token: {self.access_token[:50]}...")
         
         return True
@@ -181,7 +181,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"鍝嶅簲鐘舵€佺爜: {response.status_code}")
+        print(f"鍝嶅簲状态佺爜: {response.status_code}")
         print(f"鍝嶅簲鍐呭: {response.text[:500]}")
         
         # 楠岃瘉鍝嶅簲
@@ -194,7 +194,7 @@ class TestAuthIntegration:
         assert "access_token" in data, "鍝嶅簲涓己灏慳ccess_token"
         assert "refresh_token" in data, "鍝嶅簲涓己灏憆efresh_token"
         
-        # 淇濆瓨Token
+        # 保存Token
         self.access_token = data.get("access_token")
         self.refresh_token = data.get("refresh_token")
         
@@ -228,7 +228,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"鍝嶅簲鐘舵€佺爜: {response.status_code}")
+        print(f"鍝嶅簲状态佺爜: {response.status_code}")
         print(f"鍝嶅簲鍐呭: {response.text[:500]}")
         
         # 楠岃瘉鍝嶅簲
@@ -248,7 +248,7 @@ class TestAuthIntegration:
         assert new_access_token != self.access_token, "鏂癮ccess_token搴旇涓庢棫token涓嶅悓"
         assert new_refresh_token != self.refresh_token, "鏂皉efresh_token搴旇涓庢棫token涓嶅悓"
         
-        # 鏇存柊Token
+        # 更新Token
         self.access_token = new_access_token
         self.refresh_token = new_refresh_token
         
@@ -268,7 +268,7 @@ class TestAuthIntegration:
         if not self.access_token:
             self.test_02_user_login()
         
-        # 鍒涘缓API Key
+        # 创建API Key
         headers = {
             "Authorization": f"Bearer {self.access_token}"
         }
@@ -278,7 +278,7 @@ class TestAuthIntegration:
             "description": "闆嗘垚娴嬭瘯API Key"
         }
         
-        print(f"鍒涘缓API Key鏁版嵁: {create_api_key_data}")
+        print(f"创建API Key鏁版嵁: {create_api_key_data}")
         
         # 鍙戦€佸垱寤篈PI Key璇锋眰
         response = self.session.post(
@@ -288,21 +288,21 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"鍝嶅簲鐘舵€佺爜: {response.status_code}")
+        print(f"鍝嶅簲状态佺爜: {response.status_code}")
         print(f"鍝嶅簲鍐呭: {response.text[:500]}")
         
         # 楠岃瘉鍝嶅簲
-        assert response.status_code == 200, f"鍒涘缓API Key澶辫触: {response.text}"
+        assert response.status_code == 200, f"创建API Key澶辫触: {response.text}"
         
         result = response.json()
-        assert result.get("code") == 0, f"鍒涘缓API Key澶辫触: {result}"
+        assert result.get("code") == 0, f"创建API Key澶辫触: {result}"
         
         data = result.get("data", {})
         assert "api_key" in data, "鍝嶅簲涓己灏慳pi_key"
         
         self.api_key = data.get("api_key")
         
-        print(f"鉁?API Key鍒涘缓鎴愬姛")
+        print(f"鉁?API Key创建鎴愬姛")
         print(f"  API Key: {self.api_key[:50]}...")
         
         # 浣跨敤API Key杩涜璁よ瘉
@@ -317,7 +317,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"API Key璁よ瘉鍝嶅簲鐘舵€佺爜: {test_response.status_code}")
+        print(f"API Key璁よ瘉鍝嶅簲状态佺爜: {test_response.status_code}")
         print(f"API Key璁よ瘉鍝嶅簲鍐呭: {test_response.text[:500]}")
         
         # 楠岃瘉API Key璁よ瘉鎴愬姛
@@ -347,7 +347,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"鍝嶅簲鐘舵€佺爜: {response.status_code}")
+        print(f"鍝嶅簲状态佺爜: {response.status_code}")
         print(f"鍝嶅簲鍐呭: {response.text[:500]}")
         
         # 楠岃瘉鍝嶅簲
@@ -364,7 +364,7 @@ class TestAuthIntegration:
             timeout=10
         )
         
-        print(f"楠岃瘉Token澶辨晥鍝嶅簲鐘舵€佺爜: {test_response.status_code}")
+        print(f"楠岃瘉Token澶辨晥鍝嶅簲状态佺爜: {test_response.status_code}")
         
         # Token搴旇澶辨晥
         assert test_response.status_code != 200, "鐧诲嚭鍚嶵oken搴旇澶辨晥"

@@ -53,7 +53,7 @@ def mock_workflow():
 
 @pytest.fixture
 def workflow_service(mock_db):
-    """鍒涘缓WorkflowService瀹炰緥"""
+    """创建WorkflowService瀹炰緥"""
     return WorkflowService(mock_db)
 
 
@@ -72,10 +72,10 @@ class TestWorkflowService:
         """娴嬭瘯鍚姩宸ヤ綔娴佹垚鍔?""
         # 妯℃嫙鑾峰彇妯℃澘
         workflow_service.template_repo.get_by_id = Mock(return_value=mock_template)
-        # 妯℃嫙鏇存柊妯℃澘
+        # 妯℃嫙更新妯℃澘
         workflow_service.template_repo.update = Mock()
-        # 妯℃嫙鍒涘缓宸ヤ綔娴?        workflow_service.workflow_repo.create = Mock(return_value=mock_workflow)
-        # 妯℃嫙鍒涘缓浠诲姟
+        # 妯℃嫙创建宸ヤ綔娴?        workflow_service.workflow_repo.create = Mock(return_value=mock_workflow)
+        # 妯℃嫙创建浠诲姟
         workflow_service.task_repo.create = Mock()
         
         # 鎵ц鍚姩宸ヤ綔娴?        result = workflow_service.start_workflow(
@@ -122,9 +122,9 @@ class TestWorkflowService:
     
     def test_get_workflow_success(self, workflow_service, mock_workflow):
         """娴嬭瘯鑾峰彇宸ヤ綔娴佹垚鍔?""
-        # 妯℃嫙鏌ヨ宸ヤ綔娴?        workflow_service.workflow_repo.get_by_id = Mock(return_value=mock_workflow)
+        # 妯℃嫙查询宸ヤ綔娴?        workflow_service.workflow_repo.get_by_id = Mock(return_value=mock_workflow)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = workflow_service.get_workflow("test_workflow_id")
         
         # 楠岃瘉缁撴灉
@@ -134,10 +134,10 @@ class TestWorkflowService:
     
     def test_get_workflow_not_found(self, workflow_service):
         """娴嬭瘯鑾峰彇宸ヤ綔娴佸け璐?""
-        # 妯℃嫙鏌ヨ宸ヤ綔娴佽繑鍥濶one
+        # 妯℃嫙查询宸ヤ綔娴佽繑鍥濶one
         workflow_service.workflow_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = workflow_service.get_workflow("nonexistent_id")
         
         # 楠岃瘉缁撴灉
@@ -145,9 +145,9 @@ class TestWorkflowService:
     
     def test_get_user_workflows_success(self, workflow_service, mock_workflow):
         """娴嬭瘯鑾峰彇鐢ㄦ埛宸ヤ綔娴佹垚鍔?""
-        # 妯℃嫙鏌ヨ宸ヤ綔娴佸垪琛?        workflow_service.workflow_repo.get_user_workflows = Mock(return_value=[mock_workflow])
+        # 妯℃嫙查询宸ヤ綔娴佸垪琛?        workflow_service.workflow_repo.get_user_workflows = Mock(return_value=[mock_workflow])
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = workflow_service.get_user_workflows("user_001")
         
         # 楠岃瘉缁撴灉
@@ -157,8 +157,8 @@ class TestWorkflowService:
     
     def test_terminate_workflow_success(self, workflow_service, mock_workflow):
         """娴嬭瘯缁堟宸ヤ綔娴佹垚鍔?""
-        # 妯℃嫙鏌ヨ宸ヤ綔娴?        workflow_service.workflow_repo.get_by_id = Mock(return_value=mock_workflow)
-        # 妯℃嫙鏇存柊宸ヤ綔娴?        workflow_service.workflow_repo.update = Mock(return_value=mock_workflow)
+        # 妯℃嫙查询宸ヤ綔娴?        workflow_service.workflow_repo.get_by_id = Mock(return_value=mock_workflow)
+        # 妯℃嫙更新宸ヤ綔娴?        workflow_service.workflow_repo.update = Mock(return_value=mock_workflow)
         
         # 鎵ц缁堟
         result = workflow_service.terminate_workflow("test_workflow_id")
@@ -171,7 +171,7 @@ class TestWorkflowService:
     
     def test_terminate_workflow_not_found(self, workflow_service):
         """娴嬭瘯缁堟宸ヤ綔娴佸け璐ワ紙宸ヤ綔娴佷笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ宸ヤ綔娴佽繑鍥濶one
+        # 妯℃嫙查询宸ヤ綔娴佽繑鍥濶one
         workflow_service.workflow_repo.get_by_id = Mock(return_value=None)
         
         # 鎵ц缁堟
@@ -208,7 +208,7 @@ class TestWorkflowService:
         workflow_service.workflow_repo.count_by_tenant.assert_called_once_with("default")
     
     def test_count_workflows_all_success(self, workflow_service):
-        """娴嬭瘯缁熻鎵€鏈夊伐浣滄祦鏁伴噺鎴愬姛"""
+        """娴嬭瘯缁熻鎵€鏈夊伐浣滄祦数量鎴愬姛"""
         # 妯℃嫙缁熻
         workflow_service.workflow_repo.count_all = Mock(return_value=100)
         

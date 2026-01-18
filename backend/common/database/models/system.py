@@ -108,7 +108,7 @@ class ErrorCode(BaseModel, TimestampMixin):
 
     code = Column(String(50), unique=True, nullable=False, comment='閿欒鐮?)
     message = Column(String(500), nullable=False, comment='閿欒淇℃伅')
-    level = Column(String(20), nullable=False, default='error', comment='閿欒绾у埆')
+    level = Column(String(20), nullable=False, default='error', comment='閿欒级别')
     module = Column(String(50), nullable=False, comment='妯″潡')
-    description = Column(Text, comment='鎻忚堪')
-    status = Column(String(20), nullable=False, default='active', comment='鐘舵€?)
+    description = Column(Text, comment='描述')
+    status = Column(String(20), nullable=False, default='active', comment='状态?)

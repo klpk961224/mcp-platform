@@ -19,7 +19,7 @@ class MessageService:
     TYPE_ANNOUNCEMENT = "announcement"  # 鍏憡
     TYPE_REMINDER = "reminder"  # 鎻愰啋
 
-    # 鐘舵€佸父閲?    STATUS_UNREAD = "unread"
+    # 状态佸父閲?    STATUS_UNREAD = "unread"
     STATUS_READ = "read"
     STATUS_DELETED = "deleted"
 
@@ -33,7 +33,7 @@ class MessageService:
         self.repository = MessageRepository(db)
 
     def get_message_by_id(self, message_id: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁ID鑾峰彇绔欏唴淇?""
+        """根据ID鑾峰彇绔欏唴淇?""
         message = self.repository.get_by_id(message_id)
         if not message:
             return None
@@ -49,7 +49,7 @@ class MessageService:
         }
 
     def get_messages_by_sender(self, sender_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鍙戦€佽€呰幏鍙栫珯鍐呬俊"""
+        """根据鍙戦€佽€呰幏鍙栫珯鍐呬俊"""
         messages = self.repository.get_by_sender(sender_id, skip=skip, limit=limit)
         total = self.repository.count_by_sender(sender_id)
         return {
@@ -58,7 +58,7 @@ class MessageService:
         }
 
     def get_messages_by_receiver(self, receiver_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鎺ユ敹鑰呰幏鍙栫珯鍐呬俊"""
+        """根据鎺ユ敹鑰呰幏鍙栫珯鍐呬俊"""
         messages = self.repository.get_by_receiver(receiver_id, skip=skip, limit=limit)
         total = self.repository.count_by_receiver(receiver_id)
         return {
@@ -67,7 +67,7 @@ class MessageService:
         }
 
     def get_unread_messages_by_receiver(self, receiver_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊"""
+        """根据鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊"""
         messages = self.repository.get_unread_by_receiver(receiver_id, skip=skip, limit=limit)
         total = self.repository.count_unread_by_receiver(receiver_id)
         return {
@@ -100,8 +100,8 @@ class MessageService:
         priority: int = PRIORITY_NORMAL,
         extra_data: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """鍒涘缓绔欏唴淇?""
-        # 鍒涘缓绔欏唴淇?        message = Message(
+        """创建绔欏唴淇?""
+        # 创建绔欏唴淇?        message = Message(
             tenant_id=tenant_id,
             type=type,
             title=title,
@@ -125,12 +125,12 @@ class MessageService:
         status: Optional[str] = None,
         extra_data: Optional[Dict[str, Any]] = None
     ) -> Optional[Dict[str, Any]]:
-        """鏇存柊绔欏唴淇?""
+        """更新绔欏唴淇?""
         message = self.repository.get_by_id(message_id)
         if not message:
             return None
 
-        # 鏇存柊瀛楁
+        # 更新瀛楁
         if title is not None:
             message.title = title
         if content is not None:
@@ -144,14 +144,14 @@ class MessageService:
         return self._to_dict(message)
 
     def delete_message(self, message_id: str) -> bool:
-        """鍒犻櫎绔欏唴淇?""
+        """删除绔欏唴淇?""
         return self.repository.delete(message_id)
 
     def mark_as_read(self, message_id: str, user_id: str) -> bool:
         """鏍囪绔欏唴淇′负宸茶"""
         success = self.repository.mark_as_read(message_id, user_id)
         if success:
-            # 鍒涘缓闃呰璁板綍
+            # 创建闃呰璁板綍
             self.repository.create_read_record(message_id, user_id)
         return success
 

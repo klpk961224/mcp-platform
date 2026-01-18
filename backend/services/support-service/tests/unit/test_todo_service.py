@@ -2,17 +2,17 @@
 """
 TodoService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓寰呭姙浠诲姟
+娴嬭瘯鍐呭锛?1. 创建寰呭姙浠诲姟
 2. 鑾峰彇寰呭姙浠诲姟
 3. 瀹屾垚寰呭姙浠诲姟
 4. 鍙栨秷瀹屾垚寰呭姙浠诲姟
-5. 鍒犻櫎寰呭姙浠诲姟
+5. 删除寰呭姙浠诲姟
 6. 鑾峰彇閫炬湡浠诲姟
-7. 鍒涘缓姣忔棩璁″垝
+7. 创建姣忔棩璁″垝
 8. 鑾峰彇姣忔棩璁″垝
 9. 鑾峰彇缁熻淇℃伅
 10. 鍙戦€侀€炬湡鎻愰啋
-11. 鍙戦€佸嵆灏嗗埌鏈熸彁閱?12. 缁熻寰呭姙浠诲姟鏁伴噺
+11. 鍙戦€佸嵆灏嗗埌鏈熸彁閱?12. 缁熻寰呭姙浠诲姟数量
 """
 
 import pytest
@@ -38,7 +38,7 @@ def mock_todo():
     todo.user_id = "user_001"
     todo.username = "User_001"
     todo.title = "娴嬭瘯浠诲姟"
-    todo.description = "娴嬭瘯鎻忚堪"
+    todo.description = "娴嬭瘯描述"
     todo.task_type = "personal"
     todo.priority = "medium"
     todo.status = "pending"
@@ -70,7 +70,7 @@ def mock_daily_plan():
     daily_plan.username = "User_001"
     daily_plan.plan_date = datetime(2026, 1, 16)
     daily_plan.tasks = '[{"title": "浠诲姟1", "completed": false}]'
-    daily_plan.notes = "澶囨敞"
+    daily_plan.notes = "备注"
     daily_plan.total_tasks = 1
     daily_plan.completed_tasks = 0
     daily_plan.completion_rate = 0
@@ -81,7 +81,7 @@ def mock_daily_plan():
 
 @pytest.fixture
 def todo_service(mock_db):
-    """鍒涘缓TodoService瀹炰緥"""
+    """创建TodoService瀹炰緥"""
     return TodoService(mock_db)
 
 
@@ -96,16 +96,16 @@ class TestTodoService:
         assert service.notification_service is not None
     
     def test_create_todo_success(self, todo_service, mock_todo):
-        """娴嬭瘯鍒涘缓寰呭姙浠诲姟鎴愬姛"""
-        # 妯℃嫙鍒涘缓寰呭姙浠诲姟
+        """娴嬭瘯创建寰呭姙浠诲姟鎴愬姛"""
+        # 妯℃嫙创建寰呭姙浠诲姟
         todo_service.todo_repo.create_todo = Mock(return_value=mock_todo)
         
-        # 鎵ц鍒涘缓寰呭姙浠诲姟
+        # 鎵ц创建寰呭姙浠诲姟
         result = todo_service.create_todo(
             title="娴嬭瘯浠诲姟",
             user_id="user_001",
             tenant_id="default",
-            description="娴嬭瘯鎻忚堪"
+            description="娴嬭瘯描述"
         )
         
         # 楠岃瘉缁撴灉
@@ -116,10 +116,10 @@ class TestTodoService:
     
     def test_get_user_todos_success(self, todo_service, mock_todo):
         """娴嬭瘯鑾峰彇鐢ㄦ埛寰呭姙浠诲姟鎴愬姛"""
-        # 妯℃嫙鏌ヨ寰呭姙浠诲姟鍒楄〃
+        # 妯℃嫙查询寰呭姙浠诲姟鍒楄〃
         todo_service.todo_repo.get_user_todos = Mock(return_value=[mock_todo])
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = todo_service.get_user_todos("user_001")
         
         # 楠岃瘉缁撴灉
@@ -129,9 +129,9 @@ class TestTodoService:
     
     def test_complete_todo_success(self, todo_service, mock_todo):
         """娴嬭瘯瀹屾垚寰呭姙浠诲姟鎴愬姛"""
-        # 妯℃嫙鏌ヨ寰呭姙浠诲姟
+        # 妯℃嫙查询寰呭姙浠诲姟
         todo_service.todo_repo.get_todo_by_id = Mock(return_value=mock_todo)
-        # 妯℃嫙鏇存柊寰呭姙浠诲姟
+        # 妯℃嫙更新寰呭姙浠诲姟
         todo_service.todo_repo.update_todo = Mock(return_value=mock_todo)
         
         # 鎵ц瀹屾垚
@@ -145,7 +145,7 @@ class TestTodoService:
     
     def test_complete_todo_not_found(self, todo_service):
         """娴嬭瘯瀹屾垚寰呭姙浠诲姟澶辫触锛堝緟鍔炰换鍔′笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ寰呭姙浠诲姟杩斿洖None
+        # 妯℃嫙查询寰呭姙浠诲姟杩斿洖None
         todo_service.todo_repo.get_todo_by_id = Mock(return_value=None)
         
         # 鎵ц瀹屾垚
@@ -156,9 +156,9 @@ class TestTodoService:
     
     def test_uncomplete_todo_success(self, todo_service, mock_todo):
         """娴嬭瘯鍙栨秷瀹屾垚寰呭姙浠诲姟鎴愬姛"""
-        # 妯℃嫙鏌ヨ寰呭姙浠诲姟
+        # 妯℃嫙查询寰呭姙浠诲姟
         todo_service.todo_repo.get_todo_by_id = Mock(return_value=mock_todo)
-        # 妯℃嫙鏇存柊寰呭姙浠诲姟
+        # 妯℃嫙更新寰呭姙浠诲姟
         todo_service.todo_repo.update_todo = Mock(return_value=mock_todo)
         
         # 鎵ц鍙栨秷瀹屾垚
@@ -171,11 +171,11 @@ class TestTodoService:
         todo_service.todo_repo.update_todo.assert_called_once()
     
     def test_delete_todo_success(self, todo_service):
-        """娴嬭瘯鍒犻櫎寰呭姙浠诲姟鎴愬姛"""
-        # 妯℃嫙鍒犻櫎寰呭姙浠诲姟
+        """娴嬭瘯删除寰呭姙浠诲姟鎴愬姛"""
+        # 妯℃嫙删除寰呭姙浠诲姟
         todo_service.todo_repo.delete_todo = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = todo_service.delete_todo("test_todo_id")
         
         # 楠岃瘉缁撴灉
@@ -184,10 +184,10 @@ class TestTodoService:
     
     def test_get_overdue_todos_success(self, todo_service, mock_todo):
         """娴嬭瘯鑾峰彇閫炬湡浠诲姟鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫炬湡浠诲姟
+        # 妯℃嫙查询閫炬湡浠诲姟
         todo_service.todo_repo.get_overdue_todos = Mock(return_value=[mock_todo])
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = todo_service.get_overdue_todos()
         
         # 楠岃瘉缁撴灉
@@ -195,23 +195,23 @@ class TestTodoService:
         todo_service.todo_repo.get_overdue_todos.assert_called_once()
     
     def test_update_overdue_status_success(self, todo_service, mock_todo):
-        """娴嬭瘯鏇存柊鎵€鏈変换鍔＄殑閫炬湡鐘舵€佹垚鍔?""
-        # 妯℃嫙鏌ヨ鎵€鏈変换鍔?        todo_service.todo_repo.get_tenant_todos = Mock(return_value=[mock_todo])
-        # 妯℃嫙鏇存柊浠诲姟
+        """娴嬭瘯更新鎵€鏈変换鍔＄殑閫炬湡状态佹垚鍔?""
+        # 妯℃嫙查询鎵€鏈変换鍔?        todo_service.todo_repo.get_tenant_todos = Mock(return_value=[mock_todo])
+        # 妯℃嫙更新浠诲姟
         todo_service.todo_repo.update_todo = Mock(return_value=mock_todo)
         
-        # 鎵ц鏇存柊閫炬湡鐘舵€?        todo_service.update_overdue_status()
+        # 鎵ц更新閫炬湡状态?        todo_service.update_overdue_status()
         
         # 楠岃瘉缁撴灉
         mock_todo.update_overdue_status.assert_called_once()
         todo_service.todo_repo.update_todo.assert_called_once()
     
     def test_create_daily_plan_success(self, todo_service, mock_daily_plan):
-        """娴嬭瘯鍒涘缓姣忔棩璁″垝鎴愬姛"""
-        # 妯℃嫙鍒涘缓姣忔棩璁″垝
+        """娴嬭瘯创建姣忔棩璁″垝鎴愬姛"""
+        # 妯℃嫙创建姣忔棩璁″垝
         todo_service.todo_repo.create_daily_plan = Mock(return_value=mock_daily_plan)
         
-        # 鎵ц鍒涘缓姣忔棩璁″垝
+        # 鎵ц创建姣忔棩璁″垝
         result = todo_service.create_daily_plan(
             user_id="user_001",
             tenant_id="default",
@@ -226,10 +226,10 @@ class TestTodoService:
     
     def test_get_user_daily_plan_success(self, todo_service, mock_daily_plan):
         """娴嬭瘯鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒掓垚鍔?""
-        # 妯℃嫙鏌ヨ姣忔棩璁″垝
+        # 妯℃嫙查询姣忔棩璁″垝
         todo_service.todo_repo.get_user_daily_plan = Mock(return_value=mock_daily_plan)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = todo_service.get_user_daily_plan("user_001", date(2026, 1, 16))
         
         # 楠岃瘉缁撴灉
@@ -239,10 +239,10 @@ class TestTodoService:
     
     def test_get_user_daily_plan_not_found(self, todo_service):
         """娴嬭瘯鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒掑け璐?""
-        # 妯℃嫙鏌ヨ姣忔棩璁″垝杩斿洖None
+        # 妯℃嫙查询姣忔棩璁″垝杩斿洖None
         todo_service.todo_repo.get_user_daily_plan = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = todo_service.get_user_daily_plan("user_001", date(2026, 1, 16))
         
         # 楠岃瘉缁撴灉
@@ -269,9 +269,9 @@ class TestTodoService:
     
     def test_send_overdue_reminders_success(self, todo_service, mock_todo):
         """娴嬭瘯鍙戦€侀€炬湡浠诲姟鎻愰啋鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫炬湡浠诲姟
+        # 妯℃嫙查询閫炬湡浠诲姟
         todo_service.todo_repo.get_overdue_todos = Mock(return_value=[mock_todo])
-        # 妯℃嫙鏇存柊浠诲姟
+        # 妯℃嫙更新浠诲姟
         todo_service.todo_repo.update_todo = Mock(return_value=mock_todo)
         # 妯℃嫙鍙戦€侀€氱煡
         todo_service.notification_service.send_system_notification = Mock()
@@ -285,7 +285,7 @@ class TestTodoService:
     
     def test_send_due_date_reminders_success(self, todo_service, mock_todo):
         """娴嬭瘯鍙戦€佸嵆灏嗗埌鏈熶换鍔℃彁閱掓垚鍔?""
-        # 妯℃嫙鏌ヨ鎵€鏈変换鍔?        todo_service.todo_repo.get_tenant_todos = Mock(return_value=[mock_todo])
+        # 妯℃嫙查询鎵€鏈変换鍔?        todo_service.todo_repo.get_tenant_todos = Mock(return_value=[mock_todo])
         # 妯℃嫙鍙戦€侀€氱煡
         todo_service.notification_service.send_system_notification = Mock()
         
@@ -295,7 +295,7 @@ class TestTodoService:
         todo_service.todo_repo.get_tenant_todos.assert_called_once()
     
     def test_count_todos_success(self, todo_service):
-        """娴嬭瘯缁熻寰呭姙浠诲姟鏁伴噺鎴愬姛"""
+        """娴嬭瘯缁熻寰呭姙浠诲姟数量鎴愬姛"""
         # 妯℃嫙缁熻
         todo_service.todo_repo.count_todos_by_user = Mock(return_value=10)
         

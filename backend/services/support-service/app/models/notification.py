@@ -5,12 +5,12 @@
 鍔熻兘璇存槑锛?
 1. 绔欏唴淇＄鐞?
 2. 閫氱煡鍏憡绠＄悊
-3. 娑堟伅闃呰鐘舵€?
+3. 娑堟伅闃呰状态?
 
 浣跨敤绀轰緥锛?
     from app.models.notification import Notification, NotificationRead
     
-    # 鍒涘缓閫氱煡
+    # 创建閫氱煡
     notification = Notification(
         title="绯荤粺閫氱煡",
         content="绯荤粺灏嗕簬浠婃櫄缁存姢",
@@ -36,26 +36,26 @@ class Notification(BaseModel):
     
     灞炴€ц鏄庯細
     - id: 閫氱煡ID锛堜富閿級
-    - tenant_id: 绉熸埛ID
+    - tenant_id: 租户ID
     - sender_id: 鍙戦€佽€匢D
     - sender_name: 鍙戦€佽€呭悕绉?
     - title: 鏍囬
     - content: 鍐呭
-    - notification_type: 閫氱煡绫诲瀷
+    - notification_type: 閫氱煡类型
     - priority: 浼樺厛绾?
-    - status: 鐘舵€?
+    - status: 状态?
     - send_time: 鍙戦€佹椂闂?
     - is_system: 鏄惁绯荤粺閫氱煡
-    - target_type: 鐩爣绫诲瀷
+    - target_type: 鐩爣类型
     - target_ids: 鐩爣ID鍒楄〃锛圝SON锛?
     - attachment: 闄勪欢URL
-    - read_count: 宸茶鏁伴噺
+    - read_count: 宸茶数量
     - total_count: 鎬绘暟閲?
-    - created_at: 鍒涘缓鏃堕棿
+    - created_at: 创建时间
     """
     
     # 鍩烘湰淇℃伅
-    tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="绉熸埛ID")
+    tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="租户ID")
     sender_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, comment="鍙戦€佽€匢D")
     sender_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, comment="鍙戦€佽€呭悕绉?)
     
@@ -63,24 +63,24 @@ class Notification(BaseModel):
     title: Mapped[str] = mapped_column(String(255), nullable=False, comment="鏍囬")
     content: Mapped[str] = mapped_column(Text, nullable=False, comment="鍐呭")
     
-    # 绫诲瀷淇℃伅
-    notification_type: Mapped[str] = mapped_column(String(20), nullable=False, comment="閫氱煡绫诲瀷")
+    # 类型淇℃伅
+    notification_type: Mapped[str] = mapped_column(String(20), nullable=False, comment="閫氱煡类型")
     priority: Mapped[str] = mapped_column(String(20), nullable=False, default="normal", comment="浼樺厛绾?)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="sent", comment="鐘舵€?)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="sent", comment="状态?)
     
     # 鏃堕棿淇℃伅
     send_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, comment="鍙戦€佹椂闂?)
     
     # 鐩爣淇℃伅
     is_system: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="鏄惁绯荤粺閫氱煡")
-    target_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, comment="鐩爣绫诲瀷")
+    target_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, comment="鐩爣类型")
     target_ids: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="鐩爣ID鍒楄〃锛圝SON锛?)
     
     # 鎵╁睍淇℃伅
     attachment: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="闄勪欢URL")
     
     # 缁熻淇℃伅
-    read_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="宸茶鏁伴噺")
+    read_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="宸茶数量")
     total_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="鎬绘暟閲?)
     
     # 鍏崇郴
@@ -128,25 +128,25 @@ class NotificationRead(BaseModel):
     閫氱煡闃呰璁板綍妯″瀷
     
     鍔熻兘锛?
-    - 閫氱煡闃呰鐘舵€?
+    - 閫氱煡闃呰状态?
     - 闃呰鏃堕棿璁板綍
     
     灞炴€ц鏄庯細
     - id: 闃呰璁板綍ID锛堜富閿級
     - notification_id: 閫氱煡ID锛堝閿級
-    - user_id: 鐢ㄦ埛ID
-    - username: 鐢ㄦ埛鍚?
+    - user_id: 用户ID
+    - username: 用户名?
     - is_read: 鏄惁宸茶
     - read_time: 闃呰鏃堕棿
-    - created_at: 鍒涘缓鏃堕棿
+    - created_at: 创建时间
     """
     
     # 鍩烘湰淇℃伅
     notification_id: Mapped[str] = mapped_column(String(64), ForeignKey("notification.id"), nullable=False, index=True, comment="閫氱煡ID")
-    user_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="鐢ㄦ埛ID")
-    username: Mapped[str] = mapped_column(String(50), nullable=False, comment="鐢ㄦ埛鍚?)
+    user_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="用户ID")
+    username: Mapped[str] = mapped_column(String(50), nullable=False, comment="用户名?)
     
-    # 闃呰鐘舵€?
+    # 闃呰状态?
     is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="鏄惁宸茶")
     read_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="闃呰鏃堕棿")
     

@@ -3,7 +3,7 @@
 鏁版嵁鑼冨洿鏉冮檺鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 鏁版嵁鑼冨洿CRUD鎿嶄綔
 2. 鐢ㄦ埛鏁版嵁鑼冨洿鏉冮檺鎿嶄綔
-3. 鏁版嵁鑼冨洿鏉冮檺鏌ヨ
+3. 鏁版嵁鑼冨洿鏉冮檺查询
 
 浣跨敤绀轰緥锛?    from app.repositories.data_scope_repository import DataScopeRepository
     
@@ -23,7 +23,7 @@ class DataScopeRepository:
     """
     鏁版嵁鑼冨洿鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 鏁版嵁鑼冨洿CRUD鎿嶄綔
-    - 鏁版嵁鑼冨洿鏌ヨ鎿嶄綔
+    - 鏁版嵁鑼冨洿查询鎿嶄綔
     
     浣跨敤鏂规硶锛?        data_scope_repo = DataScopeRepository(db)
         data_scope = data_scope_repo.get_by_code("department")
@@ -39,14 +39,14 @@ class DataScopeRepository:
     
     def create(self, data_scope: DataScope) -> DataScope:
         """
-        鍒涘缓鏁版嵁鑼冨洿
+        创建鏁版嵁鑼冨洿
         
         Args:
             data_scope: 鏁版嵁鑼冨洿瀵硅薄
         
         Returns:
-            DataScope: 鍒涘缓鐨勬暟鎹寖鍥村璞?        """
-        logger.info(f"鍒涘缓鏁版嵁鑼冨洿: name={data_scope.name}, code={data_scope.code}")
+            DataScope: 创建鐨勬暟鎹寖鍥村璞?        """
+        logger.info(f"创建鏁版嵁鑼冨洿: name={data_scope.name}, code={data_scope.code}")
         self.db.add(data_scope)
         self.db.commit()
         self.db.refresh(data_scope)
@@ -54,7 +54,7 @@ class DataScopeRepository:
     
     def get_by_id(self, data_scope_id: str) -> Optional[DataScope]:
         """
-        鏍规嵁ID鑾峰彇鏁版嵁鑼冨洿
+        根据ID鑾峰彇鏁版嵁鑼冨洿
         
         Args:
             data_scope_id: 鏁版嵁鑼冨洿ID
@@ -66,10 +66,10 @@ class DataScopeRepository:
     
     def get_by_code(self, code: str) -> Optional[DataScope]:
         """
-        鏍规嵁缂栫爜鑾峰彇鏁版嵁鑼冨洿
+        根据编码鑾峰彇鏁版嵁鑼冨洿
         
         Args:
-            code: 鏁版嵁鑼冨洿缂栫爜
+            code: 鏁版嵁鑼冨洿编码
         
         Returns:
             Optional[DataScope]: 鏁版嵁鑼冨洿瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -81,7 +81,7 @@ class DataScopeRepository:
         鑾峰彇鎵€鏈夋暟鎹寖鍥?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataScope]: 鏁版嵁鑼冨洿鍒楄〃
@@ -91,37 +91,37 @@ class DataScopeRepository:
     
     def update(self, data_scope: DataScope) -> DataScope:
         """
-        鏇存柊鏁版嵁鑼冨洿
+        更新鏁版嵁鑼冨洿
         
         Args:
             data_scope: 鏁版嵁鑼冨洿瀵硅薄
         
         Returns:
-            DataScope: 鏇存柊鍚庣殑鏁版嵁鑼冨洿瀵硅薄
+            DataScope: 更新鍚庣殑鏁版嵁鑼冨洿瀵硅薄
         """
-        logger.info(f"鏇存柊鏁版嵁鑼冨洿: data_scope_id={data_scope.id}")
+        logger.info(f"更新鏁版嵁鑼冨洿: data_scope_id={data_scope.id}")
         self.db.commit()
         self.db.refresh(data_scope)
         return data_scope
     
     def delete(self, data_scope_id: str) -> bool:
         """
-        鍒犻櫎鏁版嵁鑼冨洿
+        删除鏁版嵁鑼冨洿
         
         Args:
             data_scope_id: 鏁版嵁鑼冨洿ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鏁版嵁鑼冨洿: data_scope_id={data_scope_id}")
+        logger.info(f"删除鏁版嵁鑼冨洿: data_scope_id={data_scope_id}")
         data_scope = self.get_by_id(data_scope_id)
         if not data_scope:
             return False
         
         # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛浣跨敤
         if data_scope.user_data_scopes:
-            raise ValueError("鏃犳硶鍒犻櫎鏁版嵁鑼冨洿锛氳鏁版嵁鑼冨洿琚敤鎴蜂娇鐢?)
+            raise ValueError("鏃犳硶删除鏁版嵁鑼冨洿锛氳鏁版嵁鑼冨洿琚敤鎴蜂娇鐢?)
         
         self.db.delete(data_scope)
         self.db.commit()
@@ -131,7 +131,7 @@ class DataScopeRepository:
         """
         缁熻鎵€鏈夋暟鎹寖鍥存暟閲?        
         Returns:
-            int: 鏁版嵁鑼冨洿鏁伴噺
+            int: 鏁版嵁鑼冨洿数量
         """
         return self.db.query(DataScope).count()
     
@@ -139,7 +139,7 @@ class DataScopeRepository:
         """
         妫€鏌ユ暟鎹寖鍥寸紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 鏁版嵁鑼冨洿缂栫爜
+            code: 鏁版嵁鑼冨洿编码
         
         Returns:
             bool: 鏄惁瀛樺湪
@@ -151,7 +151,7 @@ class UserDataScopeRepository:
     """
     鐢ㄦ埛鏁版嵁鑼冨洿鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 鐢ㄦ埛鏁版嵁鑼冨洿CRUD鎿嶄綔
-    - 鐢ㄦ埛鏁版嵁鑼冨洿鏌ヨ鎿嶄綔
+    - 鐢ㄦ埛鏁版嵁鑼冨洿查询鎿嶄綔
     
     浣跨敤鏂规硶锛?        user_data_scope_repo = UserDataScopeRepository(db)
         user_data_scope = user_data_scope_repo.get_by_user_module("user_001", "user")
@@ -167,14 +167,14 @@ class UserDataScopeRepository:
     
     def create(self, user_data_scope: UserDataScope) -> UserDataScope:
         """
-        鍒涘缓鐢ㄦ埛鏁版嵁鑼冨洿
+        创建鐢ㄦ埛鏁版嵁鑼冨洿
         
         Args:
             user_data_scope: 鐢ㄦ埛鏁版嵁鑼冨洿瀵硅薄
         
         Returns:
-            UserDataScope: 鍒涘缓鐨勭敤鎴锋暟鎹寖鍥村璞?        """
-        logger.info(f"鍒涘缓鐢ㄦ埛鏁版嵁鑼冨洿: user_id={user_data_scope.user_id}, module={user_data_scope.module}")
+            UserDataScope: 创建鐨勭敤鎴锋暟鎹寖鍥村璞?        """
+        logger.info(f"创建鐢ㄦ埛鏁版嵁鑼冨洿: user_id={user_data_scope.user_id}, module={user_data_scope.module}")
         self.db.add(user_data_scope)
         self.db.commit()
         self.db.refresh(user_data_scope)
@@ -182,7 +182,7 @@ class UserDataScopeRepository:
     
     def get_by_id(self, user_data_scope_id: str) -> Optional[UserDataScope]:
         """
-        鏍规嵁ID鑾峰彇鐢ㄦ埛鏁版嵁鑼冨洿
+        根据ID鑾峰彇鐢ㄦ埛鏁版嵁鑼冨洿
         
         Args:
             user_data_scope_id: 鐢ㄦ埛鏁版嵁鑼冨洿ID
@@ -194,9 +194,9 @@ class UserDataScopeRepository:
     
     def get_by_user_module(self, user_id: str, module: str) -> Optional[UserDataScope]:
         """
-        鏍规嵁鐢ㄦ埛ID鍜屾ā鍧楄幏鍙栫敤鎴锋暟鎹寖鍥?        
+        根据用户ID鍜屾ā鍧楄幏鍙栫敤鎴锋暟鎹寖鍥?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             module: 妯″潡
         
         Returns:
@@ -211,9 +211,9 @@ class UserDataScopeRepository:
     
     def get_by_user_id(self, user_id: str) -> List[UserDataScope]:
         """
-        鏍规嵁鐢ㄦ埛ID鑾峰彇鎵€鏈夋暟鎹寖鍥?        
+        根据用户ID鑾峰彇鎵€鏈夋暟鎹寖鍥?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             List[UserDataScope]: 鐢ㄦ埛鏁版嵁鑼冨洿鍒楄〃
@@ -222,30 +222,30 @@ class UserDataScopeRepository:
     
     def update(self, user_data_scope: UserDataScope) -> UserDataScope:
         """
-        鏇存柊鐢ㄦ埛鏁版嵁鑼冨洿
+        更新鐢ㄦ埛鏁版嵁鑼冨洿
         
         Args:
             user_data_scope: 鐢ㄦ埛鏁版嵁鑼冨洿瀵硅薄
         
         Returns:
-            UserDataScope: 鏇存柊鍚庣殑鐢ㄦ埛鏁版嵁鑼冨洿瀵硅薄
+            UserDataScope: 更新鍚庣殑鐢ㄦ埛鏁版嵁鑼冨洿瀵硅薄
         """
-        logger.info(f"鏇存柊鐢ㄦ埛鏁版嵁鑼冨洿: user_data_scope_id={user_data_scope.id}")
+        logger.info(f"更新鐢ㄦ埛鏁版嵁鑼冨洿: user_data_scope_id={user_data_scope.id}")
         self.db.commit()
         self.db.refresh(user_data_scope)
         return user_data_scope
     
     def delete(self, user_data_scope_id: str) -> bool:
         """
-        鍒犻櫎鐢ㄦ埛鏁版嵁鑼冨洿
+        删除鐢ㄦ埛鏁版嵁鑼冨洿
         
         Args:
             user_data_scope_id: 鐢ㄦ埛鏁版嵁鑼冨洿ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鐢ㄦ埛鏁版嵁鑼冨洿: user_data_scope_id={user_data_scope_id}")
+        logger.info(f"删除鐢ㄦ埛鏁版嵁鑼冨洿: user_data_scope_id={user_data_scope_id}")
         user_data_scope = self.get_by_id(user_data_scope_id)
         if not user_data_scope:
             return False
@@ -258,9 +258,9 @@ class UserDataScopeRepository:
         """
         缁熻鐢ㄦ埛鐨勬暟鎹寖鍥存暟閲?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鏁版嵁鑼冨洿鏁伴噺
+            int: 鏁版嵁鑼冨洿数量
         """
         return self.db.query(UserDataScope).filter(UserDataScope.user_id == user_id).count()

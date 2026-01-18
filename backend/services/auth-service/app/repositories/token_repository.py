@@ -2,7 +2,7 @@
 """
 Token鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. Token CRUD鎿嶄綔
-2. Token鏌ヨ鎿嶄綔
+2. Token查询鎿嶄綔
 3. Token娓呯悊鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.token_repository import TokenRepository
@@ -23,7 +23,7 @@ class TokenRepository:
     """
     Token鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - Token CRUD鎿嶄綔
-    - Token鏌ヨ鎿嶄綔
+    - Token查询鎿嶄綔
     - Token娓呯悊鎿嶄綔
     
     浣跨敤鏂规硶锛?        token_repo = TokenRepository(db)
@@ -39,18 +39,18 @@ class TokenRepository:
     
     def create_token(self, user_id: str, token_type: str, token_hash: str, expires_at: Optional[datetime] = None) -> Token:
         """
-        鍒涘缓Token
+        创建Token
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            token_type: Token绫诲瀷
+            user_id: 用户ID
+            token_type: Token类型
             token_hash: Token鍝堝笇
             expires_at: 杩囨湡鏃堕棿
         
         Returns:
-            Token: 鍒涘缓鐨凾oken瀵硅薄
+            Token: 创建鐨凾oken瀵硅薄
         """
-        logger.info(f"鍒涘缓Token: user_id={user_id}, token_type={token_type}")
+        logger.info(f"创建Token: user_id={user_id}, token_type={token_type}")
         token = Token(
             user_id=user_id,
             token_type=token_type,
@@ -64,7 +64,7 @@ class TokenRepository:
     
     def get_by_id(self, token_id: str) -> Optional[Token]:
         """
-        鏍规嵁ID鑾峰彇Token
+        根据ID鑾峰彇Token
         
         Args:
             token_id: Token ID
@@ -76,7 +76,7 @@ class TokenRepository:
     
     def get_by_token_hash(self, token_hash: str) -> Optional[Token]:
         """
-        鏍规嵁Token鍝堝笇鑾峰彇Token
+        根据Token鍝堝笇鑾峰彇Token
         
         Args:
             token_hash: Token鍝堝笇
@@ -88,10 +88,10 @@ class TokenRepository:
     
     def get_by_user_id(self, user_id: str) -> List[Token]:
         """
-        鏍规嵁鐢ㄦ埛ID鑾峰彇鎵€鏈塗oken
+        根据用户ID鑾峰彇鎵€鏈塗oken
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             List[Token]: Token鍒楄〃
@@ -100,12 +100,12 @@ class TokenRepository:
     
     def get_by_type(self, token_type: str, page: int = 1, page_size: int = 10) -> List[Token]:
         """
-        鏍规嵁Token绫诲瀷鑾峰彇Token鍒楄〃
+        根据Token类型鑾峰彇Token鍒楄〃
         
         Args:
-            token_type: Token绫诲瀷
+            token_type: Token类型
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Token]: Token鍒楄〃
@@ -119,7 +119,7 @@ class TokenRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Token]: Token鍒楄〃
@@ -129,30 +129,30 @@ class TokenRepository:
     
     def update(self, token: Token) -> Token:
         """
-        鏇存柊Token
+        更新Token
         
         Args:
             token: Token瀵硅薄
         
         Returns:
-            Token: 鏇存柊鍚庣殑Token瀵硅薄
+            Token: 更新鍚庣殑Token瀵硅薄
         """
-        logger.info(f"鏇存柊Token: token_id={token.id}")
+        logger.info(f"更新Token: token_id={token.id}")
         self.db.commit()
         self.db.refresh(token)
         return token
     
     def delete(self, token_id: str) -> bool:
         """
-        鍒犻櫎Token
+        删除Token
         
         Args:
             token_id: Token ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎Token: token_id={token_id}")
+        logger.info(f"删除Token: token_id={token_id}")
         token = self.get_by_id(token_id)
         if not token:
             return False
@@ -181,33 +181,33 @@ class TokenRepository:
     
     def count_by_user(self, user_id: str) -> int:
         """
-        缁熻鐢ㄦ埛鐨凾oken鏁伴噺
+        缁熻鐢ㄦ埛鐨凾oken数量
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: Token鏁伴噺
+            int: Token数量
         """
         return self.db.query(Token).filter(Token.user_id == user_id).count()
     
     def count_by_type(self, token_type: str) -> int:
         """
-        缁熻Token绫诲瀷鐨勬暟閲?        
+        缁熻Token类型鐨勬暟閲?        
         Args:
-            token_type: Token绫诲瀷
+            token_type: Token类型
         
         Returns:
-            int: Token鏁伴噺
+            int: Token数量
         """
         return self.db.query(Token).filter(Token.token_type == token_type).count()
     
     def count_all(self) -> int:
         """
-        缁熻鎵€鏈塗oken鏁伴噺
+        缁熻鎵€鏈塗oken数量
         
         Returns:
-            int: Token鏁伴噺
+            int: Token数量
         """
         return self.db.query(Token).count()
     
@@ -216,10 +216,10 @@ class TokenRepository:
         鍚婇攢鐢ㄦ埛鐨勬墍鏈塗oken
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鍚婇攢鐨凾oken鏁伴噺
+            int: 鍚婇攢鐨凾oken数量
         """
         logger.info(f"鍚婇攢鐢ㄦ埛鎵€鏈塗oken: user_id={user_id}")
         tokens = self.get_by_user_id(user_id)
@@ -253,16 +253,16 @@ class TokenRepository:
     
     def delete_expired_tokens(self) -> int:
         """
-        鍒犻櫎鎵€鏈夎繃鏈熺殑Token
+        删除鎵€鏈夎繃鏈熺殑Token
         
         Returns:
-            int: 鍒犻櫎鐨凾oken鏁伴噺
+            int: 删除鐨凾oken数量
         """
-        logger.info("鍒犻櫎鎵€鏈夎繃鏈熺殑Token")
+        logger.info("删除鎵€鏈夎繃鏈熺殑Token")
         expired_tokens = self.get_expired_tokens()
         count = len(expired_tokens)
         for token in expired_tokens:
             self.db.delete(token)
         self.db.commit()
-        logger.info(f"鍒犻櫎浜?{count} 涓繃鏈烼oken")
+        logger.info(f"删除浜?{count} 涓繃鏈烼oken")
         return count

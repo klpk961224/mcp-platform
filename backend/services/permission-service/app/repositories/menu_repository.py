@@ -2,7 +2,7 @@
 """
 鑿滃崟鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 鑿滃崟CRUD鎿嶄綔
-2. 鑿滃崟鏍戝舰缁撴瀯鏌ヨ
+2. 鑿滃崟鏍戝舰缁撴瀯查询
 3. 鑿滃崟缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.menu_repository import MenuRepository
@@ -23,7 +23,7 @@ class MenuRepository:
     """
     鑿滃崟鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 鑿滃崟CRUD鎿嶄綔
-    - 鑿滃崟鏍戝舰缁撴瀯鏌ヨ
+    - 鑿滃崟鏍戝舰缁撴瀯查询
     - 鑿滃崟缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        menu_repo = MenuRepository(db)
@@ -40,14 +40,14 @@ class MenuRepository:
     
     def create(self, menu: Menu) -> Menu:
         """
-        鍒涘缓鑿滃崟
+        创建鑿滃崟
         
         Args:
             menu: 鑿滃崟瀵硅薄
         
         Returns:
-            Menu: 鍒涘缓鐨勮彍鍗曞璞?        """
-        logger.info(f"鍒涘缓鑿滃崟: name={menu.name}, code={menu.code}, tenant_id={menu.tenant_id}")
+            Menu: 创建鐨勮彍鍗曞璞?        """
+        logger.info(f"创建鑿滃崟: name={menu.name}, code={menu.code}, tenant_id={menu.tenant_id}")
         self.db.add(menu)
         self.db.commit()
         self.db.refresh(menu)
@@ -55,7 +55,7 @@ class MenuRepository:
     
     def get_by_id(self, menu_id: str) -> Optional[Menu]:
         """
-        鏍规嵁ID鑾峰彇鑿滃崟
+        根据ID鑾峰彇鑿滃崟
         
         Args:
             menu_id: 鑿滃崟ID
@@ -67,10 +67,10 @@ class MenuRepository:
     
     def get_by_code(self, code: str) -> Optional[Menu]:
         """
-        鏍规嵁缂栫爜鑾峰彇鑿滃崟
+        根据编码鑾峰彇鑿滃崟
         
         Args:
-            code: 鑿滃崟缂栫爜
+            code: 鑿滃崟编码
         
         Returns:
             Optional[Menu]: 鑿滃崟瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -79,12 +79,12 @@ class MenuRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Menu]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇鑿滃崟鍒楄〃
+        根据租户ID鑾峰彇鑿滃崟鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -94,11 +94,11 @@ class MenuRepository:
     
     def get_by_parent_id(self, parent_id: str, page: int = 1, page_size: int = 10) -> List[Menu]:
         """
-        鏍规嵁鐖惰彍鍗旾D鑾峰彇瀛愯彍鍗曞垪琛?        
+        根据鐖惰彍鍗旾D鑾峰彇瀛愯彍鍗曞垪琛?        
         Args:
             parent_id: 鐖惰彍鍗旾D
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -111,9 +111,9 @@ class MenuRepository:
         鑾峰彇绉熸埛鐨勬牴鑿滃崟锛堟病鏈夌埗鑿滃崟鐨勮彍鍗曪級
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -131,7 +131,7 @@ class MenuRepository:
         鑾峰彇绉熸埛鐨勮彍鍗曟爲
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             List[Menu]: 鑿滃崟鏍?        """
@@ -142,7 +142,7 @@ class MenuRepository:
         """
         鑾峰彇绉熸埛鐨勫彲瑙佽彍鍗?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -157,10 +157,10 @@ class MenuRepository:
     
     def get_by_role_id(self, role_id: str) -> List[Menu]:
         """
-        鏍规嵁瑙掕壊ID鑾峰彇鑿滃崟鍒楄〃
+        根据角色ID鑾峰彇鑿滃崟鍒楄〃
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -172,9 +172,9 @@ class MenuRepository:
         鎼滅储鑿滃崟
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -199,7 +199,7 @@ class MenuRepository:
         鑾峰彇鎵€鏈夎彍鍗?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Menu]: 鑿滃崟鍒楄〃
@@ -209,40 +209,40 @@ class MenuRepository:
     
     def update(self, menu: Menu) -> Menu:
         """
-        鏇存柊鑿滃崟
+        更新鑿滃崟
         
         Args:
             menu: 鑿滃崟瀵硅薄
         
         Returns:
-            Menu: 鏇存柊鍚庣殑鑿滃崟瀵硅薄
+            Menu: 更新鍚庣殑鑿滃崟瀵硅薄
         """
-        logger.info(f"鏇存柊鑿滃崟: menu_id={menu.id}")
+        logger.info(f"更新鑿滃崟: menu_id={menu.id}")
         self.db.commit()
         self.db.refresh(menu)
         return menu
     
     def delete(self, menu_id: str) -> bool:
         """
-        鍒犻櫎鑿滃崟
+        删除鑿滃崟
         
         Args:
             menu_id: 鑿滃崟ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鑿滃崟: menu_id={menu_id}")
+        logger.info(f"删除鑿滃崟: menu_id={menu_id}")
         menu = self.get_by_id(menu_id)
         if not menu:
             return False
         
         # 妫€鏌ユ槸鍚︽湁瀛愯彍鍗?        if menu.children:
-            raise ValueError("鏃犳硶鍒犻櫎鑿滃崟锛氳鑿滃崟涓嬪瓨鍦ㄥ瓙鑿滃崟")
+            raise ValueError("鏃犳硶删除鑿滃崟锛氳鑿滃崟涓嬪瓨鍦ㄥ瓙鑿滃崟")
         
         # 妫€鏌ユ槸鍚︽湁瑙掕壊浣跨敤
         if menu.roles:
-            raise ValueError("鏃犳硶鍒犻櫎鑿滃崟锛氳鑿滃崟琚鑹蹭娇鐢?)
+            raise ValueError("鏃犳硶删除鑿滃崟锛氳鑿滃崟琚鑹蹭娇鐢?)
         
         self.db.delete(menu)
         self.db.commit()
@@ -250,13 +250,13 @@ class MenuRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛鑿滃崟鏁伴噺
+        缁熻绉熸埛鑿滃崟数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 鑿滃崟鏁伴噺
+            int: 鑿滃崟数量
         """
         return self.db.query(Menu).filter(Menu.tenant_id == tenant_id).count()
     
@@ -274,15 +274,15 @@ class MenuRepository:
         """
         缁熻鎵€鏈夎彍鍗曟暟閲?        
         Returns:
-            int: 鑿滃崟鏁伴噺
+            int: 鑿滃崟数量
         """
         return self.db.query(Menu).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        妫€鏌ヨ彍鍗曠紪鐮佹槸鍚﹀瓨鍦?        
+        妫€查询彍鍗曠紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 鑿滃崟缂栫爜
+            code: 鑿滃崟编码
         
         Returns:
             bool: 鏄惁瀛樺湪
@@ -295,7 +295,7 @@ class MenuRepository:
         
         Args:
             path: 鑿滃崟璺緞
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             bool: 鏄惁瀛樺湪

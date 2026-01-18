@@ -2,13 +2,13 @@
 """
 TenantService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓绉熸埛
+娴嬭瘯鍐呭锛?1. 创建绉熸埛
 2. 鑾峰彇绉熸埛
-3. 鏇存柊绉熸埛
-4. 鍒犻櫎绉熸埛
+3. 更新绉熸埛
+4. 删除绉熸埛
 5. 鑾峰彇绉熸埛鍒楄〃
-6. 妫€鏌ヨ祫婧愰厤棰?7. 鑾峰彇濂楅淇℃伅
-8. 鏇存柊绉熸埛濂楅
+6. 妫€查询祫婧愰厤棰?7. 鑾峰彇濂楅淇℃伅
+8. 更新绉熸埛濂楅
 9. 妫€鏌ョ鎴疯繃鏈?10. 缁垂绉熸埛
 """
 
@@ -34,7 +34,7 @@ def mock_tenant():
     tenant.name = "娴嬭瘯绉熸埛"
     tenant.code = "test_tenant"
     tenant.status = "active"
-    tenant.description = "娴嬭瘯绉熸埛鎻忚堪"
+    tenant.description = "娴嬭瘯绉熸埛描述"
     tenant.package_id = "basic"
     tenant.max_users = 50
     tenant.max_departments = 20
@@ -55,7 +55,7 @@ def mock_tenant():
 
 @pytest.fixture
 def tenant_service(mock_db):
-    """鍒涘缓TenantService瀹炰緥"""
+    """创建TenantService瀹炰緥"""
     return TenantService(mock_db)
 
 
@@ -69,13 +69,13 @@ class TestTenantService:
         assert service.tenant_repo is not None
     
     def test_create_tenant_success(self, tenant_service, mock_tenant):
-        """娴嬭瘯鍒涘缓绉熸埛鎴愬姛"""
-        # 妯℃嫙绉熸埛缂栫爜涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=False)
-        # 妯℃嫙绉熸埛鍚嶇О涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=False)
-        # 妯℃嫙鍒涘缓绉熸埛
+        """娴嬭瘯创建绉熸埛鎴愬姛"""
+        # 妯℃嫙绉熸埛编码涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=False)
+        # 妯℃嫙绉熸埛名称涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=False)
+        # 妯℃嫙创建绉熸埛
         tenant_service.tenant_repo.create = Mock(return_value=mock_tenant)
         
-        # 鎵ц鍒涘缓绉熸埛
+        # 鎵ц创建绉熸埛
         tenant_data = {
             "name": "娴嬭瘯绉熸埛",
             "code": "test_tenant"
@@ -88,52 +88,52 @@ class TestTenantService:
         tenant_service.tenant_repo.create.assert_called_once()
     
     def test_create_tenant_name_empty(self, tenant_service):
-        """娴嬭瘯鍒涘缓绉熸埛锛堝悕绉颁负绌猴級"""
-        # 鎵ц鍒涘缓绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
+        """娴嬭瘯创建绉熸埛锛堝悕绉颁负绌猴級"""
+        # 鎵ц创建绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
             "name": "",
             "code": "test_tenant"
         }
-        with pytest.raises(ValueError, match="绉熸埛鍚嶇О涓嶈兘涓虹┖"):
+        with pytest.raises(ValueError, match="绉熸埛名称涓嶈兘涓虹┖"):
             tenant_service.create_tenant(tenant_data)
     
     def test_create_tenant_code_empty(self, tenant_service):
-        """娴嬭瘯鍒涘缓绉熸埛锛堢紪鐮佷负绌猴級"""
-        # 鎵ц鍒涘缓绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
+        """娴嬭瘯创建绉熸埛锛堢紪鐮佷负绌猴級"""
+        # 鎵ц创建绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
             "name": "娴嬭瘯绉熸埛",
             "code": ""
         }
-        with pytest.raises(ValueError, match="绉熸埛缂栫爜涓嶈兘涓虹┖"):
+        with pytest.raises(ValueError, match="绉熸埛编码涓嶈兘涓虹┖"):
             tenant_service.create_tenant(tenant_data)
     
     def test_create_tenant_code_exists(self, tenant_service):
-        """娴嬭瘯鍒涘缓绉熸埛锛堢紪鐮佸凡瀛樺湪锛?""
-        # 妯℃嫙绉熸埛缂栫爜宸插瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=True)
+        """娴嬭瘯创建绉熸埛锛堢紪鐮佸凡瀛樺湪锛?""
+        # 妯℃嫙绉熸埛编码宸插瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=True)
         
-        # 鎵ц鍒涘缓绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
+        # 鎵ц创建绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
             "name": "娴嬭瘯绉熸埛",
             "code": "existing_code"
         }
-        with pytest.raises(ValueError, match="绉熸埛缂栫爜宸插瓨鍦?):
+        with pytest.raises(ValueError, match="绉熸埛编码宸插瓨鍦?):
             tenant_service.create_tenant(tenant_data)
     
     def test_create_tenant_name_exists(self, tenant_service):
-        """娴嬭瘯鍒涘缓绉熸埛锛堝悕绉板凡瀛樺湪锛?""
-        # 妯℃嫙绉熸埛缂栫爜涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=False)
-        # 妯℃嫙绉熸埛鍚嶇О宸插瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=True)
+        """娴嬭瘯创建绉熸埛锛堝悕绉板凡瀛樺湪锛?""
+        # 妯℃嫙绉熸埛编码涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_code = Mock(return_value=False)
+        # 妯℃嫙绉熸埛名称宸插瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=True)
         
-        # 鎵ц鍒涘缓绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
+        # 鎵ц创建绉熸埛骞堕獙璇佸紓甯?        tenant_data = {
             "name": "existing_name",
             "code": "test_tenant"
         }
-        with pytest.raises(ValueError, match="绉熸埛鍚嶇О宸插瓨鍦?):
+        with pytest.raises(ValueError, match="绉熸埛名称宸插瓨鍦?):
             tenant_service.create_tenant(tenant_data)
     
     def test_get_tenant_success(self, tenant_service, mock_tenant):
         """娴嬭瘯鑾峰彇绉熸埛鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = tenant_service.get_tenant("test_tenant_id")
         
         # 楠岃瘉缁撴灉
@@ -142,25 +142,25 @@ class TestTenantService:
     
     def test_get_tenant_not_found(self, tenant_service):
         """娴嬭瘯鑾峰彇绉熸埛澶辫触"""
-        # 妯℃嫙鏌ヨ绉熸埛杩斿洖None
+        # 妯℃嫙查询绉熸埛杩斿洖None
         tenant_service.tenant_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = tenant_service.get_tenant("nonexistent_id")
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_update_tenant_success(self, tenant_service, mock_tenant):
-        """娴嬭瘯鏇存柊绉熸埛鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        """娴嬭瘯更新绉熸埛鎴愬姛"""
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
-        # 妯℃嫙绉熸埛鍚嶇О涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=False)
-        # 妯℃嫙鏇存柊绉熸埛
+        # 妯℃嫙绉熸埛名称涓嶅瓨鍦?        tenant_service.tenant_repo.exists_by_name = Mock(return_value=False)
+        # 妯℃嫙更新绉熸埛
         tenant_service.tenant_repo.update = Mock(return_value=mock_tenant)
         
-        # 鎵ц鏇存柊
-        update_data = {"description": "鏇存柊鍚庣殑鎻忚堪"}
+        # 鎵ц更新
+        update_data = {"description": "更新鍚庣殑描述"}
         result = tenant_service.update_tenant("test_tenant_id", update_data)
         
         # 楠岃瘉缁撴灉
@@ -168,22 +168,22 @@ class TestTenantService:
         tenant_service.tenant_repo.update.assert_called_once()
     
     def test_update_tenant_not_found(self, tenant_service):
-        """娴嬭瘯鏇存柊绉熸埛澶辫触锛堢鎴蜂笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ绉熸埛杩斿洖None
+        """娴嬭瘯更新绉熸埛澶辫触锛堢鎴蜂笉瀛樺湪锛?""
+        # 妯℃嫙查询绉熸埛杩斿洖None
         tenant_service.tenant_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏇存柊骞堕獙璇佸紓甯?        update_data = {"description": "鏇存柊鍚庣殑鎻忚堪"}
+        # 鎵ц更新骞堕獙璇佸紓甯?        update_data = {"description": "更新鍚庣殑描述"}
         with pytest.raises(ValueError, match="绉熸埛涓嶅瓨鍦?):
             tenant_service.update_tenant("nonexistent_id", update_data)
     
     def test_delete_tenant_success(self, tenant_service, mock_tenant):
-        """娴嬭瘯鍒犻櫎绉熸埛鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        """娴嬭瘯删除绉熸埛鎴愬姛"""
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
-        # 妯℃嫙鍒犻櫎绉熸埛
+        # 妯℃嫙删除绉熸埛
         tenant_service.tenant_repo.delete = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = tenant_service.delete_tenant("test_tenant_id")
         
         # 楠岃瘉缁撴灉
@@ -191,30 +191,30 @@ class TestTenantService:
         tenant_service.tenant_repo.delete.assert_called_once_with("test_tenant_id")
     
     def test_delete_tenant_has_users(self, tenant_service, mock_tenant):
-        """娴嬭瘯鍒犻櫎绉熸埛澶辫触锛堟湁鐢ㄦ埛锛?""
-        # 妯℃嫙鏌ヨ绉熸埛
+        """娴嬭瘯删除绉熸埛澶辫触锛堟湁鐢ㄦ埛锛?""
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         # 璁剧疆鏈夌敤鎴?        mock_tenant.users = [Mock()]
         
-        # 鎵ц鍒犻櫎骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="璇ョ鎴蜂笅瀛樺湪鐢ㄦ埛"):
+        # 鎵ц删除骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="璇ョ鎴蜂笅瀛樺湪鐢ㄦ埛"):
             tenant_service.delete_tenant("test_tenant_id")
     
     def test_delete_tenant_has_departments(self, tenant_service, mock_tenant):
-        """娴嬭瘯鍒犻櫎绉熸埛澶辫触锛堟湁閮ㄩ棬锛?""
-        # 妯℃嫙鏌ヨ绉熸埛
+        """娴嬭瘯删除绉熸埛澶辫触锛堟湁閮ㄩ棬锛?""
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         # 璁剧疆鏈夐儴闂?        mock_tenant.departments = [Mock()]
         
-        # 鎵ц鍒犻櫎骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="璇ョ鎴蜂笅瀛樺湪閮ㄩ棬"):
+        # 鎵ц删除骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="璇ョ鎴蜂笅瀛樺湪閮ㄩ棬"):
             tenant_service.delete_tenant("test_tenant_id")
     
     def test_list_tenants_success(self, tenant_service, mock_tenant):
         """娴嬭瘯鑾峰彇绉熸埛鍒楄〃鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛鍒楄〃
+        # 妯℃嫙查询绉熸埛鍒楄〃
         tenant_service.tenant_repo.get_all = Mock(return_value=[mock_tenant])
         tenant_service.tenant_repo.count_all = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = tenant_service.list_tenants()
         
         # 楠岃瘉缁撴灉
@@ -223,7 +223,7 @@ class TestTenantService:
     
     def test_check_quota_users(self, tenant_service, mock_tenant):
         """娴嬭瘯妫€鏌ョ敤鎴烽厤棰?""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         
         # 鎵ц妫€鏌?        result = tenant_service.check_quota("test_tenant_id", "users")
@@ -235,7 +235,7 @@ class TestTenantService:
     
     def test_check_quota_departments(self, tenant_service, mock_tenant):
         """娴嬭瘯妫€鏌ラ儴闂ㄩ厤棰?""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         
         # 鎵ц妫€鏌?        result = tenant_service.check_quota("test_tenant_id", "departments")
@@ -274,26 +274,26 @@ class TestTenantService:
         assert "enterprise" in result
     
     def test_update_package_success(self, tenant_service, mock_tenant):
-        """娴嬭瘯鏇存柊绉熸埛濂楅鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        """娴嬭瘯更新绉熸埛濂楅鎴愬姛"""
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
-        # 妯℃嫙鏇存柊绉熸埛
+        # 妯℃嫙更新绉熸埛
         tenant_service.tenant_repo.update = Mock(return_value=mock_tenant)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = tenant_service.update_package("test_tenant_id", "professional")
         
         # 楠岃瘉缁撴灉
         assert result.id == "test_tenant_id"
     
     def test_update_package_not_found(self, tenant_service):
-        """娴嬭瘯鏇存柊绉熸埛濂楅澶辫触锛堝椁愪笉瀛樺湪锛?""
-        # 鎵ц鏇存柊骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="濂楅涓嶅瓨鍦?):
+        """娴嬭瘯更新绉熸埛濂楅澶辫触锛堝椁愪笉瀛樺湪锛?""
+        # 鎵ц更新骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="濂楅涓嶅瓨鍦?):
             tenant_service.update_package("test_tenant_id", "nonexistent")
     
     def test_check_expiration_true(self, tenant_service, mock_tenant):
         """娴嬭瘯妫€鏌ョ鎴疯繃鏈燂紙宸茶繃鏈燂級"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         # 璁剧疆宸茶繃鏈?        mock_tenant.is_expired = Mock(return_value=True)
         
@@ -304,7 +304,7 @@ class TestTenantService:
     
     def test_check_expiration_false(self, tenant_service, mock_tenant):
         """娴嬭瘯妫€鏌ョ鎴疯繃鏈燂紙鏈繃鏈燂級"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
         
         # 鎵ц妫€鏌?        result = tenant_service.check_expiration("test_tenant_id")
@@ -314,9 +314,9 @@ class TestTenantService:
     
     def test_renew_tenant_success(self, tenant_service, mock_tenant):
         """娴嬭瘯缁垂绉熸埛鎴愬姛"""
-        # 妯℃嫙鏌ヨ绉熸埛
+        # 妯℃嫙查询绉熸埛
         tenant_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
-        # 妯℃嫙鏇存柊绉熸埛
+        # 妯℃嫙更新绉熸埛
         tenant_service.tenant_repo.update = Mock(return_value=mock_tenant)
         
         # 鎵ц缁垂
@@ -328,7 +328,7 @@ class TestTenantService:
     
     def test_renew_tenant_not_found(self, tenant_service):
         """娴嬭瘯缁垂绉熸埛澶辫触锛堢鎴蜂笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ绉熸埛杩斿洖None
+        # 妯℃嫙查询绉熸埛杩斿洖None
         tenant_service.tenant_repo.get_by_id = Mock(return_value=None)
         
         # 鎵ц缁垂骞堕獙璇佸紓甯?        with pytest.raises(ValueError, match="绉熸埛涓嶅瓨鍦?):

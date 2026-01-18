@@ -4,7 +4,7 @@
 
 鍔熻兘璇存槑锛?1. 鐧诲綍鏃ュ織绠＄悊
 2. 鎿嶄綔鏃ュ織绠＄悊
-3. 鏃ュ織鏌ヨ鍜岀粺璁?
+3. 鏃ュ織查询鍜岀粺璁?
 浣跨敤绀轰緥锛?    from app.services.log_service import LogService
     
     log_service = LogService(db)
@@ -27,7 +27,7 @@ class LogService:
     
     鍔熻兘锛?    - 鐧诲綍鏃ュ織绠＄悊
     - 鎿嶄綔鏃ュ織绠＄悊
-    - 鏃ュ織鏌ヨ鍜岀粺璁?    
+    - 鏃ュ織查询鍜岀粺璁?    
     浣跨敤鏂规硶锛?        log_service = LogService(db)
         log = log_service.create_login_log(user_id="123", username="admin")
     """
@@ -44,17 +44,17 @@ class LogService:
                          ip_address: Optional[str] = None, user_agent: Optional[str] = None,
                          login_status: str = "success", error_message: Optional[str] = None) -> LoginLog:
         """
-        鍒涘缓鐧诲綍鏃ュ織
+        创建鐧诲綍鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
-            ip_address: IP鍦板潃锛堝彲閫夛級
+            user_id: 用户ID
+            tenant_id: 租户ID
+            ip_address: IP地址锛堝彲閫夛級
             user_agent: 鐢ㄦ埛浠ｇ悊锛堝彲閫夛級
-            login_status: 鐧诲綍鐘舵€?            error_message: 閿欒淇℃伅锛堝彲閫夛級
+            login_status: 鐧诲綍状态?            error_message: 閿欒淇℃伅锛堝彲閫夛級
         
         Returns:
-            LoginLog: 鍒涘缓鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
         login_log = LoginLog(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -71,13 +71,13 @@ class LogService:
         璁板綍鎴愬姛鐧诲綍
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
-            ip_address: IP鍦板潃锛堝彲閫夛級
+            user_id: 用户ID
+            tenant_id: 租户ID
+            ip_address: IP地址锛堝彲閫夛級
             user_agent: 鐢ㄦ埛浠ｇ悊锛堝彲閫夛級
         
         Returns:
-            LoginLog: 鍒涘缓鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
         return self.create_login_log(
             user_id=user_id,
             tenant_id=tenant_id,
@@ -92,13 +92,13 @@ class LogService:
         璁板綍澶辫触鐧诲綍
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
-            ip_address: IP鍦板潃锛堝彲閫夛級
+            user_id: 用户ID
+            tenant_id: 租户ID
+            ip_address: IP地址锛堝彲閫夛級
             error_message: 閿欒淇℃伅锛堝彲閫夛級
         
         Returns:
-            LoginLog: 鍒涘缓鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
         return self.create_login_log(
             user_id=user_id,
             tenant_id=tenant_id,
@@ -112,7 +112,7 @@ class LogService:
         璁板綍鐧诲嚭
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -129,22 +129,22 @@ class LogService:
                               response_status: Optional[int] = None,
                               response_time: Optional[int] = None) -> OperationLog:
         """
-        鍒涘缓鎿嶄綔鏃ュ織
+        创建鎿嶄綔鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
-            module: 妯″潡鍚嶇О
+            user_id: 用户ID
+            tenant_id: 租户ID
+            module: 妯″潡名称
             operation: 鎿嶄綔鍔ㄤ綔
             method: 璇锋眰鏂规硶
             path: 璇锋眰璺緞锛堝彲閫夛級
             request_params: 璇锋眰鍙傛暟锛堝彲閫夛級
             response_data: 鍝嶅簲鏁版嵁锛堝彲閫夛級
-            response_status: 鍝嶅簲鐘舵€侊紙鍙€夛級
+            response_status: 鍝嶅簲状态侊紙鍙€夛級
             response_time: 鍝嶅簲鏃堕棿锛堝彲閫夛級
         
         Returns:
-            OperationLog: 鍒涘缓鐨勬搷浣滄棩蹇楀璞?        """
+            OperationLog: 创建鐨勬搷浣滄棩蹇楀璞?        """
         operation_log = OperationLog(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -164,9 +164,9 @@ class LogService:
         鑾峰彇鐢ㄦ埛鐧诲綍鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
@@ -178,9 +178,9 @@ class LogService:
         鑾峰彇鐢ㄦ埛鎿嶄綔鏃ュ織
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
@@ -191,7 +191,7 @@ class LogService:
         """
         妫€鏌ョ敤鎴峰け璐ョ櫥褰曟鏁版槸鍚﹁秴杩囬槇鍊?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             threshold: 闃堝€?            hours: 灏忔椂鏁?        
         Returns:
             bool: 鏄惁瓒呰繃闃堝€?        """
@@ -203,7 +203,7 @@ class LogService:
         鑾峰彇鐧诲綍缁熻淇℃伅
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             days: 澶╂暟
         
         Returns:

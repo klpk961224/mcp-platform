@@ -7,7 +7,7 @@ T = TypeVar('T')
 
 class SuccessResponse(BaseModel, Generic[T]):
     """鎴愬姛鍝嶅簲"""
-    code: int = Field(200, description="鐘舵€佺爜")
+    code: int = Field(200, description="状态佺爜")
     message: str = Field("success", description="娑堟伅")
     data: Optional[T] = Field(None, description="鏁版嵁")
 

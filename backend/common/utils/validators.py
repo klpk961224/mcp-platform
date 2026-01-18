@@ -4,7 +4,7 @@ from typing import Optional
 
 
 def validate_email(email: str) -> bool:
-    """楠岃瘉閭鏍煎紡"""
+    """楠岃瘉邮箱鏍煎紡"""
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
@@ -16,7 +16,7 @@ def validate_phone(phone: str) -> bool:
 
 
 def validate_username(username: str) -> bool:
-    """楠岃瘉鐢ㄦ埛鍚嶆牸寮?""
+    """楠岃瘉用户名嶆牸寮?""
     pattern = r'^[a-zA-Z0-9_]{4,20}$'
     return re.match(pattern, username) is not None
 

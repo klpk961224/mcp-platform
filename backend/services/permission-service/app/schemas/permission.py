@@ -10,19 +10,19 @@ from datetime import datetime
 class PermissionBase(BaseModel):
     """鏉冮檺鍩虹妯″瀷"""
     
-    name: str = Field(..., description="鏉冮檺鍚嶇О")
-    code: str = Field(..., description="鏉冮檺缂栫爜")
-    type: str = Field(..., description="绫诲瀷")
-    description: Optional[str] = Field(None, description="鎻忚堪")
+    name: str = Field(..., description="鏉冮檺名称")
+    code: str = Field(..., description="鏉冮檺编码")
+    type: str = Field(..., description="类型")
+    description: Optional[str] = Field(None, description="描述")
 
 
 class PermissionCreate(PermissionBase):
-    """鍒涘缓鏉冮檺"""
+    """创建鏉冮檺"""
     pass
 
 
 class PermissionUpdate(BaseModel):
-    """鏇存柊鏉冮檺"""
+    """更新鏉冮檺"""
     
     name: Optional[str] = None
     description: Optional[str] = None

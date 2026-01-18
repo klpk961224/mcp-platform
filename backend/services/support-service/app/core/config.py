@@ -15,21 +15,21 @@ from typing import Optional
 class Settings(BaseSettings):
     """閰嶇疆绫?""
     
-    # 搴旂敤閰嶇疆
+    # 应用配置
     APP_NAME: str = "鏀拺鍩熸湇鍔?
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
     APP_PORT: int = 228005
     
-    # 鏁版嵁搴撻厤缃?    DATABASE_URL: str
+    # 数据库配置?    DATABASE_URL: str
     
-    # Redis閰嶇疆
+    # Redis配置
     REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: Optional[str] = None
     REDIS_DB: int = 0
     
-    # JWT閰嶇疆
+    # JWT配置
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # API Key閰嶇疆
     API_KEY_SECRET: str
     
-    # 鏃ュ織閰嶇疆
+    # 日志配置
     LOG_LEVEL: str = "DEBUG"
     LOG_FILE_PATH: str = "logs/support-service.log"
     

@@ -10,20 +10,20 @@ from datetime import datetime
 class RoleBase(BaseModel):
     """瑙掕壊鍩虹妯″瀷"""
     
-    name: str = Field(..., description="瑙掕壊鍚嶇О")
-    code: str = Field(..., description="瑙掕壊缂栫爜")
-    description: Optional[str] = Field(None, description="鎻忚堪")
-    status: str = Field(default="active", description="鐘舵€?)
+    name: str = Field(..., description="角色名称")
+    code: str = Field(..., description="角色编码")
+    description: Optional[str] = Field(None, description="描述")
+    status: str = Field(default="active", description="状态?)
 
 
 class RoleCreate(RoleBase):
-    """鍒涘缓瑙掕壊"""
+    """创建瑙掕壊"""
     
-    tenant_id: str = Field(..., description="绉熸埛ID")
+    tenant_id: str = Field(..., description="租户ID")
 
 
 class RoleUpdate(BaseModel):
-    """鏇存柊瑙掕壊"""
+    """更新瑙掕壊"""
     
     name: Optional[str] = None
     description: Optional[str] = None

@@ -2,11 +2,11 @@
 """
 User API闆嗘垚娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓鐢ㄦ埛API
+娴嬭瘯鍐呭锛?1. 创建鐢ㄦ埛API
 2. 鑾峰彇鐢ㄦ埛鍒楄〃API
 3. 鑾峰彇鐢ㄦ埛璇︽儏API
-4. 鏇存柊鐢ㄦ埛API
-5. 鍒犻櫎鐢ㄦ埛API
+4. 更新鐢ㄦ埛API
+5. 删除鐢ㄦ埛API
 """
 
 import pytest
@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 
 @pytest.fixture
 def client():
-    """鍒涘缓娴嬭瘯瀹㈡埛绔?""
+    """创建娴嬭瘯瀹㈡埛绔?""
     from app.main import app
     return TestClient(app)
 
@@ -42,7 +42,7 @@ class TestUserAPI:
     """User API娴嬭瘯绫?""
     
     def test_create_user_success(self, client, mock_user):
-        """娴嬭瘯鍒涘缓鐢ㄦ埛鎴愬姛"""
+        """娴嬭瘯创建鐢ㄦ埛鎴愬姛"""
         # 妯℃嫙UserService
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
@@ -74,11 +74,11 @@ class TestUserAPI:
             assert data["email"] == "test@example.com"
     
     def test_create_user_username_exists(self, client):
-        """娴嬭瘯鍒涘缓鐢ㄦ埛澶辫触锛堢敤鎴峰悕宸插瓨鍦級"""
+        """娴嬭瘯创建鐢ㄦ埛澶辫触锛堢敤鎴峰悕宸插瓨鍦級"""
         # 妯℃嫙UserService鎶涘嚭寮傚父
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
-            mock_service.create_user.side_effect = ValueError("鐢ㄦ埛鍚嶅凡瀛樺湪")
+            mock_service.create_user.side_effect = ValueError("用户名嶅凡瀛樺湪")
             MockUserService.return_value = mock_service
             
             # 鍙戦€佸垱寤虹敤鎴疯姹?            response = client.post("/api/v1/users", json={
@@ -179,7 +179,7 @@ class TestUserAPI:
             assert "detail" in data
     
     def test_update_user_success(self, client):
-        """娴嬭瘯鏇存柊鐢ㄦ埛鎴愬姛"""
+        """娴嬭瘯更新鐢ㄦ埛鎴愬姛"""
         # 妯℃嫙UserService
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
@@ -207,7 +207,7 @@ class TestUserAPI:
             assert data["email"] == "newemail@example.com"
     
     def test_update_user_not_found(self, client):
-        """娴嬭瘯鏇存柊鐢ㄦ埛澶辫触锛堢敤鎴蜂笉瀛樺湪锛?""
+        """娴嬭瘯更新鐢ㄦ埛澶辫触锛堢敤鎴蜂笉瀛樺湪锛?""
         # 妯℃嫙UserService杩斿洖None
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
@@ -224,7 +224,7 @@ class TestUserAPI:
             assert "detail" in data
     
     def test_delete_user_success(self, client):
-        """娴嬭瘯鍒犻櫎鐢ㄦ埛鎴愬姛"""
+        """娴嬭瘯删除鐢ㄦ埛鎴愬姛"""
         # 妯℃嫙UserService
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
@@ -238,10 +238,10 @@ class TestUserAPI:
             # 楠岃瘉鍝嶅簲
             assert response.status_code == 200
             data = response.json()
-            assert data["message"] == "鍒犻櫎鎴愬姛"
+            assert data["message"] == "删除鎴愬姛"
     
     def test_delete_user_not_found(self, client):
-        """娴嬭瘯鍒犻櫎鐢ㄦ埛澶辫触锛堢敤鎴蜂笉瀛樺湪锛?""
+        """娴嬭瘯删除鐢ㄦ埛澶辫触锛堢敤鎴蜂笉瀛樺湪锛?""
         # 妯℃嫙UserService杩斿洖None
         with patch('app.api.v1.users.UserService') as MockUserService:
             mock_service = Mock()
@@ -256,8 +256,8 @@ class TestUserAPI:
             assert "detail" in data
     
     def test_create_user_missing_username(self, client):
-        """娴嬭瘯鍒涘缓鐢ㄦ埛澶辫触锛堢己灏戠敤鎴峰悕锛?""
-        # 鍙戦€佸垱寤虹敤鎴疯姹傦紙缂哄皯鐢ㄦ埛鍚嶏級
+        """娴嬭瘯创建鐢ㄦ埛澶辫触锛堢己灏戠敤鎴峰悕锛?""
+        # 鍙戦€佸垱寤虹敤鎴疯姹傦紙缂哄皯用户名嶏級
         response = client.post("/api/v1/users", json={
             "email": "test@example.com",
             "password": "password123",
@@ -268,8 +268,8 @@ class TestUserAPI:
         assert response.status_code == 422  # Validation Error
     
     def test_create_user_missing_email(self, client):
-        """娴嬭瘯鍒涘缓鐢ㄦ埛澶辫触锛堢己灏戦偖绠憋級"""
-        # 鍙戦€佸垱寤虹敤鎴疯姹傦紙缂哄皯閭锛?        response = client.post("/api/v1/users", json={
+        """娴嬭瘯创建鐢ㄦ埛澶辫触锛堢己灏戦偖绠憋級"""
+        # 鍙戦€佸垱寤虹敤鎴疯姹傦紙缂哄皯邮箱锛?        response = client.post("/api/v1/users", json={
             "username": "testuser",
             "password": "password123",
             "tenant_id": "default"

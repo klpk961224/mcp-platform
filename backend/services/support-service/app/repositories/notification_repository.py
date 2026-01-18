@@ -3,7 +3,7 @@
 閫氱煡鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 閫氱煡CRUD鎿嶄綔
 2. 閫氱煡闃呰璁板綍绠＄悊
-3. 閫氱煡鏌ヨ鍜岀粺璁?
+3. 閫氱煡查询鍜岀粺璁?
 浣跨敤绀轰緥锛?    from app.repositories.notification_repository import NotificationRepository
     
     notification_repo = NotificationRepository(db)
@@ -23,7 +23,7 @@ class NotificationRepository:
     閫氱煡鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 閫氱煡CRUD鎿嶄綔
     - 閫氱煡闃呰璁板綍绠＄悊
-    - 閫氱煡鏌ヨ鍜岀粺璁?    
+    - 閫氱煡查询鍜岀粺璁?    
     浣跨敤鏂规硶锛?        notification_repo = NotificationRepository(db)
         notifications = notification_repo.get_user_notifications(user_id="123")
     """
@@ -37,15 +37,15 @@ class NotificationRepository:
     
     def create_notification(self, notification: Notification) -> Notification:
         """
-        鍒涘缓閫氱煡
+        创建閫氱煡
         
         Args:
             notification: 閫氱煡瀵硅薄
         
         Returns:
-            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
+            Notification: 创建鐨勯€氱煡瀵硅薄
         """
-        logger.info(f"鍒涘缓閫氱煡: title={notification.title}, type={notification.notification_type}")
+        logger.info(f"创建閫氱煡: title={notification.title}, type={notification.notification_type}")
         self.db.add(notification)
         self.db.commit()
         self.db.refresh(notification)
@@ -53,7 +53,7 @@ class NotificationRepository:
     
     def get_notification_by_id(self, notification_id: str) -> Optional[Notification]:
         """
-        鏍规嵁ID鑾峰彇閫氱煡
+        根据ID鑾峰彇閫氱煡
         
         Args:
             notification_id: 閫氱煡ID
@@ -69,10 +69,10 @@ class NotificationRepository:
         鑾峰彇鐢ㄦ埛閫氱煡
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             unread_only: 鏄惁鍙幏鍙栨湭璇婚€氱煡
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Notification]: 閫氱煡鍒楄〃
@@ -98,9 +98,9 @@ class NotificationRepository:
         鑾峰彇绉熸埛閫氱煡
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Notification]: 閫氱煡鍒楄〃
@@ -116,7 +116,7 @@ class NotificationRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Notification]: 绯荤粺閫氱煡鍒楄〃
@@ -132,9 +132,9 @@ class NotificationRepository:
         鎼滅储閫氱煡
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Notification]: 閫氱煡鍒楄〃
@@ -154,30 +154,30 @@ class NotificationRepository:
     
     def update_notification(self, notification: Notification) -> Notification:
         """
-        鏇存柊閫氱煡
+        更新閫氱煡
         
         Args:
             notification: 閫氱煡瀵硅薄
         
         Returns:
-            Notification: 鏇存柊鍚庣殑閫氱煡瀵硅薄
+            Notification: 更新鍚庣殑閫氱煡瀵硅薄
         """
-        logger.info(f"鏇存柊閫氱煡: notification_id={notification.id}")
+        logger.info(f"更新閫氱煡: notification_id={notification.id}")
         self.db.commit()
         self.db.refresh(notification)
         return notification
     
     def delete_notification(self, notification_id: str) -> bool:
         """
-        鍒犻櫎閫氱煡
+        删除閫氱煡
         
         Args:
             notification_id: 閫氱煡ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎閫氱煡: notification_id={notification_id}")
+        logger.info(f"删除閫氱煡: notification_id={notification_id}")
         notification = self.get_notification_by_id(notification_id)
         if not notification:
             return False
@@ -189,13 +189,13 @@ class NotificationRepository:
     # 閫氱煡闃呰璁板綍鐩稿叧鏂规硶
     def create_notification_read(self, notification_read: NotificationRead) -> NotificationRead:
         """
-        鍒涘缓閫氱煡闃呰璁板綍
+        创建閫氱煡闃呰璁板綍
         
         Args:
             notification_read: 閫氱煡闃呰璁板綍瀵硅薄
         
         Returns:
-            NotificationRead: 鍒涘缓鐨勯€氱煡闃呰璁板綍瀵硅薄
+            NotificationRead: 创建鐨勯€氱煡闃呰璁板綍瀵硅薄
         """
         self.db.add(notification_read)
         self.db.commit()
@@ -208,7 +208,7 @@ class NotificationRepository:
         
         Args:
             notification_id: 閫氱煡ID
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Optional[NotificationRead]: 閫氱煡闃呰璁板綍瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -225,7 +225,7 @@ class NotificationRepository:
         鏍囪閫氱煡涓哄凡璇?        
         Args:
             notification_id: 閫氱煡ID
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -235,7 +235,7 @@ class NotificationRepository:
             notification_read.mark_as_read()
             self.db.commit()
             
-            # 鏇存柊閫氱煡鐨勫凡璇绘暟閲?            notification = self.get_notification_by_id(notification_id)
+            # 更新閫氱煡鐨勫凡璇绘暟閲?            notification = self.get_notification_by_id(notification_id)
             if notification:
                 notification.read_count += 1
                 self.db.commit()
@@ -247,10 +247,10 @@ class NotificationRepository:
         """
         鏍囪鎵€鏈夐€氱煡涓哄凡璇?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鏍囪鐨勯€氱煡鏁伴噺
+            int: 鏍囪鐨勯€氱煡数量
         """
         count = self.db.query(NotificationRead).filter(
             and_(
@@ -264,13 +264,13 @@ class NotificationRepository:
     
     def get_unread_count(self, user_id: str) -> int:
         """
-        鑾峰彇鐢ㄦ埛鏈閫氱煡鏁伴噺
+        鑾峰彇鐢ㄦ埛鏈閫氱煡数量
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鏈閫氱煡鏁伴噺
+            int: 鏈閫氱煡数量
         """
         return self.db.query(NotificationRead).filter(
             and_(
@@ -282,21 +282,21 @@ class NotificationRepository:
     # 缁熻鏂规硶
     def count_notifications_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛閫氱煡鏁伴噺
+        缁熻绉熸埛閫氱煡数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 閫氱煡鏁伴噺
+            int: 閫氱煡数量
         """
         return self.db.query(Notification).filter(Notification.tenant_id == tenant_id).count()
     
     def count_all_notifications(self) -> int:
         """
-        缁熻鎵€鏈夐€氱煡鏁伴噺
+        缁熻鎵€鏈夐€氱煡数量
         
         Returns:
-            int: 閫氱煡鏁伴噺
+            int: 閫氱煡数量
         """
         return self.db.query(Notification).count()

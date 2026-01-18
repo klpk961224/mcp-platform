@@ -25,13 +25,13 @@ from common.security.password import hash_password
 router = APIRouter(prefix="/users", tags=["鐢ㄦ埛绠＄悊"])
 
 
-@router.post("", response_model=UserResponse, summary="鍒涘缓鐢ㄦ埛")
+@router.post("", response_model=UserResponse, summary="创建鐢ㄦ埛")
 async def create_user(
     user: UserCreate,
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓鐢ㄦ埛"""
-    logger.info(f"鍒涘缓鐢ㄦ埛璇锋眰: username={user.username}")
+    """创建鐢ㄦ埛"""
+    logger.info(f"创建鐢ㄦ埛璇锋眰: username={user.username}")
     
     try:
         user_service = UserService(db)
@@ -43,10 +43,10 @@ async def create_user(
         user_data["password_hash"] = password_hash
         del user_data["password"]
         
-        # 鍒涘缓鐢ㄦ埛
+        # 创建鐢ㄦ埛
         new_user = user_service.create_user(user_data)
         
-        logger.info(f"鍒涘缓鐢ㄦ埛鎴愬姛: username={user.username}, user_id={new_user.id}")
+        logger.info(f"创建鐢ㄦ埛鎴愬姛: username={user.username}, user_id={new_user.id}")
         
         return UserResponse(
             id=new_user.id,
@@ -61,25 +61,25 @@ async def create_user(
             updated_at=new_user.updated_at.isoformat() if new_user.updated_at else None
         )
     except ValueError as e:
-        logger.warning(f"鍒涘缓鐢ㄦ埛澶辫触: username={user.username}, error={str(e)}")
+        logger.warning(f"创建鐢ㄦ埛澶辫触: username={user.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"鍒涘缓鐢ㄦ埛寮傚父: username={user.username}, error={str(e)}")
+        logger.error(f"创建鐢ㄦ埛寮傚父: username={user.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鍒涘缓鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="创建鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
         )
 
 
 @router.get("", response_model=UserListResponse, summary="鑾峰彇鐢ㄦ埛鍒楄〃")
 async def get_users(
     page: int = Query(1, ge=1, description="椤电爜"),
-    page_size: int = Query(10, ge=1, le=100, description="姣忛〉鏁伴噺"),
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
-    status: Optional[str] = Query(None, description="鐘舵€?),
+    page_size: int = Query(10, ge=1, le=100, description="姣忛〉数量"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
+    status: Optional[str] = Query(None, description="状态?),
     keyword: Optional[str] = Query(None, description="鍏抽敭璇?),
     db: Session = Depends(get_db)
 ):
@@ -89,7 +89,7 @@ async def get_users(
     try:
         user_service = UserService(db)
         
-        # 鏌ヨ鐢ㄦ埛鍒楄〃
+        # 查询鐢ㄦ埛鍒楄〃
         users = user_service.list_users(
             tenant_id=tenant_id,
             keyword=keyword,
@@ -171,14 +171,14 @@ async def get_user(
         )
 
 
-@router.put("/{user_id}", response_model=UserResponse, summary="鏇存柊鐢ㄦ埛")
+@router.put("/{user_id}", response_model=UserResponse, summary="更新鐢ㄦ埛")
 async def update_user(
     user_id: str,
     user: UserUpdate,
     db: Session = Depends(get_db)
 ):
-    """鏇存柊鐢ㄦ埛"""
-    logger.info(f"鏇存柊鐢ㄦ埛: user_id={user_id}")
+    """更新鐢ㄦ埛"""
+    logger.info(f"更新鐢ㄦ埛: user_id={user_id}")
     
     try:
         user_service = UserService(db)
@@ -191,14 +191,14 @@ async def update_user(
                 detail="鐢ㄦ埛涓嶅瓨鍦?
             )
         
-        # 鏇存柊鐢ㄦ埛淇℃伅
+        # 更新鐢ㄦ埛淇℃伅
         update_data = user.dict(exclude_unset=True)
         if "dept_id" in update_data:
             update_data["department_id"] = update_data.pop("dept_id")
         
         updated_user = user_service.update_user(user_id, update_data)
         
-        logger.info(f"鏇存柊鐢ㄦ埛鎴愬姛: user_id={user_id}")
+        logger.info(f"更新鐢ㄦ埛鎴愬姛: user_id={user_id}")
         
         return UserResponse(
             id=updated_user.id,
@@ -215,26 +215,26 @@ async def update_user(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(f"鏇存柊鐢ㄦ埛澶辫触: user_id={user_id}, error={str(e)}")
+        logger.warning(f"更新鐢ㄦ埛澶辫触: user_id={user_id}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"鏇存柊鐢ㄦ埛寮傚父: user_id={user_id}, error={str(e)}")
+        logger.error(f"更新鐢ㄦ埛寮傚父: user_id={user_id}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鏇存柊鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="更新鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
         )
 
 
-@router.delete("/{user_id}", summary="鍒犻櫎鐢ㄦ埛")
+@router.delete("/{user_id}", summary="删除鐢ㄦ埛")
 async def delete_user(
     user_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎鐢ㄦ埛"""
-    logger.info(f"鍒犻櫎鐢ㄦ埛: user_id={user_id}")
+    """删除鐢ㄦ埛"""
+    logger.info(f"删除鐢ㄦ埛: user_id={user_id}")
     
     try:
         user_service = UserService(db)
@@ -246,17 +246,17 @@ async def delete_user(
                 detail="鐢ㄦ埛涓嶅瓨鍦?
             )
         
-        # 鍒犻櫎鐢ㄦ埛
+        # 删除鐢ㄦ埛
         user_service.delete_user(user_id)
         
-        logger.info(f"鍒犻櫎鐢ㄦ埛鎴愬姛: user_id={user_id}")
+        logger.info(f"删除鐢ㄦ埛鎴愬姛: user_id={user_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎鐢ㄦ埛寮傚父: user_id={user_id}, error={str(e)}")
+        logger.error(f"删除鐢ㄦ埛寮傚父: user_id={user_id}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鍒犻櫎鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="删除鐢ㄦ埛澶辫触锛岃绋嶅悗閲嶈瘯"
         )

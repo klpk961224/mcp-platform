@@ -18,8 +18,8 @@ try:
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
 
-    # 鍒涘缓鏁版嵁搴擄紙濡傛灉涓嶅瓨鍦級
-    print("姝ｅ湪鍒涘缓鏁版嵁搴?mcp_platform...")
+    # 创建鏁版嵁搴擄紙濡傛灉涓嶅瓨鍦級
+    print("姝ｅ湪创建鏁版嵁搴?mcp_platform...")
     cursor.execute("CREATE DATABASE IF NOT EXISTS mcp_platform CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     cursor.execute("USE mcp_platform")
 
@@ -50,15 +50,15 @@ try:
         else:
             alter_statements.append(statement)
 
-    # 绗竴姝ワ細鍒涘缓鎵€鏈夎〃锛堜笉甯﹀閿害鏉燂級
-    print(f"\n绗竴姝ワ細鍒涘缓鎵€鏈夎〃锛堝叡{len(create_statements)}涓級...")
+    # 绗竴姝ワ細创建鎵€鏈夎〃锛堜笉甯﹀閿害鏉燂級
+    print(f"\n绗竴姝ワ細创建鎵€鏈夎〃锛堝叡{len(create_statements)}涓級...")
     for i, statement in enumerate(create_statements, 1):
         if statement:
             try:
                 cursor.execute(statement)
-                print(f"鍒涘缓绗?{i} 涓〃鎴愬姛")
+                print(f"创建绗?{i} 涓〃鎴愬姛")
             except Exception as e:
-                print(f"鍒涘缓绗?{i} 涓〃澶辫触: {e}")
+                print(f"创建绗?{i} 涓〃澶辫触: {e}")
 
     # 绗簩姝ワ細娣诲姞澶栭敭绾︽潫
     print(f"\n绗簩姝ワ細娣诲姞澶栭敭绾︽潫...")
@@ -90,7 +90,7 @@ try:
     connection.commit()
     print("\n鏁版嵁搴撳垵濮嬪寲鎴愬姛锛?)
 
-    # 鏌ョ湅鍒涘缓鐨勮〃
+    # 鏌ョ湅创建鐨勮〃
     print("\n宸插垱寤虹殑琛細")
     cursor.execute("SHOW TABLES")
     tables = cursor.fetchall()

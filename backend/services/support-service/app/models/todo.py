@@ -8,7 +8,7 @@
 
 浣跨敤绀轰緥锛?    from app.models.todo import TodoTask, DailyPlan
     
-    # 鍒涘缓寰呭姙浠诲姟
+    # 创建寰呭姙浠诲姟
     todo = TodoTask(
         title="瀹屾垚椤圭洰鏂囨。",
         description="缂栧啓椤圭洰璁捐鏂囨。",

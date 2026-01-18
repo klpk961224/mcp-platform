@@ -46,23 +46,23 @@ class NotificationService:
                            target_type: Optional[str] = None, target_ids: Optional[List[str]] = None,
                            attachment: Optional[str] = None) -> Notification:
         """
-        鍒涘缓閫氱煡
+        创建閫氱煡
         
         Args:
             title: 鏍囬
             content: 鍐呭
-            tenant_id: 绉熸埛ID
-            notification_type: 閫氱煡绫诲瀷
+            tenant_id: 租户ID
+            notification_type: 閫氱煡类型
             priority: 浼樺厛绾?            sender_id: 鍙戦€佽€匢D锛堝彲閫夛級
             sender_name: 鍙戦€佽€呭悕绉帮紙鍙€夛級
-            target_type: 鐩爣绫诲瀷锛堝彲閫夛級
+            target_type: 鐩爣类型锛堝彲閫夛級
             target_ids: 鐩爣ID鍒楄〃锛堝彲閫夛級
             attachment: 闄勪欢URL锛堝彲閫夛級
         
         Returns:
-            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
+            Notification: 创建鐨勯€氱煡瀵硅薄
         """
-        logger.info(f"鍒涘缓閫氱煡: title={title}, type={notification_type}")
+        logger.info(f"创建閫氱煡: title={title}, type={notification_type}")
         
         import json
         notification = Notification(
@@ -105,11 +105,11 @@ class NotificationService:
         Args:
             title: 鏍囬
             content: 鍐呭
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             target_ids: 鐩爣ID鍒楄〃
             priority: 浼樺厛绾?        
         Returns:
-            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
+            Notification: 创建鐨勯€氱煡瀵硅薄
         """
         return self.create_notification(
             title=title,
@@ -129,11 +129,11 @@ class NotificationService:
         Args:
             title: 鏍囬
             content: 鍐呭
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             target_ids: 鐩爣ID鍒楄〃
         
         Returns:
-            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
+            Notification: 创建鐨勯€氱煡瀵硅薄
         """
         return self.create_notification(
             title=title,
@@ -152,10 +152,10 @@ class NotificationService:
         鑾峰彇鐢ㄦ埛閫氱煡
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             unread_only: 鏄惁鍙幏鍙栨湭璇婚€氱煡
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Notification]: 閫氱煡鍒楄〃
@@ -164,13 +164,13 @@ class NotificationService:
     
     def get_unread_count(self, user_id: str) -> int:
         """
-        鑾峰彇鐢ㄦ埛鏈閫氱煡鏁伴噺
+        鑾峰彇鐢ㄦ埛鏈閫氱煡数量
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鏈閫氱煡鏁伴噺
+            int: 鏈閫氱煡数量
         """
         return self.notification_repo.get_unread_count(user_id)
     
@@ -179,7 +179,7 @@ class NotificationService:
         鏍囪閫氱煡涓哄凡璇?        
         Args:
             notification_id: 閫氱煡ID
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -191,36 +191,36 @@ class NotificationService:
         """
         鏍囪鎵€鏈夐€氱煡涓哄凡璇?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 鏍囪鐨勯€氱煡鏁伴噺
+            int: 鏍囪鐨勯€氱煡数量
         """
         logger.info(f"鏍囪鎵€鏈夐€氱煡涓哄凡璇? user_id={user_id}")
         return self.notification_repo.mark_all_as_read(user_id)
     
     def delete_notification(self, notification_id: str) -> bool:
         """
-        鍒犻櫎閫氱煡
+        删除閫氱煡
         
         Args:
             notification_id: 閫氱煡ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎閫氱煡: notification_id={notification_id}")
+        logger.info(f"删除閫氱煡: notification_id={notification_id}")
         return self.notification_repo.delete_notification(notification_id)
     
     def count_notifications(self, tenant_id: Optional[str] = None) -> int:
         """
-        缁熻閫氱煡鏁伴噺
+        缁熻閫氱煡数量
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
         
         Returns:
-            int: 閫氱煡鏁伴噺
+            int: 閫氱煡数量
         """
         if tenant_id:
             return self.notification_repo.count_notifications_by_tenant(tenant_id)

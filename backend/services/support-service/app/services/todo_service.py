@@ -49,22 +49,22 @@ class TodoService:
                     due_time: Optional[str] = None, tags: Optional[List[str]] = None,
                     attachment: Optional[str] = None) -> TodoTask:
         """
-        鍒涘缓寰呭姙浠诲姟
+        创建寰呭姙浠诲姟
         
         Args:
             title: 浠诲姟鏍囬
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
-            description: 浠诲姟鎻忚堪锛堝彲閫夛級
-            task_type: 浠诲姟绫诲瀷
+            user_id: 用户ID
+            tenant_id: 租户ID
+            description: 浠诲姟描述锛堝彲閫夛級
+            task_type: 浠诲姟类型
             priority: 浼樺厛绾?            due_date: 鎴鏃ユ湡锛堝彲閫夛級
             due_time: 鎴鏃堕棿锛堝彲閫夛級
             tags: 鏍囩鍒楄〃锛堝彲閫夛級
             attachment: 闄勪欢URL锛堝彲閫夛級
         
         Returns:
-            TodoTask: 鍒涘缓鐨勫緟鍔炰换鍔″璞?        """
-        logger.info(f"鍒涘缓寰呭姙浠诲姟: title={title}, user_id={user_id}")
+            TodoTask: 创建鐨勫緟鍔炰换鍔″璞?        """
+        logger.info(f"创建寰呭姙浠诲姟: title={title}, user_id={user_id}")
         
         todo = TodoTask(
             tenant_id=tenant_id,
@@ -93,22 +93,22 @@ class TodoService:
     
     def update_todo(self, todo_id: str, todo_data: Dict[str, Any]) -> Optional[TodoTask]:
         """
-        鏇存柊寰呭姙浠诲姟
+        更新寰呭姙浠诲姟
         
         Args:
             todo_id: 浠诲姟ID
-            todo_data: 鏇存柊鏁版嵁
+            todo_data: 更新鏁版嵁
         
         Returns:
-            Optional[TodoTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"鏇存柊寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"更新寰呭姙浠诲姟: todo_id={todo_id}")
         
         todo = self.todo_repo.get_todo_by_id(todo_id)
         if not todo:
             return None
         
-        # 鏇存柊浠诲姟
+        # 更新浠诲姟
         for key, value in todo_data.items():
             if hasattr(todo, key):
                 setattr(todo, key, value)
@@ -121,11 +121,11 @@ class TodoService:
         鑾峰彇鐢ㄦ埛寰呭姙浠诲姟
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
             priority: 浼樺厛绾э紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
@@ -139,13 +139,13 @@ class TodoService:
         鑾峰彇寰呭姙浠诲姟鍒楄〃
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
-            task_type: 浠诲姟绫诲瀷锛堝彲閫夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
+            task_type: 浠诲姟类型锛堝彲閫夛級
             priority: 浼樺厛绾э紙鍙€夛級
             is_overdue: 鏄惁閫炬湡锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
@@ -163,7 +163,7 @@ class TodoService:
             todo_id: 浠诲姟ID
         
         Returns:
-            Optional[TodoTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"瀹屾垚寰呭姙浠诲姟: todo_id={todo_id}")
         
@@ -182,7 +182,7 @@ class TodoService:
             todo_id: 浠诲姟ID
         
         Returns:
-            Optional[TodoTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"鍙栨秷瀹屾垚寰呭姙浠诲姟: todo_id={todo_id}")
         
@@ -195,15 +195,15 @@ class TodoService:
     
     def delete_todo(self, todo_id: str) -> bool:
         """
-        鍒犻櫎寰呭姙浠诲姟
+        删除寰呭姙浠诲姟
         
         Args:
             todo_id: 浠诲姟ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"删除寰呭姙浠诲姟: todo_id={todo_id}")
         return self.todo_repo.delete_todo(todo_id)
     
     def get_overdue_todos(self, page: int = 1, page_size: int = 10) -> List[TodoTask]:
@@ -212,7 +212,7 @@ class TodoService:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 閫炬湡浠诲姟鍒楄〃
@@ -221,8 +221,8 @@ class TodoService:
     
     def update_overdue_status(self):
         """
-        鏇存柊鎵€鏈変换鍔＄殑閫炬湡鐘舵€?        """
-        logger.info("鏇存柊鎵€鏈変换鍔＄殑閫炬湡鐘舵€?)
+        更新鎵€鏈変换鍔＄殑閫炬湡状态?        """
+        logger.info("更新鎵€鏈変换鍔＄殑閫炬湡状态?)
         
         todos = self.todo_repo.get_tenant_todos(tenant_id=None, page=1, page_size=10000)
         for todo in todos:
@@ -232,18 +232,18 @@ class TodoService:
     def create_daily_plan(self, user_id: str, tenant_id: str, plan_date: date,
                           tasks: List[Dict[str, Any]], notes: Optional[str] = None) -> DailyPlan:
         """
-        鍒涘缓姣忔棩璁″垝
+        创建姣忔棩璁″垝
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            tenant_id: 绉熸埛ID
+            user_id: 用户ID
+            tenant_id: 租户ID
             plan_date: 璁″垝鏃ユ湡
             tasks: 浠诲姟鍒楄〃
-            notes: 澶囨敞锛堝彲閫夛級
+            notes: 备注锛堝彲閫夛級
         
         Returns:
-            DailyPlan: 鍒涘缓鐨勬瘡鏃ヨ鍒掑璞?        """
-        logger.info(f"鍒涘缓姣忔棩璁″垝: user_id={user_id}, plan_date={plan_date}")
+            DailyPlan: 创建鐨勬瘡鏃ヨ鍒掑璞?        """
+        logger.info(f"创建姣忔棩璁″垝: user_id={user_id}, plan_date={plan_date}")
         
         daily_plan = DailyPlan(
             tenant_id=tenant_id,
@@ -258,7 +258,7 @@ class TodoService:
         """
         鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             plan_date: 璁″垝鏃ユ湡
         
         Returns:
@@ -271,7 +271,7 @@ class TodoService:
         鑾峰彇鐢ㄦ埛寰呭姙浠诲姟缁熻淇℃伅
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Dict[str, Any]: 缁熻淇℃伅
@@ -324,14 +324,14 @@ class TodoService:
     
     def count_todos(self, user_id: Optional[str] = None, status: Optional[str] = None) -> int:
         """
-        缁熻寰呭姙浠诲姟鏁伴噺
+        缁熻寰呭姙浠诲姟数量
         
         Args:
-            user_id: 鐢ㄦ埛ID锛堝彲閫夛級
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID锛堝彲閫夛級
+            status: 状态侊紙鍙€夛級
         
         Returns:
-            int: 浠诲姟鏁伴噺
+            int: 浠诲姟数量
         """
         if user_id:
             return self.todo_repo.count_todos_by_user(user_id, status)

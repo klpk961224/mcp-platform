@@ -24,7 +24,7 @@ config = context.config
 # 璁剧疆鏁版嵁搴揢RL
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
-# 瑙ｉ噴閰嶇疆鏂囦欢涓殑鏃ュ織閰嶇疆
+# 瑙ｉ噴閰嶇疆鏂囦欢涓殑日志配置
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 

@@ -13,10 +13,10 @@ from app.repositories.region_repository import RegionRepository
 class RegionService:
     """鍦板尯Service"""
 
-    # 鍦板尯绾у埆甯搁噺
+    # 鍦板尯级别甯搁噺
     LEVEL_PROVINCE = "province"  # 鐪?    LEVEL_CITY = "city"  # 甯?    LEVEL_DISTRICT = "district"  # 鍖?    LEVEL_STREET = "street"  # 琛楅亾
 
-    # 鐘舵€佸父閲?    STATUS_ACTIVE = "active"
+    # 状态佸父閲?    STATUS_ACTIVE = "active"
     STATUS_INACTIVE = "inactive"
 
     def __init__(self, db: Session):
@@ -24,14 +24,14 @@ class RegionService:
         self.repository = RegionRepository(db)
 
     def get_region_by_id(self, region_id: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁ID鑾峰彇鍦板尯"""
+        """根据ID鑾峰彇鍦板尯"""
         region = self.repository.get_by_id(region_id)
         if not region:
             return None
         return self._to_dict(region)
 
     def get_region_by_code(self, code: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁鍦板尯缂栫爜鑾峰彇"""
+        """根据鍦板尯编码鑾峰彇"""
         region = self.repository.get_by_code(code)
         if not region:
             return None
@@ -47,7 +47,7 @@ class RegionService:
         }
 
     def get_regions_by_level(self, level: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鍦板尯绾у埆鑾峰彇鍦板尯"""
+        """根据鍦板尯级别鑾峰彇鍦板尯"""
         regions = self.repository.get_by_level(level, skip=skip, limit=limit)
         total = self.repository.count_by_level(level)
         return {
@@ -56,7 +56,7 @@ class RegionService:
         }
 
     def get_regions_by_parent(self, parent_id: Optional[str], skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鐖剁骇ID鑾峰彇瀛愬湴鍖?""
+        """根据父级ID鑾峰彇瀛愬湴鍖?""
         regions = self.repository.get_by_parent_id(parent_id, skip=skip, limit=limit)
         total = self.repository.count_by_parent(parent_id)
         return {
@@ -103,19 +103,19 @@ class RegionService:
         parent_id: Optional[str] = None,
         sort_order: int = 0
     ) -> Dict[str, Any]:
-        """鍒涘缓鍦板尯"""
+        """创建鍦板尯"""
         # 妫€鏌ュ湴鍖虹紪鐮佹槸鍚﹀凡瀛樺湪
         existing = self.repository.get_by_code(code)
         if existing:
-            raise ValueError(f"鍦板尯缂栫爜 {code} 宸插瓨鍦?)
+            raise ValueError(f"鍦板尯编码 {code} 宸插瓨鍦?)
 
-        # 楠岃瘉鐖剁骇ID
+        # 楠岃瘉父级ID
         if parent_id:
             parent = self.repository.get_by_id(parent_id)
             if not parent:
                 raise ValueError(f"鐖剁骇鍦板尯 {parent_id} 涓嶅瓨鍦?)
 
-        # 鍒涘缓鍦板尯
+        # 创建鍦板尯
         region = Region(
             name=name,
             code=code,
@@ -138,12 +138,12 @@ class RegionService:
         sort_order: Optional[int] = None,
         status: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """鏇存柊鍦板尯"""
+        """更新鍦板尯"""
         region = self.repository.get_by_id(region_id)
         if not region:
             return None
 
-        # 鏇存柊瀛楁
+        # 更新瀛楁
         if name is not None:
             region.name = name
         if code is not None:
@@ -161,7 +161,7 @@ class RegionService:
         return self._to_dict(region)
 
     def delete_region(self, region_id: str) -> bool:
-        """鍒犻櫎鍦板尯"""
+        """删除鍦板尯"""
         return self.repository.delete(region_id)
 
     def get_statistics(self) -> Dict[str, Any]:
@@ -175,7 +175,7 @@ class RegionService:
         # 鎸夌姸鎬佺粺璁?        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
         inactive_count = self.repository.search({"status": self.STATUS_INACTIVE}, skip=0, limit=999999)[1]
 
-        # 椤剁骇鍦板尯鏁伴噺
+        # 椤剁骇鍦板尯数量
         top_level_count = self.repository.count_by_parent(None)
 
         return {

@@ -18,7 +18,7 @@ class MessageRepository:
         self.db = db
 
     def get_by_id(self, message_id: str) -> Optional[Message]:
-        """鏍规嵁ID鑾峰彇绔欏唴淇?""
+        """根据ID鑾峰彇绔欏唴淇?""
         return self.db.query(Message).filter(Message.id == message_id).first()
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Message]:
@@ -26,19 +26,19 @@ class MessageRepository:
         return self.db.query(Message).order_by(desc(Message.created_at)).offset(skip).limit(limit).all()
 
     def get_by_sender(self, sender_id: str, skip: int = 0, limit: int = 100) -> List[Message]:
-        """鏍规嵁鍙戦€佽€呰幏鍙栫珯鍐呬俊"""
+        """根据鍙戦€佽€呰幏鍙栫珯鍐呬俊"""
         return self.db.query(Message).filter(
             Message.sender_id == sender_id
         ).order_by(desc(Message.created_at)).offset(skip).limit(limit).all()
 
     def get_by_receiver(self, receiver_id: str, skip: int = 0, limit: int = 100) -> List[Message]:
-        """鏍规嵁鎺ユ敹鑰呰幏鍙栫珯鍐呬俊"""
+        """根据鎺ユ敹鑰呰幏鍙栫珯鍐呬俊"""
         return self.db.query(Message).filter(
             Message.receiver_id == receiver_id
         ).order_by(desc(Message.created_at)).offset(skip).limit(limit).all()
 
     def get_unread_by_receiver(self, receiver_id: str, skip: int = 0, limit: int = 100) -> List[Message]:
-        """鏍规嵁鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊"""
+        """根据鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊"""
         return self.db.query(Message).filter(
             Message.receiver_id == receiver_id,
             Message.status == "unread"
@@ -48,11 +48,11 @@ class MessageRepository:
         """鎼滅储绔欏唴淇?""
         query = self.db.query(Message)
 
-        # 绉熸埛ID杩囨护
+        # 租户ID杩囨护
         if query_params.get("tenant_id"):
             query = query.filter(Message.tenant_id == query_params["tenant_id"])
 
-        # 绫诲瀷杩囨护
+        # 类型杩囨护
         if query_params.get("type"):
             query = query.filter(Message.type == query_params["type"])
 
@@ -62,7 +62,7 @@ class MessageRepository:
         # 鎺ユ敹鑰呰繃婊?        if query_params.get("receiver_id"):
             query = query.filter(Message.receiver_id == query_params["receiver_id"])
 
-        # 鐘舵€佽繃婊?        if query_params.get("status"):
+        # 状态佽繃婊?        if query_params.get("status"):
             query = query.filter(Message.status == query_params["status"])
 
         # 鏍囬鎼滅储
@@ -82,20 +82,20 @@ class MessageRepository:
         return messages, total
 
     def create(self, message: Message) -> Message:
-        """鍒涘缓绔欏唴淇?""
+        """创建绔欏唴淇?""
         self.db.add(message)
         self.db.commit()
         self.db.refresh(message)
         return message
 
     def update(self, message: Message) -> Message:
-        """鏇存柊绔欏唴淇?""
+        """更新绔欏唴淇?""
         self.db.commit()
         self.db.refresh(message)
         return message
 
     def delete(self, message_id: str) -> bool:
-        """鍒犻櫎绔欏唴淇?""
+        """删除绔欏唴淇?""
         message = self.get_by_id(message_id)
         if message:
             self.db.delete(message)
@@ -118,22 +118,22 @@ class MessageRepository:
         return self.db.query(Message).count()
 
     def count_by_receiver(self, receiver_id: str) -> int:
-        """鏍规嵁鎺ユ敹鑰呯粺璁＄珯鍐呬俊鏁伴噺"""
+        """根据鎺ユ敹鑰呯粺璁＄珯鍐呬俊数量"""
         return self.db.query(Message).filter(Message.receiver_id == receiver_id).count()
 
     def count_unread_by_receiver(self, receiver_id: str) -> int:
-        """鏍规嵁鎺ユ敹鑰呯粺璁℃湭璇荤珯鍐呬俊鏁伴噺"""
+        """根据鎺ユ敹鑰呯粺璁℃湭璇荤珯鍐呬俊数量"""
         return self.db.query(Message).filter(
             Message.receiver_id == receiver_id,
             Message.status == "unread"
         ).count()
 
     def count_by_sender(self, sender_id: str) -> int:
-        """鏍规嵁鍙戦€佽€呯粺璁＄珯鍐呬俊鏁伴噺"""
+        """根据鍙戦€佽€呯粺璁＄珯鍐呬俊数量"""
         return self.db.query(Message).filter(Message.sender_id == sender_id).count()
 
     def create_read_record(self, message_id: str, user_id: str) -> MessageRead:
-        """鍒涘缓闃呰璁板綍"""
+        """创建闃呰璁板綍"""
         read_record = MessageRead(
             message_id=message_id,
             user_id=user_id,

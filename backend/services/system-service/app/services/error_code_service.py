@@ -13,13 +13,13 @@ from app.repositories.error_code_repository import ErrorCodeRepository
 class ErrorCodeService:
     """閿欒鐮丼ervice"""
 
-    # 閿欒绾у埆甯搁噺
+    # 閿欒级别甯搁噺
     LEVEL_INFO = "info"
     LEVEL_WARNING = "warning"
     LEVEL_ERROR = "error"
     LEVEL_CRITICAL = "critical"
 
-    # 鐘舵€佸父閲?    STATUS_ACTIVE = "active"
+    # 状态佸父閲?    STATUS_ACTIVE = "active"
     STATUS_INACTIVE = "inactive"
 
     def __init__(self, db: Session):
@@ -27,14 +27,14 @@ class ErrorCodeService:
         self.repository = ErrorCodeRepository(db)
 
     def get_error_code_by_id(self, error_code_id: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁ID鑾峰彇閿欒鐮?""
+        """根据ID鑾峰彇閿欒鐮?""
         error_code = self.repository.get_by_id(error_code_id)
         if not error_code:
             return None
         return self._to_dict(error_code)
 
     def get_error_code_by_code(self, code: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁閿欒鐮佽幏鍙?""
+        """根据閿欒鐮佽幏鍙?""
         error_code = self.repository.get_by_code(code)
         if not error_code:
             return None
@@ -50,7 +50,7 @@ class ErrorCodeService:
         }
 
     def get_error_codes_by_module(self, module: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁妯″潡鑾峰彇閿欒鐮?""
+        """根据妯″潡鑾峰彇閿欒鐮?""
         error_codes = self.repository.get_by_module(module, skip=skip, limit=limit)
         total = self.repository.count_by_module(module)
         return {
@@ -59,7 +59,7 @@ class ErrorCodeService:
         }
 
     def get_error_codes_by_level(self, level: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁閿欒绾у埆鑾峰彇閿欒鐮?""
+        """根据閿欒级别鑾峰彇閿欒鐮?""
         error_codes = self.repository.get_by_level(level, skip=skip, limit=limit)
         total = self.repository.count_by_level(level)
         return {
@@ -88,12 +88,12 @@ class ErrorCodeService:
         level: str = LEVEL_ERROR,
         description: Optional[str] = None
     ) -> Dict[str, Any]:
-        """鍒涘缓閿欒鐮?""
+        """创建閿欒鐮?""
         # 妫€鏌ラ敊璇爜鏄惁宸插瓨鍦?        existing = self.repository.get_by_code(code)
         if existing:
             raise ValueError(f"閿欒鐮?{code} 宸插瓨鍦?)
 
-        # 鍒涘缓閿欒鐮?        error_code = ErrorCode(
+        # 创建閿欒鐮?        error_code = ErrorCode(
             code=code,
             message=message,
             level=level,
@@ -115,12 +115,12 @@ class ErrorCodeService:
         description: Optional[str] = None,
         status: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """鏇存柊閿欒鐮?""
+        """更新閿欒鐮?""
         error_code = self.repository.get_by_id(error_code_id)
         if not error_code:
             return None
 
-        # 鏇存柊瀛楁
+        # 更新瀛楁
         if code is not None:
             error_code.code = code
         if message is not None:
@@ -138,7 +138,7 @@ class ErrorCodeService:
         return self._to_dict(error_code)
 
     def delete_error_code(self, error_code_id: str) -> bool:
-        """鍒犻櫎閿欒鐮?""
+        """删除閿欒鐮?""
         return self.repository.delete(error_code_id)
 
     def get_statistics(self) -> Dict[str, Any]:

@@ -104,7 +104,7 @@ class IntegrationTester:
                 logger.success(f"鉁?璁よ瘉鏈嶅姟鐧诲綍閫氳繃")
                 result = response.json()
                 if result.get("code") == 0:
-                    # 淇濆瓨token鐢ㄤ簬鍚庣画娴嬭瘯
+                    # 保存token鐢ㄤ簬鍚庣画娴嬭瘯
                     access_token = result.get("data", {}).get("access_token")
                     if access_token:
                         self.session.headers.update({

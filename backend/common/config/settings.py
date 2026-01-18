@@ -1,5 +1,5 @@
 ﻿"""
-搴旂敤閰嶇疆妯″潡
+应用配置妯″潡
 
 鍔熻兘璇存槑锛?
 1. 浣跨敤 Pydantic 绠＄悊閰嶇疆
@@ -14,10 +14,10 @@
     print(settings.APP_NAME)
     print(settings.DB_HOST)
     
-    # 璁块棶鏁版嵁搴撻厤缃?
+    # 璁块棶数据库配置?
     print(settings.DATABASE_URL)
     
-    # 璁块棶Redis閰嶇疆
+    # 璁块棶Redis配置
     print(settings.REDIS_HOST)
 """
 
@@ -29,26 +29,26 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """
-    搴旂敤閰嶇疆绫?
+    应用配置绫?
     
     鍔熻兘锛?
     - 浠庣幆澧冨彉閲忚鍙栭厤缃?
     - 鎻愪緵閰嶇疆楠岃瘉
-    - 鏀寔榛樿鍊?
+    - 鏀寔默认鍊?
     
     浣跨敤鏂规硶锛?
         settings = Settings()
         print(settings.APP_NAME)
     """
     
-    # ========== 搴旂敤閰嶇疆 ==========
-    APP_NAME: str = Field(default="浼佷笟绾I缁煎悎绠＄悊骞冲彴", description="搴旂敤鍚嶇О")
+    # ========== 应用配置 ==========
+    APP_NAME: str = Field(default="浼佷笟绾I缁煎悎绠＄悊骞冲彴", description="搴旂敤名称")
     APP_ENV: str = Field(default="development", description="杩愯鐜")
     APP_DEBUG: bool = Field(default=True, description="璋冭瘯妯″紡")
     APP_PORT: int = Field(default=8000, description="搴旂敤绔彛")
     APP_HOST: str = Field(default="0.0.0.0", description="搴旂敤涓绘満")
     
-    # ========== 鏁版嵁搴撻厤缃?==========
+    # ========== 数据库配置?==========
     DB_TYPE: str = Field(default="mysql", description="鏁版嵁搴撶被鍨?)
     DB_HOST: str = Field(default="localhost", description="鏁版嵁搴撲富鏈?)
     DB_PORT: int = Field(default=3306, description="鏁版嵁搴撶鍙?)
@@ -64,19 +64,19 @@ class Settings(BaseSettings):
     ORACLE_HOST: Optional[str] = Field(default="", description="Oracle涓绘満")
     ORACLE_PORT: int = Field(default=1521, description="Oracle绔彛")
     ORACLE_SERVICE_NAME: Optional[str] = Field(default="", description="Oracle鏈嶅姟鍚?)
-    ORACLE_USER: Optional[str] = Field(default="", description="Oracle鐢ㄦ埛鍚?)
+    ORACLE_USER: Optional[str] = Field(default="", description="Oracle用户名?)
     ORACLE_PASSWORD: Optional[str] = Field(default="", description="Oracle瀵嗙爜")
     
     # ========== PostgreSQL鏁版嵁婧愰厤缃?==========
     POSTGRESQL_HOST: Optional[str] = Field(default="", description="PostgreSQL涓绘満")
     POSTGRESQL_PORT: int = Field(default=5432, description="PostgreSQL绔彛")
     POSTGRESQL_DATABASE: Optional[str] = Field(default="", description="PostgreSQL鏁版嵁搴撳悕")
-    POSTGRESQL_USER: Optional[str] = Field(default="", description="PostgreSQL鐢ㄦ埛鍚?)
+    POSTGRESQL_USER: Optional[str] = Field(default="", description="PostgreSQL用户名?)
     POSTGRESQL_PASSWORD: Optional[str] = Field(default="", description="PostgreSQL瀵嗙爜")
     
-    # ========== Redis閰嶇疆 ==========
+    # ========== Redis配置 ==========
     CACHE_ENABLED: bool = Field(default=True, description="鏄惁鍚敤缂撳瓨")
-    CACHE_TYPE: str = Field(default="local", description="缂撳瓨绫诲瀷")
+    CACHE_TYPE: str = Field(default="local", description="缂撳瓨类型")
     REDIS_HOST: str = Field(default="127.0.0.1", description="Redis涓绘満")
     REDIS_PORT: int = Field(default=6379, description="Redis绔彛")
     REDIS_PASSWORD: Optional[str] = Field(default="", description="Redis瀵嗙爜")
@@ -88,18 +88,18 @@ class Settings(BaseSettings):
     NACOS_HOST: str = Field(default="127.0.0.1", description="Nacos涓绘満")
     NACOS_PORT: int = Field(default=8848, description="Nacos绔彛")
     NACOS_NAMESPACE: str = Field(default="mcp-platform", description="Nacos鍛藉悕绌洪棿")
-    NACOS_USERNAME: str = Field(default="nacos", description="Nacos鐢ㄦ埛鍚?)
+    NACOS_USERNAME: str = Field(default="nacos", description="Nacos用户名?)
     NACOS_PASSWORD: str = Field(default="nacos", description="Nacos瀵嗙爜")
     
     # ========== RabbitMQ閰嶇疆 ==========
     USE_RABBITMQ: bool = Field(default=False, description="鏄惁浣跨敤RabbitMQ")
     RABBITMQ_HOST: str = Field(default="localhost", description="RabbitMQ涓绘満")
     RABBITMQ_PORT: int = Field(default=5672, description="RabbitMQ绔彛")
-    RABBITMQ_USERNAME: str = Field(default="admin", description="RabbitMQ鐢ㄦ埛鍚?)
+    RABBITMQ_USERNAME: str = Field(default="admin", description="RabbitMQ用户名?)
     RABBITMQ_PASSWORD: str = Field(default="admin123", description="RabbitMQ瀵嗙爜")
     RABBITMQ_VHOST: str = Field(default="/", description="RabbitMQ铏氭嫙涓绘満")
     
-    # ========== JWT閰嶇疆 ==========
+    # ========== JWT配置 ==========
     JWT_SECRET: str = Field(default="your-secret-key-change-in-production", description="JWT瀵嗛挜")
     JWT_ALGORITHM: str = Field(default="HS256", description="JWT绠楁硶")
     JWT_EXPIRE_MINUTES: int = Field(default=1440, description="JWT杩囨湡鏃堕棿锛堝垎閽燂級")
@@ -108,8 +108,8 @@ class Settings(BaseSettings):
     # ========== API Key閰嶇疆 ==========
     API_KEY_SECRET: str = Field(default="your-api-key-secret", description="API Key瀵嗛挜")
     
-    # ========== 鏃ュ織閰嶇疆 ==========
-    LOG_LEVEL: str = Field(default="INFO", description="鏃ュ織绾у埆")
+    # ========== 日志配置 ==========
+    LOG_LEVEL: str = Field(default="INFO", description="鏃ュ織级别")
     LOG_FILE_PATH: str = Field(default="logs/app.log", description="鏃ュ織鏂囦欢璺緞")
     LOG_ROTATION: str = Field(default="100 MB", description="鏃ュ織杞浆澶у皬")
     LOG_RETENTION: str = Field(default="30 days", description="鏃ュ織淇濈暀鏃堕棿")
@@ -156,7 +156,7 @@ class Settings(BaseSettings):
     )
     
     # ========== 鍒嗛〉閰嶇疆 ==========
-    DEFAULT_PAGE_SIZE: int = Field(default=10, description="榛樿椤靛ぇ灏?)
+    DEFAULT_PAGE_SIZE: int = Field(default=10, description="默认椤靛ぇ灏?)
     MAX_PAGE_SIZE: int = Field(default=100, description="鏈€澶ч〉澶у皬")
     PAGE_SIZE_OPTIONS: List[int] = Field(
         default=[10, 20, 50, 100],
@@ -178,7 +178,7 @@ class Settings(BaseSettings):
     
     @validator("LOG_LEVEL")
     def validate_log_level(cls, v):
-        """楠岃瘉鏃ュ織绾у埆"""
+        """楠岃瘉鏃ュ織级别"""
         if v not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
             raise ValueError(f"鏃犳晥鐨勬棩蹇楃骇鍒? {v}")
         return v

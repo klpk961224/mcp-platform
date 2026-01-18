@@ -2,7 +2,7 @@
 """
 MCP宸ュ叿鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. MCP宸ュ叿CRUD鎿嶄綔
-2. MCP宸ュ叿鏌ヨ鎿嶄綔
+2. MCP宸ュ叿查询鎿嶄綔
 3. MCP宸ュ叿缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.mcp_tool_repository import MCPToolRepository
@@ -23,7 +23,7 @@ class MCPToolRepository:
     """
     MCP宸ュ叿鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - MCP宸ュ叿CRUD鎿嶄綔
-    - MCP宸ュ叿鏌ヨ鎿嶄綔
+    - MCP宸ュ叿查询鎿嶄綔
     - MCP宸ュ叿缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        tool_repo = MCPToolRepository(db)
@@ -39,14 +39,14 @@ class MCPToolRepository:
     
     def create(self, tool: MCPTool) -> MCPTool:
         """
-        鍒涘缓MCP宸ュ叿
+        创建MCP宸ュ叿
         
         Args:
             tool: 宸ュ叿瀵硅薄
         
         Returns:
-            MCPTool: 鍒涘缓鐨勫伐鍏峰璞?        """
-        logger.info(f"鍒涘缓MCP宸ュ叿: name={tool.name}, code={tool.code}")
+            MCPTool: 创建鐨勫伐鍏峰璞?        """
+        logger.info(f"创建MCP宸ュ叿: name={tool.name}, code={tool.code}")
         self.db.add(tool)
         self.db.commit()
         self.db.refresh(tool)
@@ -54,7 +54,7 @@ class MCPToolRepository:
     
     def get_by_id(self, tool_id: str) -> Optional[MCPTool]:
         """
-        鏍规嵁ID鑾峰彇宸ュ叿
+        根据ID鑾峰彇宸ュ叿
         
         Args:
             tool_id: 宸ュ叿ID
@@ -66,10 +66,10 @@ class MCPToolRepository:
     
     def get_by_code(self, code: str) -> Optional[MCPTool]:
         """
-        鏍规嵁缂栫爜鑾峰彇宸ュ叿
+        根据编码鑾峰彇宸ュ叿
         
         Args:
-            code: 宸ュ叿缂栫爜
+            code: 宸ュ叿编码
         
         Returns:
             Optional[MCPTool]: 宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -78,12 +78,12 @@ class MCPToolRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇宸ュ叿鍒楄〃
+        根据租户ID鑾峰彇宸ュ叿鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[MCPTool]: 宸ュ叿鍒楄〃
@@ -97,7 +97,7 @@ class MCPToolRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[MCPTool]: 宸ュ叿鍒楄〃
@@ -109,9 +109,9 @@ class MCPToolRepository:
         """
         鑾峰彇绉熸埛鍙敤鐨勫伐鍏峰垪琛紙绉熸埛绉佹湁 + 鍏紑锛?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[MCPTool]: 宸ュ叿鍒楄〃
@@ -129,9 +129,9 @@ class MCPToolRepository:
         鎼滅储宸ュ叿
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[MCPTool]: 宸ュ叿鍒楄〃
@@ -160,7 +160,7 @@ class MCPToolRepository:
         鑾峰彇鎵€鏈夊伐鍏?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[MCPTool]: 宸ュ叿鍒楄〃
@@ -170,30 +170,30 @@ class MCPToolRepository:
     
     def update(self, tool: MCPTool) -> MCPTool:
         """
-        鏇存柊宸ュ叿
+        更新宸ュ叿
         
         Args:
             tool: 宸ュ叿瀵硅薄
         
         Returns:
-            MCPTool: 鏇存柊鍚庣殑宸ュ叿瀵硅薄
+            MCPTool: 更新鍚庣殑宸ュ叿瀵硅薄
         """
-        logger.info(f"鏇存柊MCP宸ュ叿: tool_id={tool.id}")
+        logger.info(f"更新MCP宸ュ叿: tool_id={tool.id}")
         self.db.commit()
         self.db.refresh(tool)
         return tool
     
     def delete(self, tool_id: str) -> bool:
         """
-        鍒犻櫎宸ュ叿
+        删除宸ュ叿
         
         Args:
             tool_id: 宸ュ叿ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎MCP宸ュ叿: tool_id={tool_id}")
+        logger.info(f"删除MCP宸ュ叿: tool_id={tool_id}")
         tool = self.get_by_id(tool_id)
         if not tool:
             return False
@@ -204,13 +204,13 @@ class MCPToolRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛宸ュ叿鏁伴噺
+        缁熻绉熸埛宸ュ叿数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 宸ュ叿鏁伴噺
+            int: 宸ュ叿数量
         """
         return self.db.query(MCPTool).filter(MCPTool.tenant_id == tenant_id).count()
     
@@ -218,7 +218,7 @@ class MCPToolRepository:
         """
         缁熻鎵€鏈夊伐鍏锋暟閲?        
         Returns:
-            int: 宸ュ叿鏁伴噺
+            int: 宸ュ叿数量
         """
         return self.db.query(MCPTool).count()
     
@@ -226,7 +226,7 @@ class MCPToolRepository:
         """
         妫€鏌ュ伐鍏风紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 宸ュ叿缂栫爜
+            code: 宸ュ叿编码
         
         Returns:
             bool: 鏄惁瀛樺湪

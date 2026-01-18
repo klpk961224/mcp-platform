@@ -1,5 +1,5 @@
 ﻿"""
-鏉冮檺鍩熸湇鍔?- FastAPI搴旂敤鍏ュ彛
+权限域服务?- FastAPI搴旂敤鍏ュ彛
 """
 
 from fastapi import FastAPI
@@ -16,7 +16,7 @@ from common.database.connection import datasource_manager
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="鏉冮檺鍩熸湇鍔?- 瑙掕壊绠＄悊銆佹潈闄愮鐞嗐€佽彍鍗曠鐞嗐€佹暟鎹寖鍥存潈闄?,
+    description="权限域服务?- 瑙掕壊绠＄悊銆佹潈闄愮鐞嗐€佽彍鍗曠鐞嗐€佹暟鎹寖鍥存潈闄?,
     version="1.0.0",
     debug=settings.APP_DEBUG
 )

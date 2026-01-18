@@ -23,8 +23,8 @@ router = APIRouter(prefix="/logs", tags=["鏃ュ織瀹¤"])
 async def get_login_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    user_id: Optional[str] = Query(None, description="鐢ㄦ埛ID"),
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    user_id: Optional[str] = Query(None, description="用户ID"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
     """鑾峰彇鐧诲綍鏃ュ織鍒楄〃"""
@@ -60,7 +60,7 @@ async def get_login_logs(
 
 @router.get("/login/statistics", summary="鑾峰彇鐧诲綍缁熻淇℃伅")
 async def get_login_statistics(
-    tenant_id: str = Query(..., description="绉熸埛ID"),
+    tenant_id: str = Query(..., description="租户ID"),
     days: int = Query(7, ge=1, le=30, description="缁熻澶╂暟"),
     db: Session = Depends(get_db)
 ):
@@ -81,8 +81,8 @@ async def get_login_statistics(
 async def get_operation_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    user_id: Optional[str] = Query(None, description="鐢ㄦ埛ID"),
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    user_id: Optional[str] = Query(None, description="用户ID"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
     """鑾峰彇鎿嶄綔鏃ュ織鍒楄〃"""

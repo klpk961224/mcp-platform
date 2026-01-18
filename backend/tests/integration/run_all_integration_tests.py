@@ -247,7 +247,7 @@ class IntegrationTestRunner:
                     
                     if service_result.get("details"):
                         f.write("#### 娴嬭瘯璇︽儏\n\n")
-                        f.write("| 娴嬭瘯鐢ㄤ緥 | 鐘舵€?|\n")
+                        f.write("| 娴嬭瘯鐢ㄤ緥 | 状态?|\n")
                         f.write("|---------|------|\n")
                         
                         for detail in service_result["details"]:

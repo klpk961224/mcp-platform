@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 @pytest.fixture
 def client():
-    """鍒涘缓娴嬭瘯瀹㈡埛绔?""
+    """创建娴嬭瘯瀹㈡埛绔?""
     from app.main import app
     return TestClient(app)
 
@@ -65,7 +65,7 @@ class TestAuthAPI:
         # 妯℃嫙AuthService鎶涘嚭寮傚父
         with patch('app.api.v1.auth.AuthService') as MockAuthService:
             mock_service = Mock()
-            mock_service.login.side_effect = ValueError("鐢ㄦ埛鍚嶆垨瀵嗙爜閿欒")
+            mock_service.login.side_effect = ValueError("用户名嶆垨瀵嗙爜閿欒")
             MockAuthService.return_value = mock_service
             
             # 鍙戦€佺櫥褰曡姹?            response = client.post("/api/v1/auth/login", json={
@@ -79,11 +79,11 @@ class TestAuthAPI:
             assert "detail" in data
     
     def test_login_user_disabled(self, client):
-        """娴嬭瘯鐧诲綍澶辫触锛堢敤鎴峰凡绂佺敤锛?""
+        """娴嬭瘯鐧诲綍澶辫触锛堢敤鎴峰凡禁用锛?""
         # 妯℃嫙AuthService鎶涘嚭寮傚父
         with patch('app.api.v1.auth.AuthService') as MockAuthService:
             mock_service = Mock()
-            mock_service.login.side_effect = ValueError("鐢ㄦ埛宸茶绂佺敤")
+            mock_service.login.side_effect = ValueError("鐢ㄦ埛宸茶禁用")
             MockAuthService.return_value = mock_service
             
             # 鍙戦€佺櫥褰曡姹?            response = client.post("/api/v1/auth/login", json={
@@ -170,7 +170,7 @@ class TestAuthAPI:
     
     def test_login_missing_username(self, client):
         """娴嬭瘯鐧诲綍澶辫触锛堢己灏戠敤鎴峰悕锛?""
-        # 鍙戦€佺櫥褰曡姹傦紙缂哄皯鐢ㄦ埛鍚嶏級
+        # 鍙戦€佺櫥褰曡姹傦紙缂哄皯用户名嶏級
         response = client.post("/api/v1/auth/login", json={
             "password": "password"
         })

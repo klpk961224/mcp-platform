@@ -2,7 +2,7 @@
 甯搁噺瀹氫箟妯″潡
 
 鍔熻兘璇存槑锛?1. 瀹氫箟绯荤粺甯搁噺
-2. 瀹氫箟鏋氫妇鍊?3. 瀹氫箟閿欒鐮?4. 瀹氫箟鐘舵€佺爜
+2. 瀹氫箟鏋氫妇鍊?3. 瀹氫箟閿欒鐮?4. 瀹氫箟状态佺爜
 
 浣跨敤绀轰緥锛?    from common.config.constants import (
         UserStatus,
@@ -23,9 +23,9 @@ from enum import Enum
 from typing import Dict
 
 
-# ========== 鐢ㄦ埛鐘舵€?==========
+# ========== 鐢ㄦ埛状态?==========
 class UserStatus(str, Enum):
-    """鐢ㄦ埛鐘舵€佹灇涓?""
+    """鐢ㄦ埛状态佹灇涓?""
     ACTIVE = "active"  # 婵€娲?    INACTIVE = "inactive"  # 鏈縺娲?    LOCKED = "locked"  # 閿佸畾
     DELETED = "deleted"  # 宸插垹闄?
 
@@ -35,28 +35,28 @@ class Gender(str, Enum):
     MALE = "male"  # 鐢?    FEMALE = "female"  # 濂?    UNKNOWN = "unknown"  # 鏈煡
 
 
-# ========== 璁㈠崟鐘舵€?==========
+# ========== 璁㈠崟状态?==========
 class OrderStatus(str, Enum):
-    """璁㈠崟鐘舵€佹灇涓?""
+    """璁㈠崟状态佹灇涓?""
     PENDING = "pending"  # 寰呮敮浠?    PAID = "paid"  # 宸叉敮浠?    SHIPPED = "shipped"  # 宸插彂璐?    DELIVERED = "delivered"  # 宸查€佽揪
     CANCELLED = "cancelled"  # 宸插彇娑?    REFUNDED = "refunded"  # 宸查€€娆?
 
-# ========== 鏀粯鐘舵€?==========
+# ========== 鏀粯状态?==========
 class PaymentStatus(str, Enum):
-    """鏀粯鐘舵€佹灇涓?""
+    """鏀粯状态佹灇涓?""
     PENDING = "pending"  # 寰呮敮浠?    SUCCESS = "success"  # 鏀粯鎴愬姛
     FAILED = "failed"  # 鏀粯澶辫触
     REFUNDED = "refunded"  # 宸查€€娆?
 
-# ========== 瀹℃壒鐘舵€?==========
+# ========== 瀹℃壒状态?==========
 class ApprovalStatus(str, Enum):
-    """瀹℃壒鐘舵€佹灇涓?""
+    """瀹℃壒状态佹灇涓?""
     PENDING = "pending"  # 寰呭鎵?    APPROVED = "approved"  # 宸查€氳繃
     REJECTED = "rejected"  # 宸叉嫆缁?    CANCELLED = "cancelled"  # 宸插彇娑?
 
-# ========== 浠诲姟鐘舵€?==========
+# ========== 浠诲姟状态?==========
 class TaskStatus(str, Enum):
-    """浠诲姟鐘舵€佹灇涓?""
+    """浠诲姟状态佹灇涓?""
     PENDING = "pending"  # 寰呭鐞?    IN_PROGRESS = "in_progress"  # 杩涜涓?    COMPLETED = "completed"  # 宸插畬鎴?    FAILED = "failed"  # 澶辫触
     CANCELLED = "cancelled"  # 宸插彇娑?
 
@@ -65,18 +65,18 @@ class TaskPriority(str, Enum):
     """浠诲姟浼樺厛绾ф灇涓?""
     LOW = "low"  # 浣?    MEDIUM = "medium"  # 涓?    HIGH = "high"  # 楂?    URGENT = "urgent"  # 绱ф€?
 
-# ========== 閫氱煡绫诲瀷 ==========
+# ========== 閫氱煡类型 ==========
 class NotificationType(str, Enum):
-    """閫氱煡绫诲瀷鏋氫妇"""
+    """閫氱煡类型鏋氫妇"""
     SYSTEM = "system"  # 绯荤粺閫氱煡
     USER = "user"  # 鐢ㄦ埛閫氱煡
     TASK = "task"  # 浠诲姟閫氱煡
     APPROVAL = "approval"  # 瀹℃壒閫氱煡
 
 
-# ========== 鏃ュ織绾у埆 ==========
+# ========== 鏃ュ織级别 ==========
 class LogLevel(str, Enum):
-    """鏃ュ織绾у埆鏋氫妇"""
+    """鏃ュ織级别鏋氫妇"""
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -84,9 +84,9 @@ class LogLevel(str, Enum):
     CRITICAL = "CRITICAL"
 
 
-# ========== 鏃ュ織绫诲瀷 ==========
+# ========== 鏃ュ織类型 ==========
 class LogType(str, Enum):
-    """鏃ュ織绫诲瀷鏋氫妇"""
+    """鏃ュ織类型鏋氫妇"""
     LOGIN = "login"  # 鐧诲綍鏃ュ織
     OPERATION = "operation"  # 鎿嶄綔鏃ュ織
     ERROR = "error"  # 閿欒鏃ュ織
@@ -97,7 +97,7 @@ class LogType(str, Enum):
 class ResponseCode(int, Enum):
     """鍝嶅簲鐮佹灇涓?""
     SUCCESS = 200  # 鎴愬姛
-    CREATED = 201  # 鍒涘缓鎴愬姛
+    CREATED = 201  # 创建鎴愬姛
     NO_CONTENT = 204  # 鏃犲唴瀹?    
     BAD_REQUEST = 400  # 璇锋眰閿欒
     UNAUTHORIZED = 401  # 鏈巿鏉?    FORBIDDEN = 403  # 绂佹璁块棶
@@ -164,7 +164,7 @@ ERROR_MESSAGES: Dict[int, str] = {
     ErrorCode.UNKNOWN_ERROR: "鏈煡閿欒",
     ErrorCode.PARAMETER_ERROR: "鍙傛暟閿欒",
     ErrorCode.VALIDATION_ERROR: "楠岃瘉澶辫触",
-    ErrorCode.NOT_FOUND: "璧勬簮涓嶅瓨鍦?,
+    ErrorCode.NOT_FOUND: "资源涓嶅瓨鍦?,
     ErrorCode.PERMISSION_DENIED: "鏉冮檺涓嶈冻",
     ErrorCode.RATE_LIMIT_EXCEEDED: "瓒呭嚭閫熺巼闄愬埗",
     

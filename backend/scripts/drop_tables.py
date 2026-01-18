@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""鍒犻櫎鎵€鏈夎〃"""
+"""删除鎵€鏈夎〃"""
 
 import pymysql
 
@@ -18,13 +18,13 @@ try:
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
 
-    # 绂佺敤澶栭敭妫€鏌?    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+    # 禁用澶栭敭妫€鏌?    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
     # 鑾峰彇鎵€鏈夎〃
     cursor.execute("SHOW TABLES")
     tables = cursor.fetchall()
 
-    # 鍒犻櫎鎵€鏈夎〃
+    # 删除鎵€鏈夎〃
     for table in tables:
         table_name = table[0]
         cursor.execute(f"DROP TABLE IF EXISTS {table_name}")

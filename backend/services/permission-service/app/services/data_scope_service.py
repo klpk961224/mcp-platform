@@ -31,7 +31,7 @@ class DataScopeService:
         has_access = data_scope_service.check_data_scope("user_001", "department", "dept_001")
     """
     
-    # 鏁版嵁鑼冨洿绫诲瀷甯搁噺
+    # 鏁版嵁鑼冨洿类型甯搁噺
     DATA_SCOPE_ALL = "all"  # 鍏ㄩ儴鏁版嵁
     DATA_SCOPE_DEPARTMENT = "department"  # 鏈儴闂ㄦ暟鎹?    DATA_SCOPE_DEPARTMENT_AND_BELOW = "department_and_below"  # 鏈儴闂ㄥ強浠ヤ笅鏁版嵁
     DATA_SCOPE_SELF = "self"  # 浠呮湰浜烘暟鎹?    
@@ -46,22 +46,22 @@ class DataScopeService:
     
     def create_data_scope(self, data_scope_data: Dict[str, Any]) -> DataScope:
         """
-        鍒涘缓鏁版嵁鑼冨洿
+        创建鏁版嵁鑼冨洿
         
         Args:
             data_scope_data: 鏁版嵁鑼冨洿鏁版嵁
         
         Returns:
-            DataScope: 鍒涘缓鐨勬暟鎹寖鍥村璞?        
+            DataScope: 创建鐨勬暟鎹寖鍥村璞?        
         Raises:
-            ValueError: 鏁版嵁鑼冨洿缂栫爜宸插瓨鍦?        """
-        logger.info(f"鍒涘缓鏁版嵁鑼冨洿: name={data_scope_data.get('name')}, code={data_scope_data.get('code')}")
+            ValueError: 鏁版嵁鑼冨洿编码宸插瓨鍦?        """
+        logger.info(f"创建鏁版嵁鑼冨洿: name={data_scope_data.get('name')}, code={data_scope_data.get('code')}")
         
         # 妫€鏌ユ暟鎹寖鍥寸紪鐮佹槸鍚﹀凡瀛樺湪
         if self.data_scope_repo.exists_by_code(data_scope_data.get("code")):
-            raise ValueError("鏁版嵁鑼冨洿缂栫爜宸插瓨鍦?)
+            raise ValueError("鏁版嵁鑼冨洿编码宸插瓨鍦?)
         
-        # 鍒涘缓鏁版嵁鑼冨洿
+        # 创建鏁版嵁鑼冨洿
         data_scope = DataScope(**data_scope_data)
         return self.data_scope_repo.create(data_scope)
     
@@ -79,10 +79,10 @@ class DataScopeService:
     
     def get_data_scope_by_code(self, code: str) -> Optional[DataScope]:
         """
-        鏍规嵁缂栫爜鑾峰彇鏁版嵁鑼冨洿
+        根据编码鑾峰彇鏁版嵁鑼冨洿
         
         Args:
-            code: 鏁版嵁鑼冨洿缂栫爜
+            code: 鏁版嵁鑼冨洿编码
         
         Returns:
             Optional[DataScope]: 鏁版嵁鑼冨洿瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -95,7 +95,7 @@ class DataScopeService:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataScope]: 鏁版嵁鑼冨洿鍒楄〃
@@ -106,12 +106,12 @@ class DataScopeService:
         """
         璁剧疆鐢ㄦ埛鐨勬暟鎹寖鍥存潈闄?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             module: 妯″潡
-            data_scope_code: 鏁版嵁鑼冨洿缂栫爜
+            data_scope_code: 鏁版嵁鑼冨洿编码
         
         Returns:
-            UserDataScope: 鍒涘缓鐨勭敤鎴锋暟鎹寖鍥村璞?        
+            UserDataScope: 创建鐨勭敤鎴锋暟鎹寖鍥村璞?        
         Raises:
             ValueError: 鏁版嵁鑼冨洿涓嶅瓨鍦?        """
         logger.info(f"璁剧疆鐢ㄦ埛鏁版嵁鑼冨洿: user_id={user_id}, module={module}, data_scope_code={data_scope_code}")
@@ -124,11 +124,11 @@ class DataScopeService:
         # 妫€鏌ユ槸鍚﹀凡瀛樺湪
         existing = self.user_data_scope_repo.get_by_user_module(user_id, module)
         if existing:
-            # 鏇存柊
+            # 更新
             existing.data_scope_id = data_scope.id
             return self.user_data_scope_repo.update(existing)
         else:
-            # 鍒涘缓
+            # 创建
             user_data_scope = UserDataScope(
                 user_id=user_id,
                 module=module,
@@ -140,7 +140,7 @@ class DataScopeService:
         """
         鑾峰彇鐢ㄦ埛鐨勬暟鎹寖鍥存潈闄?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             module: 妯″潡
         
         Returns:
@@ -153,7 +153,7 @@ class DataScopeService:
         妫€鏌ョ敤鎴锋槸鍚︽湁鏉冮檺璁块棶鐩爣鏁版嵁
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             module: 妯″潡
             target_id: 鐩爣鏁版嵁ID
             user_info: 鐢ㄦ埛淇℃伅锛堝寘鍚玠epartment_id绛夛級
@@ -164,12 +164,12 @@ class DataScopeService:
         
         # 鑾峰彇鐢ㄦ埛鐨勬暟鎹寖鍥?        user_data_scope = self.get_user_data_scope(user_id, module)
         if not user_data_scope:
-            # 榛樿涓轰粎鏈汉鏁版嵁
+            # 默认涓轰粎鏈汉鏁版嵁
             data_scope_code = self.DATA_SCOPE_SELF
         else:
             data_scope_code = user_data_scope.data_scope.code
         
-        # 鏍规嵁鏁版嵁鑼冨洿绫诲瀷妫€鏌ユ潈闄?        if data_scope_code == self.DATA_SCOPE_ALL:
+        # 根据鏁版嵁鑼冨洿类型妫€鏌ユ潈闄?        if data_scope_code == self.DATA_SCOPE_ALL:
             # 鍏ㄩ儴鏁版嵁锛氭湁鏉冮檺
             return True
         elif data_scope_code == self.DATA_SCOPE_DEPARTMENT:
@@ -192,7 +192,7 @@ class DataScopeService:
             # 浠呮湰浜烘暟鎹細妫€鏌ユ槸鍚︽槸鏈汉
             return target_id == user_id
         else:
-            # 鏈煡鏁版嵁鑼冨洿绫诲瀷锛氶粯璁ゆ棤鏉冮檺
+            # 鏈煡鏁版嵁鑼冨洿类型锛氶粯璁ゆ棤鏉冮檺
             return False
     
     def _check_same_department(self, target_id: str, user_department_id: str, module: str) -> bool:
@@ -201,13 +201,13 @@ class DataScopeService:
         
         Args:
             target_id: 鐩爣ID
-            user_department_id: 鐢ㄦ埛閮ㄩ棬ID
+            user_department_id: 鐢ㄦ埛部门ID
             module: 妯″潡
         
         Returns:
             bool: 鏄惁灞炰簬鍚屼竴閮ㄩ棬
         """
-        # 鏍规嵁妯″潡鏌ヨ鐩爣鏁版嵁鐨勯儴闂↖D
+        # 根据妯″潡查询鐩爣鏁版嵁鐨勯儴闂↖D
         target_department_id = self._get_target_department_id(target_id, module)
         if not target_department_id:
             return False
@@ -219,12 +219,12 @@ class DataScopeService:
         
         Args:
             target_id: 鐩爣ID
-            user_department_id: 鐢ㄦ埛閮ㄩ棬ID
+            user_department_id: 鐢ㄦ埛部门ID
             module: 妯″潡
         
         Returns:
             bool: 鏄惁灞炰簬鏈儴闂ㄦ垨瀛愰儴闂?        """
-        # 鏍规嵁妯″潡鏌ヨ鐩爣鏁版嵁鐨勯儴闂↖D
+        # 根据妯″潡查询鐩爣鏁版嵁鐨勯儴闂↖D
         target_department_id = self._get_target_department_id(target_id, module)
         if not target_department_id:
             return False
@@ -271,15 +271,15 @@ class DataScopeService:
             module: 妯″潡
         
         Returns:
-            Optional[str]: 閮ㄩ棬ID
+            Optional[str]: 部门ID
         """
         if module == "user":
-            # 鏌ヨ鐢ㄦ埛鐨勯儴闂↖D
+            # 查询鐢ㄦ埛鐨勯儴闂↖D
             from common.database.models.user import User
             user = self.db.query(User).filter(User.id == target_id).first()
             return user.department_id if user else None
         elif module == "department":
-            # 鏌ヨ閮ㄩ棬鐨勭埗閮ㄩ棬ID
+            # 查询閮ㄩ棬鐨勭埗部门ID
             from common.database.models.user import Department
             department = self.db.query(Department).filter(Department.id == target_id).first()
             return department.parent_id if department else None

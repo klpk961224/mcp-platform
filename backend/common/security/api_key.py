@@ -32,8 +32,8 @@ def generate_api_key(
     鐢熸垚API Key
     
     Args:
-        user_id: 鐢ㄦ埛ID
-        name: API Key鍚嶇О
+        user_id: 用户ID
+        name: API Key名称
         expires_days: 杩囨湡澶╂暟锛堝彲閫夛級
     
     Returns:
@@ -81,7 +81,7 @@ def verify_api_key(api_key: str) -> Optional[Dict[str, Any]]:
     
     key_id, key_secret = parts
     
-    # 杩欓噷搴旇鏌ヨ鏁版嵁搴撻獙璇丄PI Key
+    # 杩欓噷搴旇查询鏁版嵁搴撻獙璇丄PI Key
     # 绠€鍖栫増鏈紝鍙繑鍥炲熀鏈俊鎭?    logger.debug(f"API Key楠岃瘉鎴愬姛: key_id={key_id}")
     return {
         "key_id": key_id,

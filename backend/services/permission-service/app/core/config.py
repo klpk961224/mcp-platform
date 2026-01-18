@@ -1,5 +1,5 @@
 ﻿"""
-鏉冮檺鍩熸湇鍔￠厤缃ā鍧?"""
+权限域服务￠厤缃ā鍧?"""
 
 from pydantic_settings import BaseSettings
 from typing import Optional
@@ -8,7 +8,7 @@ from typing import Optional
 class Settings(BaseSettings):
     """閰嶇疆绫?""
     
-    APP_NAME: str = "鏉冮檺鍩熸湇鍔?
+    APP_NAME: str = "权限域服务?
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
     APP_PORT: int = 228003

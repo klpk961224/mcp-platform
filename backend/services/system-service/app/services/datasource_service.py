@@ -37,21 +37,21 @@ class DataSourceService:
     
     def create_datasource(self, datasource_data: Dict[str, Any]) -> DataSource:
         """
-        鍒涘缓鏁版嵁婧?        
+        创建鏁版嵁婧?        
         Args:
             datasource_data: 鏁版嵁婧愭暟鎹?        
         Returns:
-            DataSource: 鍒涘缓鐨勬暟鎹簮瀵硅薄
+            DataSource: 创建鐨勬暟鎹簮瀵硅薄
         
         Raises:
             ValueError: 鏁版嵁婧愬悕绉板凡瀛樺湪
         """
-        logger.info(f"鍒涘缓鏁版嵁婧? name={datasource_data.get('name')}, type={datasource_data.get('type')}")
+        logger.info(f"创建鏁版嵁婧? name={datasource_data.get('name')}, type={datasource_data.get('type')}")
         
-        # 妫€鏌ユ暟鎹簮鍚嶇О鏄惁宸插瓨鍦?        if self.datasource_repo.exists_by_name(datasource_data.get("name"), datasource_data.get("tenant_id")):
+        # 妫€鏌ユ暟鎹簮名称鏄惁宸插瓨鍦?        if self.datasource_repo.exists_by_name(datasource_data.get("name"), datasource_data.get("tenant_id")):
             raise ValueError("鏁版嵁婧愬悕绉板凡瀛樺湪")
         
-        # 鍒涘缓鏁版嵁婧?        datasource = DataSource(**datasource_data)
+        # 创建鏁版嵁婧?        datasource = DataSource(**datasource_data)
         datasource = self.datasource_repo.create(datasource)
         
         # 娉ㄥ唽鍒版暟鎹簮绠＄悊鍣?        self._register_datasource(datasource)
@@ -71,9 +71,9 @@ class DataSourceService:
     
     def get_default_datasource(self, tenant_id: str) -> Optional[DataSource]:
         """
-        鑾峰彇榛樿鏁版嵁婧?        
+        鑾峰彇默认鏁版嵁婧?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
@@ -82,20 +82,20 @@ class DataSourceService:
     
     def update_datasource(self, datasource_id: str, datasource_data: Dict[str, Any]) -> Optional[DataSource]:
         """
-        鏇存柊鏁版嵁婧?        
+        更新鏁版嵁婧?        
         Args:
             datasource_id: 鏁版嵁婧怚D
             datasource_data: 鏁版嵁婧愭暟鎹?        
         Returns:
-            Optional[DataSource]: 鏇存柊鍚庣殑鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
+            Optional[DataSource]: 更新鍚庣殑鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
-        logger.info(f"鏇存柊鏁版嵁婧? datasource_id={datasource_id}")
+        logger.info(f"更新鏁版嵁婧? datasource_id={datasource_id}")
         
         datasource = self.datasource_repo.get_by_id(datasource_id)
         if not datasource:
             return None
         
-        # 鏇存柊鏁版嵁婧?        for key, value in datasource_data.items():
+        # 更新鏁版嵁婧?        for key, value in datasource_data.items():
             if hasattr(datasource, key):
                 setattr(datasource, key, value)
         
@@ -107,14 +107,14 @@ class DataSourceService:
     
     def delete_datasource(self, datasource_id: str) -> bool:
         """
-        鍒犻櫎鏁版嵁婧?        
+        删除鏁版嵁婧?        
         Args:
             datasource_id: 鏁版嵁婧怚D
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鏁版嵁婧? datasource_id={datasource_id}")
+        logger.info(f"删除鏁版嵁婧? datasource_id={datasource_id}")
         return self.datasource_repo.delete(datasource_id)
     
     def list_datasources(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None,
@@ -122,10 +122,10 @@ class DataSourceService:
         """
         鑾峰彇鏁版嵁婧愬垪琛?        
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DataSource]: 鏁版嵁婧愬垪琛?        """
@@ -157,7 +157,7 @@ class DataSourceService:
             session.execute("SELECT 1")
             session.close()
             
-            # 鏇存柊鍋ュ悍鐘舵€?            datasource.update_health_status(is_healthy=True)
+            # 更新鍋ュ悍状态?            datasource.update_health_status(is_healthy=True)
             self.datasource_repo.update(datasource)
             
             return {"success": True, "message": "杩炴帴鎴愬姛"}
@@ -165,7 +165,7 @@ class DataSourceService:
         except Exception as e:
             logger.error(f"鏁版嵁婧愯繛鎺ユ祴璇曞け璐? {e}")
             
-            # 鏇存柊鍋ュ悍鐘舵€?            datasource.update_health_status(is_healthy=False)
+            # 更新鍋ュ悍状态?            datasource.update_health_status(is_healthy=False)
             self.datasource_repo.update(datasource)
             
             return {"success": False, "message": f"杩炴帴澶辫触: {str(e)}"}
@@ -198,7 +198,7 @@ class DataSourceService:
         """
         缁熻鏁版嵁婧愭暟閲?        
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
         
         Returns:
             int: 鏁版嵁婧愭暟閲?        """

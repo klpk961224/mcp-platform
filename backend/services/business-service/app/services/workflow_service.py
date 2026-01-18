@@ -47,12 +47,12 @@ class WorkflowService:
         Args:
             template_id: 妯℃澘ID
             initiator_id: 鍙戣捣浜篒D
-            initiator_name: 鍙戣捣浜哄悕绉?            tenant_id: 绉熸埛ID
+            initiator_name: 鍙戣捣浜哄悕绉?            tenant_id: 租户ID
             business_data: 涓氬姟鏁版嵁锛堝彲閫夛級
             variables: 鍙橀噺锛堝彲閫夛級
         
         Returns:
-            WorkflowInstance: 鍒涘缓鐨勫伐浣滄祦瀵硅薄
+            WorkflowInstance: 创建鐨勫伐浣滄祦瀵硅薄
         """
         logger.info(f"鍚姩宸ヤ綔娴? template_id={template_id}, initiator_id={initiator_id}")
         
@@ -120,10 +120,10 @@ class WorkflowService:
         """
         鑾峰彇鐢ㄦ埛宸ヤ綔娴?        
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowInstance]: 宸ヤ綔娴佸垪琛?        """
@@ -136,7 +136,7 @@ class WorkflowService:
             workflow_id: 宸ヤ綔娴両D
         
         Returns:
-            Optional[WorkflowInstance]: 鏇存柊鍚庣殑宸ヤ綔娴佸璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
+            Optional[WorkflowInstance]: 更新鍚庣殑宸ヤ綔娴佸璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         logger.info(f"缁堟宸ヤ綔娴? workflow_id={workflow_id}")
         
@@ -151,7 +151,7 @@ class WorkflowService:
         """
         鑾峰彇宸ヤ綔娴佺粺璁′俊鎭?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             Dict[str, Any]: 缁熻淇℃伅
@@ -173,7 +173,7 @@ class WorkflowService:
         """
         缁熻宸ヤ綔娴佹暟閲?        
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
         
         Returns:
             int: 宸ヤ綔娴佹暟閲?        """

@@ -4,7 +4,7 @@ Alembic鐜閰嶇疆
 
 鍔熻兘璇存槑锛?1. 鏁版嵁搴撹縼绉荤幆澧冮厤缃?2. 鑷姩鐢熸垚杩佺Щ鑴氭湰
 3. 鏁版嵁搴撹繛鎺ョ鐞?
-浣跨敤绀轰緥锛?    alembic revision --autogenerate -m "鍒涘缓鐢ㄦ埛琛?
+浣跨敤绀轰緥锛?    alembic revision --autogenerate -m "创建用户表?
     alembic upgrade head
 """
 

@@ -2,7 +2,7 @@
 """
 鐢ㄦ埛鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 鐢ㄦ埛CRUD鎿嶄綔
-2. 鐢ㄦ埛鏌ヨ鎿嶄綔
+2. 鐢ㄦ埛查询鎿嶄綔
 3. 鐢ㄦ埛缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.user_repository import UserRepository
@@ -23,7 +23,7 @@ class UserRepository:
     """
     鐢ㄦ埛鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 鐢ㄦ埛CRUD鎿嶄綔
-    - 鐢ㄦ埛鏌ヨ鎿嶄綔
+    - 鐢ㄦ埛查询鎿嶄綔
     - 鐢ㄦ埛缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        user_repo = UserRepository(db)
@@ -40,14 +40,14 @@ class UserRepository:
     
     def create(self, user: User) -> User:
         """
-        鍒涘缓鐢ㄦ埛
+        创建鐢ㄦ埛
         
         Args:
             user: 鐢ㄦ埛瀵硅薄
         
         Returns:
-            User: 鍒涘缓鐨勭敤鎴峰璞?        """
-        logger.info(f"鍒涘缓鐢ㄦ埛: username={user.username}, tenant_id={user.tenant_id}")
+            User: 创建鐨勭敤鎴峰璞?        """
+        logger.info(f"创建鐢ㄦ埛: username={user.username}, tenant_id={user.tenant_id}")
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
@@ -55,10 +55,10 @@ class UserRepository:
     
     def get_by_id(self, user_id: str) -> Optional[User]:
         """
-        鏍规嵁ID鑾峰彇鐢ㄦ埛
+        根据ID鑾峰彇鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -67,9 +67,9 @@ class UserRepository:
     
     def get_by_username(self, username: str) -> Optional[User]:
         """
-        鏍规嵁鐢ㄦ埛鍚嶈幏鍙栫敤鎴?        
+        根据用户名嶈幏鍙栫敤鎴?        
         Args:
-            username: 鐢ㄦ埛鍚?        
+            username: 用户名?        
         Returns:
             Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
@@ -77,10 +77,10 @@ class UserRepository:
     
     def get_by_email(self, email: str) -> Optional[User]:
         """
-        鏍规嵁閭鑾峰彇鐢ㄦ埛
+        根据邮箱鑾峰彇鐢ㄦ埛
         
         Args:
-            email: 閭
+            email: 邮箱
         
         Returns:
             Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -89,12 +89,12 @@ class UserRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇鐢ㄦ埛鍒楄〃
+        根据租户ID鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[User]: 鐢ㄦ埛鍒楄〃
@@ -104,12 +104,12 @@ class UserRepository:
     
     def get_by_department_id(self, department_id: str, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        鏍规嵁閮ㄩ棬ID鑾峰彇鐢ㄦ埛鍒楄〃
+        根据部门ID鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            department_id: 閮ㄩ棬ID
+            department_id: 部门ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[User]: 鐢ㄦ埛鍒楄〃
@@ -122,9 +122,9 @@ class UserRepository:
         鎼滅储鐢ㄦ埛
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[User]: 鐢ㄦ埛鍒楄〃
@@ -149,7 +149,7 @@ class UserRepository:
         鑾峰彇鎵€鏈夌敤鎴?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[User]: 鐢ㄦ埛鍒楄〃
@@ -159,30 +159,30 @@ class UserRepository:
     
     def update(self, user: User) -> User:
         """
-        鏇存柊鐢ㄦ埛
+        更新鐢ㄦ埛
         
         Args:
             user: 鐢ㄦ埛瀵硅薄
         
         Returns:
-            User: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄
+            User: 更新鍚庣殑鐢ㄦ埛瀵硅薄
         """
-        logger.info(f"鏇存柊鐢ㄦ埛: user_id={user.id}")
+        logger.info(f"更新鐢ㄦ埛: user_id={user.id}")
         self.db.commit()
         self.db.refresh(user)
         return user
     
     def delete(self, user_id: str) -> bool:
         """
-        鍒犻櫎鐢ㄦ埛
+        删除鐢ㄦ埛
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎鐢ㄦ埛: user_id={user_id}")
+        logger.info(f"删除鐢ㄦ埛: user_id={user_id}")
         user = self.get_by_id(user_id)
         if not user:
             return False
@@ -193,25 +193,25 @@ class UserRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛鐢ㄦ埛鏁伴噺
+        缁熻绉熸埛鐢ㄦ埛数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 鐢ㄦ埛鏁伴噺
+            int: 鐢ㄦ埛数量
         """
         return self.db.query(User).filter(User.tenant_id == tenant_id).count()
     
     def count_by_department(self, department_id: str) -> int:
         """
-        缁熻閮ㄩ棬鐢ㄦ埛鏁伴噺
+        缁熻閮ㄩ棬鐢ㄦ埛数量
         
         Args:
-            department_id: 閮ㄩ棬ID
+            department_id: 部门ID
         
         Returns:
-            int: 鐢ㄦ埛鏁伴噺
+            int: 鐢ㄦ埛数量
         """
         return self.db.query(User).filter(User.department_id == department_id).count()
     
@@ -219,7 +219,7 @@ class UserRepository:
         """
         缁熻鎵€鏈夌敤鎴锋暟閲?        
         Returns:
-            int: 鐢ㄦ埛鏁伴噺
+            int: 鐢ㄦ埛数量
         """
         return self.db.query(User).count()
     
@@ -228,7 +228,7 @@ class UserRepository:
         妫€鏌ョ敤鎴峰悕鏄惁瀛樺湪
         
         Args:
-            username: 鐢ㄦ埛鍚?        
+            username: 用户名?        
         Returns:
             bool: 鏄惁瀛樺湪
         """
@@ -238,7 +238,7 @@ class UserRepository:
         """
         妫€鏌ラ偖绠辨槸鍚﹀瓨鍦?        
         Args:
-            email: 閭
+            email: 邮箱
         
         Returns:
             bool: 鏄惁瀛樺湪

@@ -27,7 +27,7 @@ class RedisCache:
         self.client.setex(key, ttl, value)
     
     def delete(self, key: str):
-        """鍒犻櫎缂撳瓨"""
+        """删除缂撳瓨"""
         self.client.delete(key)
     
     def exists(self, key: str) -> bool:

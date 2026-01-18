@@ -3,7 +3,7 @@
 寰呭姙浠诲姟鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 寰呭姙浠诲姟CRUD鎿嶄綔
 2. 姣忔棩璁″垝CRUD鎿嶄綔
-3. 寰呭姙浠诲姟鏌ヨ鍜岀粺璁?
+3. 寰呭姙浠诲姟查询鍜岀粺璁?
 浣跨敤绀轰緥锛?    from app.repositories.todo_repository import TodoRepository
     
     todo_repo = TodoRepository(db)
@@ -24,7 +24,7 @@ class TodoRepository:
     寰呭姙浠诲姟鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 寰呭姙浠诲姟CRUD鎿嶄綔
     - 姣忔棩璁″垝CRUD鎿嶄綔
-    - 寰呭姙浠诲姟鏌ヨ鍜岀粺璁?    
+    - 寰呭姙浠诲姟查询鍜岀粺璁?    
     浣跨敤鏂规硶锛?        todo_repo = TodoRepository(db)
         todos = todo_repo.get_user_todos(user_id="123")
     """
@@ -40,14 +40,14 @@ class TodoRepository:
     # 寰呭姙浠诲姟鐩稿叧鏂规硶
     def create_todo(self, todo: TodoTask) -> TodoTask:
         """
-        鍒涘缓寰呭姙浠诲姟
+        创建寰呭姙浠诲姟
         
         Args:
             todo: 寰呭姙浠诲姟瀵硅薄
         
         Returns:
-            TodoTask: 鍒涘缓鐨勫緟鍔炰换鍔″璞?        """
-        logger.info(f"鍒涘缓寰呭姙浠诲姟: title={todo.title}, user_id={todo.user_id}")
+            TodoTask: 创建鐨勫緟鍔炰换鍔″璞?        """
+        logger.info(f"创建寰呭姙浠诲姟: title={todo.title}, user_id={todo.user_id}")
         self.db.add(todo)
         self.db.commit()
         self.db.refresh(todo)
@@ -55,7 +55,7 @@ class TodoRepository:
     
     def get_todo_by_id(self, todo_id: str) -> Optional[TodoTask]:
         """
-        鏍规嵁ID鑾峰彇寰呭姙浠诲姟
+        根据ID鑾峰彇寰呭姙浠诲姟
         
         Args:
             todo_id: 浠诲姟ID
@@ -71,11 +71,11 @@ class TodoRepository:
         鑾峰彇鐢ㄦ埛寰呭姙浠诲姟
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
             priority: 浼樺厛绾э紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
@@ -95,9 +95,9 @@ class TodoRepository:
         鑾峰彇绉熸埛寰呭姙浠诲姟
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
@@ -113,7 +113,7 @@ class TodoRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 閫炬湡浠诲姟鍒楄〃
@@ -132,9 +132,9 @@ class TodoRepository:
         鎼滅储寰呭姙浠诲姟
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
@@ -154,30 +154,30 @@ class TodoRepository:
     
     def update_todo(self, todo: TodoTask) -> TodoTask:
         """
-        鏇存柊寰呭姙浠诲姟
+        更新寰呭姙浠诲姟
         
         Args:
             todo: 寰呭姙浠诲姟瀵硅薄
         
         Returns:
-            TodoTask: 鏇存柊鍚庣殑寰呭姙浠诲姟瀵硅薄
+            TodoTask: 更新鍚庣殑寰呭姙浠诲姟瀵硅薄
         """
-        logger.info(f"鏇存柊寰呭姙浠诲姟: todo_id={todo.id}")
+        logger.info(f"更新寰呭姙浠诲姟: todo_id={todo.id}")
         self.db.commit()
         self.db.refresh(todo)
         return todo
     
     def delete_todo(self, todo_id: str) -> bool:
         """
-        鍒犻櫎寰呭姙浠诲姟
+        删除寰呭姙浠诲姟
         
         Args:
             todo_id: 浠诲姟ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"删除寰呭姙浠诲姟: todo_id={todo_id}")
         todo = self.get_todo_by_id(todo_id)
         if not todo:
             return False
@@ -189,14 +189,14 @@ class TodoRepository:
     # 姣忔棩璁″垝鐩稿叧鏂规硶
     def create_daily_plan(self, daily_plan: DailyPlan) -> DailyPlan:
         """
-        鍒涘缓姣忔棩璁″垝
+        创建姣忔棩璁″垝
         
         Args:
             daily_plan: 姣忔棩璁″垝瀵硅薄
         
         Returns:
-            DailyPlan: 鍒涘缓鐨勬瘡鏃ヨ鍒掑璞?        """
-        logger.info(f"鍒涘缓姣忔棩璁″垝: user_id={daily_plan.user_id}, plan_date={daily_plan.plan_date}")
+            DailyPlan: 创建鐨勬瘡鏃ヨ鍒掑璞?        """
+        logger.info(f"创建姣忔棩璁″垝: user_id={daily_plan.user_id}, plan_date={daily_plan.plan_date}")
         self.db.add(daily_plan)
         self.db.commit()
         self.db.refresh(daily_plan)
@@ -204,7 +204,7 @@ class TodoRepository:
     
     def get_daily_plan_by_id(self, plan_id: str) -> Optional[DailyPlan]:
         """
-        鏍规嵁ID鑾峰彇姣忔棩璁″垝
+        根据ID鑾峰彇姣忔棩璁″垝
         
         Args:
             plan_id: 璁″垝ID
@@ -218,7 +218,7 @@ class TodoRepository:
         """
         鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             plan_date: 璁″垝鏃ユ湡
         
         Returns:
@@ -241,11 +241,11 @@ class TodoRepository:
         鑾峰彇鐢ㄦ埛姣忔棩璁″垝鍒楄〃
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
             end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[DailyPlan]: 姣忔棩璁″垝鍒楄〃
@@ -262,30 +262,30 @@ class TodoRepository:
     
     def update_daily_plan(self, daily_plan: DailyPlan) -> DailyPlan:
         """
-        鏇存柊姣忔棩璁″垝
+        更新姣忔棩璁″垝
         
         Args:
             daily_plan: 姣忔棩璁″垝瀵硅薄
         
         Returns:
-            DailyPlan: 鏇存柊鍚庣殑姣忔棩璁″垝瀵硅薄
+            DailyPlan: 更新鍚庣殑姣忔棩璁″垝瀵硅薄
         """
-        logger.info(f"鏇存柊姣忔棩璁″垝: plan_id={daily_plan.id}")
+        logger.info(f"更新姣忔棩璁″垝: plan_id={daily_plan.id}")
         self.db.commit()
         self.db.refresh(daily_plan)
         return daily_plan
     
     def delete_daily_plan(self, plan_id: str) -> bool:
         """
-        鍒犻櫎姣忔棩璁″垝
+        删除姣忔棩璁″垝
         
         Args:
             plan_id: 璁″垝ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎姣忔棩璁″垝: plan_id={plan_id}")
+        logger.info(f"删除姣忔棩璁″垝: plan_id={plan_id}")
         daily_plan = self.get_daily_plan_by_id(plan_id)
         if not daily_plan:
             return False
@@ -297,14 +297,14 @@ class TodoRepository:
     # 缁熻鏂规硶
     def count_todos_by_user(self, user_id: str, status: Optional[str] = None) -> int:
         """
-        缁熻鐢ㄦ埛寰呭姙浠诲姟鏁伴噺
+        缁熻鐢ㄦ埛寰呭姙浠诲姟数量
         
         Args:
-            user_id: 鐢ㄦ埛ID
-            status: 鐘舵€侊紙鍙€夛級
+            user_id: 用户ID
+            status: 状态侊紙鍙€夛級
         
         Returns:
-            int: 浠诲姟鏁伴噺
+            int: 浠诲姟数量
         """
         query = self.db.query(TodoTask).filter(TodoTask.user_id == user_id)
         if status:
@@ -313,13 +313,13 @@ class TodoRepository:
     
     def count_overdue_todos(self, user_id: str) -> int:
         """
-        缁熻鐢ㄦ埛閫炬湡浠诲姟鏁伴噺
+        缁熻鐢ㄦ埛閫炬湡浠诲姟数量
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
-            int: 閫炬湡浠诲姟鏁伴噺
+            int: 閫炬湡浠诲姟数量
         """
         return self.db.query(TodoTask).filter(
             and_(
@@ -333,7 +333,7 @@ class TodoRepository:
         """
         缁熻鎵€鏈夊緟鍔炰换鍔℃暟閲?        
         Returns:
-            int: 浠诲姟鏁伴噺
+            int: 浠诲姟数量
         """
         return self.db.query(TodoTask).count()
     
@@ -342,7 +342,7 @@ class TodoRepository:
         鑾峰彇鐢ㄦ埛寰呭姙浠诲姟缁熻淇℃伅
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             dict: 缁熻淇℃伅

@@ -33,7 +33,7 @@
     with get_session('mysql') as session:
         users = session.query(User).all()
     
-    # 鍒涘缓妯″瀷
+    # 创建妯″瀷
     class User(BaseModel, TimestampMixin, SoftDeleteMixin):
         __tablename__ = 'users'
         username = Column(String(50))

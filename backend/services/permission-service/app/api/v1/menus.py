@@ -25,19 +25,19 @@ from app.services.menu_service import MenuService
 router = APIRouter(prefix="/menus", tags=["鑿滃崟绠＄悊"])
 
 
-@router.post("", response_model=MenuResponse, summary="鍒涘缓鑿滃崟")
+@router.post("", response_model=MenuResponse, summary="创建鑿滃崟")
 async def create_menu(
     menu: MenuCreate,
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓鑿滃崟"""
-    logger.info(f"鍒涘缓鑿滃崟: name={menu.name}")
+    """创建鑿滃崟"""
+    logger.info(f"创建鑿滃崟: name={menu.name}")
     
     try:
         menu_service = MenuService(db)
         new_menu = menu_service.create_menu(menu.model_dump())
         
-        logger.info(f"鍒涘缓鑿滃崟鎴愬姛: name={menu.name}, menu_id={new_menu.id}")
+        logger.info(f"创建鑿滃崟鎴愬姛: name={menu.name}, menu_id={new_menu.id}")
         
         return MenuResponse(
             id=new_menu.id,
@@ -53,11 +53,11 @@ async def create_menu(
             updated_at=new_menu.updated_at
         )
     except ValueError as e:
-        logger.warning(f"鍒涘缓鑿滃崟澶辫触: name={menu.name}, error={str(e)}")
+        logger.warning(f"创建鑿滃崟澶辫触: name={menu.name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓鑿滃崟寮傚父: name={menu.name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建鑿滃崟寮傚父: name={menu.name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.get("", response_model=MenuListResponse, summary="鑾峰彇鑿滃崟鍒楄〃")
@@ -108,7 +108,7 @@ async def get_menus(
 
 @router.get("/tree", response_model=list[MenuTreeResponse], summary="鑾峰彇鑿滃崟鏍?)
 async def get_menu_tree(
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
     """鑾峰彇鑿滃崟鏍?""
@@ -180,14 +180,14 @@ async def get_menu(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鑿滃崟璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{menu_id}", response_model=MenuResponse, summary="鏇存柊鑿滃崟")
+@router.put("/{menu_id}", response_model=MenuResponse, summary="更新鑿滃崟")
 async def update_menu(
     menu_id: str,
     menu: MenuUpdate,
     db: Session = Depends(get_db)
 ):
-    """鏇存柊鑿滃崟"""
-    logger.info(f"鏇存柊鑿滃崟: menu_id={menu_id}")
+    """更新鑿滃崟"""
+    logger.info(f"更新鑿滃崟: menu_id={menu_id}")
     
     try:
         menu_service = MenuService(db)
@@ -199,7 +199,7 @@ async def update_menu(
         update_data = menu.model_dump(exclude_unset=True)
         updated_menu = menu_service.update_menu(menu_id, update_data)
         
-        logger.info(f"鏇存柊鑿滃崟鎴愬姛: menu_id={menu_id}")
+        logger.info(f"更新鑿滃崟鎴愬姛: menu_id={menu_id}")
         
         return MenuResponse(
             id=updated_menu.id,
@@ -217,20 +217,20 @@ async def update_menu(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(f"鏇存柊鑿滃崟澶辫触: menu_id={menu_id}, error={str(e)}")
+        logger.warning(f"更新鑿滃崟澶辫触: menu_id={menu_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鏇存柊鑿滃崟寮傚父: menu_id={menu_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新鑿滃崟寮傚父: menu_id={menu_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{menu_id}", summary="鍒犻櫎鑿滃崟")
+@router.delete("/{menu_id}", summary="删除鑿滃崟")
 async def delete_menu(
     menu_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎鑿滃崟"""
-    logger.info(f"鍒犻櫎鑿滃崟: menu_id={menu_id}")
+    """删除鑿滃崟"""
+    logger.info(f"删除鑿滃崟: menu_id={menu_id}")
     
     try:
         menu_service = MenuService(db)
@@ -241,11 +241,11 @@ async def delete_menu(
         
         menu_service.delete_menu(menu_id)
         
-        logger.info(f"鍒犻櫎鑿滃崟鎴愬姛: menu_id={menu_id}")
+        logger.info(f"删除鑿滃崟鎴愬姛: menu_id={menu_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎鑿滃崟寮傚父: menu_id={menu_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除鑿滃崟寮傚父: menu_id={menu_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")

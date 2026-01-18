@@ -31,12 +31,12 @@ def create_access_token(
     expires_minutes: Optional[int] = None
 ) -> str:
     """
-    鍒涘缓璁块棶Token
+    创建璁块棶Token
     
     Args:
         data: 鍖呭惈鐢ㄦ埛淇℃伅鐨勫瓧鍏革紙鎺ㄨ崘鏂瑰紡锛?            - 绀轰緥锛歿"user_id": "123", "username": "test"}
-        user_id: 鐢ㄦ埛ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
-        username: 鐢ㄦ埛鍚嶏紙鍙€夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        user_id: 用户ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        username: 用户名嶏紙鍙€夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
         additional_claims: 棰濆鐨勫０鏄庯紙鍙€夛級
         expires_delta: 杩囨湡鏃堕棿澧為噺锛堝彲閫夛級
         expires_minutes: 杩囨湡鏃堕棿锛堝垎閽燂級锛堝彲閫夛紝涓巈xpires_delta浜岄€変竴锛?    
@@ -93,7 +93,7 @@ def create_access_token(
         algorithm=settings.JWT_ALGORITHM
     )
     
-    logger.debug(f"鍒涘缓璁块棶Token: user_id={user_id}, username={username}")
+    logger.debug(f"创建璁块棶Token: user_id={user_id}, username={username}")
     return encoded_jwt
 
 
@@ -104,12 +104,12 @@ def create_refresh_token(
     expires_days: Optional[int] = None
 ) -> str:
     """
-    鍒涘缓鍒锋柊Token
+    创建鍒锋柊Token
     
     Args:
         data: 鍖呭惈鐢ㄦ埛淇℃伅鐨勫瓧鍏革紙鍙€夛級
             - 绀轰緥锛歿"user_id": "123"}
-        user_id: 鐢ㄦ埛ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        user_id: 用户ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
         expires_delta: 杩囨湡鏃堕棿澧為噺锛堝彲閫夛級
         expires_days: 杩囨湡鏃堕棿锛堝ぉ锛夛紙鍙€夛紝涓巈xpires_delta浜岄€変竴锛?    
     Returns:
@@ -159,7 +159,7 @@ def create_refresh_token(
         algorithm=settings.JWT_ALGORITHM
     )
     
-    logger.debug(f"鍒涘缓鍒锋柊Token: user_id={user_id}")
+    logger.debug(f"创建鍒锋柊Token: user_id={user_id}")
     return encoded_jwt
 
 
@@ -175,7 +175,7 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     
     浣跨敤绀轰緥锛?        payload = verify_token(token)
         if payload:
-            print(f"鐢ㄦ埛ID: {payload['sub']}")
+            print(f"用户ID: {payload['sub']}")
         else:
             print("Token鏃犳晥")
     """
@@ -203,7 +203,7 @@ def decode_token(token: str) -> Optional[Dict[str, Any]]:
     
     浣跨敤绀轰緥锛?        payload = decode_token(token)
         if payload:
-            print(f"Token绫诲瀷: {payload.get('type')}")
+            print(f"Token类型: {payload.get('type')}")
     """
     try:
         payload = jwt.decode(

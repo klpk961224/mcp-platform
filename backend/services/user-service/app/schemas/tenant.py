@@ -10,20 +10,20 @@ from datetime import datetime
 class TenantBase(BaseModel):
     """绉熸埛鍩虹妯″瀷"""
     
-    name: str = Field(..., description="绉熸埛鍚嶇О")
-    code: str = Field(..., description="绉熸埛缂栫爜")
-    status: str = Field(default="active", description="鐘舵€?)
-    description: Optional[str] = Field(None, description="鎻忚堪")
+    name: str = Field(..., description="绉熸埛名称")
+    code: str = Field(..., description="绉熸埛编码")
+    status: str = Field(default="active", description="状态?)
+    description: Optional[str] = Field(None, description="描述")
 
 
 class TenantCreate(TenantBase):
-    """鍒涘缓绉熸埛"""
+    """创建绉熸埛"""
     
     pass
 
 
 class TenantUpdate(BaseModel):
-    """鏇存柊绉熸埛"""
+    """更新绉熸埛"""
     
     name: Optional[str] = None
     status: Optional[str] = None

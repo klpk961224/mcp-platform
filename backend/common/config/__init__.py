@@ -3,7 +3,7 @@
 
 瀵煎嚭锛?- Settings: 閰嶇疆绫?- settings: 鍏ㄥ眬閰嶇疆瀹炰緥
 - get_settings: 鑾峰彇閰嶇疆瀹炰緥
-- UserStatus: 鐢ㄦ埛鐘舵€佹灇涓?- ErrorCode: 閿欒鐮佹灇涓?- ResponseCode: 鍝嶅簲鐮佹灇涓?- ERROR_MESSAGES: 閿欒淇℃伅鏄犲皠
+- UserStatus: 鐢ㄦ埛状态佹灇涓?- ErrorCode: 閿欒鐮佹灇涓?- ResponseCode: 鍝嶅簲鐮佹灇涓?- ERROR_MESSAGES: 閿欒淇℃伅鏄犲皠
 - get_error_message: 鑾峰彇閿欒淇℃伅
 
 浣跨敤绀轰緥锛?    from common.config import settings, UserStatus, ErrorCode

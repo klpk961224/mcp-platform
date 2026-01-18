@@ -7,7 +7,7 @@ Token妯″瀷
 3. Token榛戝悕鍗?
 浣跨敤绀轰緥锛?    from app.models.token import Token
     
-    # 鍒涘缓Token
+    # 创建Token
     token = Token(
         user_id="123",
         token_type="access",
@@ -30,19 +30,19 @@ class Token(BaseModel):
     - Token榛戝悕鍗?    
     灞炴€ц鏄庯細
     - id: Token ID锛堜富閿級
-    - user_id: 鐢ㄦ埛ID锛堝閿級
-    - token_type: Token绫诲瀷锛坅ccess/refresh锛?    - token_hash: Token鍝堝笇
+    - user_id: 用户ID锛堝閿級
+    - token_type: Token类型锛坅ccess/refresh锛?    - token_hash: Token鍝堝笇
     - expires_at: 杩囨湡鏃堕棿
     - is_revoked: 鏄惁宸插悐閿€
     - revoked_at: 鍚婇攢鏃堕棿
-    - created_at: 鍒涘缓鏃堕棿
+    - created_at: 创建时间
     """
     
     __tablename__ = "tokens"
     
     # 鍩烘湰淇℃伅
-    user_id = Column(String(64), nullable=False, index=True, comment="鐢ㄦ埛ID")
-    token_type = Column(String(20), nullable=False, comment="Token绫诲瀷")
+    user_id = Column(String(64), nullable=False, index=True, comment="用户ID")
+    token_type = Column(String(20), nullable=False, comment="Token类型")
     token_hash = Column(String(255), nullable=False, unique=True, index=True, comment="Token鍝堝笇")
     
     # 杩囨湡淇℃伅

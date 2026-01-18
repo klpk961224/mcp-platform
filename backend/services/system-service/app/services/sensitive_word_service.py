@@ -13,7 +13,7 @@ from app.repositories.sensitive_word_repository import SensitiveWordRepository
 class SensitiveWordService:
     """鏁忔劅璇峉ervice"""
 
-    # 鏁忔劅绾у埆甯搁噺
+    # 鏁忔劅级别甯搁噺
     LEVEL_LOW = 1  # 浣?    LEVEL_MEDIUM = 2  # 涓?    LEVEL_HIGH = 3  # 楂?    LEVEL_CRITICAL = 4  # 涓ラ噸
 
     # 鍒嗙被甯搁噺
@@ -23,7 +23,7 @@ class SensitiveWordService:
     CATEGORY_AD = "ad"  # 骞垮憡
     CATEGORY_OTHER = "other"  # 鍏朵粬
 
-    # 鐘舵€佸父閲?    STATUS_ACTIVE = "active"
+    # 状态佸父閲?    STATUS_ACTIVE = "active"
     STATUS_INACTIVE = "inactive"
 
     def __init__(self, db: Session):
@@ -31,14 +31,14 @@ class SensitiveWordService:
         self.repository = SensitiveWordRepository(db)
 
     def get_sensitive_word_by_id(self, sensitive_word_id: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁ID鑾峰彇鏁忔劅璇?""
+        """根据ID鑾峰彇鏁忔劅璇?""
         sensitive_word = self.repository.get_by_id(sensitive_word_id)
         if not sensitive_word:
             return None
         return self._to_dict(sensitive_word)
 
     def get_sensitive_word_by_word(self, word: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁鏁忔劅璇嶈幏鍙?""
+        """根据鏁忔劅璇嶈幏鍙?""
         sensitive_word = self.repository.get_by_word(word)
         if not sensitive_word:
             return None
@@ -54,7 +54,7 @@ class SensitiveWordService:
         }
 
     def get_sensitive_words_by_category(self, category: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鍒嗙被鑾峰彇鏁忔劅璇?""
+        """根据鍒嗙被鑾峰彇鏁忔劅璇?""
         sensitive_words = self.repository.get_by_category(category, skip=skip, limit=limit)
         total = self.repository.count_by_category(category)
         return {
@@ -63,7 +63,7 @@ class SensitiveWordService:
         }
 
     def get_sensitive_words_by_level(self, level: int, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鏁忔劅绾у埆鑾峰彇鏁忔劅璇?""
+        """根据鏁忔劅级别鑾峰彇鏁忔劅璇?""
         sensitive_words = self.repository.get_by_level(level, skip=skip, limit=limit)
         total = self.repository.count_by_level(level)
         return {
@@ -92,12 +92,12 @@ class SensitiveWordService:
         replacement: Optional[str] = None,
         description: Optional[str] = None
     ) -> Dict[str, Any]:
-        """鍒涘缓鏁忔劅璇?""
+        """创建鏁忔劅璇?""
         # 妫€鏌ユ晱鎰熻瘝鏄惁宸插瓨鍦?        existing = self.repository.get_by_word(word)
         if existing:
             raise ValueError(f"鏁忔劅璇?{word} 宸插瓨鍦?)
 
-        # 鍒涘缓鏁忔劅璇?        sensitive_word = SensitiveWord(
+        # 创建鏁忔劅璇?        sensitive_word = SensitiveWord(
             word=word,
             category=category,
             level=level,
@@ -119,12 +119,12 @@ class SensitiveWordService:
         description: Optional[str] = None,
         status: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """鏇存柊鏁忔劅璇?""
+        """更新鏁忔劅璇?""
         sensitive_word = self.repository.get_by_id(sensitive_word_id)
         if not sensitive_word:
             return None
 
-        # 鏇存柊瀛楁
+        # 更新瀛楁
         if word is not None:
             sensitive_word.word = word
         if category is not None:
@@ -142,7 +142,7 @@ class SensitiveWordService:
         return self._to_dict(sensitive_word)
 
     def delete_sensitive_word(self, sensitive_word_id: str) -> bool:
-        """鍒犻櫎鏁忔劅璇?""
+        """删除鏁忔劅璇?""
         return self.repository.delete(sensitive_word_id)
 
     def get_all_active_words(self) -> List[str]:

@@ -2,10 +2,10 @@
 """
 RoleService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓瑙掕壊
+娴嬭瘯鍐呭锛?1. 创建瑙掕壊
 2. 鑾峰彇瑙掕壊
-3. 鏇存柊瑙掕壊
-4. 鍒犻櫎瑙掕壊
+3. 更新瑙掕壊
+4. 删除瑙掕壊
 5. 鎼滅储瑙掕壊
 6. 瑙掕壊鏉冮檺绠＄悊
 """
@@ -38,7 +38,7 @@ def mock_role():
     role.id = "test_role_id"
     role.name = "娴嬭瘯瑙掕壊"
     role.code = "test_role"
-    role.description = "娴嬭瘯瑙掕壊鎻忚堪"
+    role.description = "娴嬭瘯角色描述"
     role.tenant_id = "default"
     role.is_system = False
     role.status = "active"
@@ -51,7 +51,7 @@ def mock_role():
 
 @pytest.fixture
 def role_service(mock_db):
-    """鍒涘缓RoleService瀹炰緥"""
+    """创建RoleService瀹炰緥"""
     return RoleService(mock_db)
 
 
@@ -67,19 +67,19 @@ class TestRoleService:
         assert service.menu_repo is not None
     
     def test_create_role_success(self, role_service, mock_role):
-        """娴嬭瘯鍒涘缓瑙掕壊鎴愬姛"""
+        """娴嬭瘯创建瑙掕壊鎴愬姛"""
         # 妯℃嫙瑙掕壊浠ｇ爜涓嶅瓨鍦?        role_service.role_repo.exists_by_code = Mock(return_value=False)
-        # 妯℃嫙瑙掕壊鍚嶇О鍦ㄥ悓涓€绉熸埛涓笉瀛樺湪
+        # 妯℃嫙角色名称鍦ㄥ悓涓€绉熸埛涓笉瀛樺湪
         role_service.role_repo.exists_by_name_in_tenant = Mock(return_value=False)
-        # 妯℃嫙鍒涘缓瑙掕壊
+        # 妯℃嫙创建瑙掕壊
         role_service.role_repo.create = Mock(return_value=mock_role)
         
-        # 鎵ц鍒涘缓瑙掕壊
+        # 鎵ц创建瑙掕壊
         role_data = {
             "name": "娴嬭瘯瑙掕壊",
             "code": "test_role",
             "tenant_id": "default",
-            "description": "娴嬭瘯瑙掕壊鎻忚堪"
+            "description": "娴嬭瘯角色描述"
         }
         result = role_service.create_role(role_data)
         
@@ -89,23 +89,23 @@ class TestRoleService:
         role_service.role_repo.create.assert_called_once()
     
     def test_create_role_code_exists(self, role_service):
-        """娴嬭瘯鍒涘缓瑙掕壊鏃朵唬鐮佸凡瀛樺湪"""
+        """娴嬭瘯创建瑙掕壊鏃朵唬鐮佸凡瀛樺湪"""
         # 妯℃嫙瑙掕壊浠ｇ爜宸插瓨鍦?        role_service.role_repo.exists_by_code = Mock(return_value=True)
         
-        # 鎵ц鍒涘缓瑙掕壊骞堕獙璇佸紓甯?        role_data = {
+        # 鎵ц创建瑙掕壊骞堕獙璇佸紓甯?        role_data = {
             "name": "娴嬭瘯瑙掕壊",
             "code": "existing_role",
             "tenant_id": "default"
         }
-        with pytest.raises(ValueError, match="瑙掕壊缂栫爜宸插瓨鍦?):
+        with pytest.raises(ValueError, match="角色编码宸插瓨鍦?):
             role_service.create_role(role_data)
     
     def test_get_by_id_success(self, role_service, mock_role):
         """娴嬭瘯鑾峰彇瑙掕壊鎴愬姛"""
-        # 妯℃嫙鏌ヨ瑙掕壊
+        # 妯℃嫙查询瑙掕壊
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = role_service.get_role("test_role_id")
         
         # 楠岃瘉缁撴灉
@@ -114,24 +114,24 @@ class TestRoleService:
     
     def test_get_by_id_not_found(self, role_service):
         """娴嬭瘯鑾峰彇瑙掕壊澶辫触"""
-        # 妯℃嫙鏌ヨ瑙掕壊杩斿洖None
+        # 妯℃嫙查询瑙掕壊杩斿洖None
         role_service.role_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = role_service.get_role("nonexistent_id")
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_update_role_success(self, role_service, mock_role):
-        """娴嬭瘯鏇存柊瑙掕壊鎴愬姛"""
-        # 妯℃嫙鏌ヨ瑙掕壊
+        """娴嬭瘯更新瑙掕壊鎴愬姛"""
+        # 妯℃嫙查询瑙掕壊
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙鏇存柊瑙掕壊
+        # 妯℃嫙更新瑙掕壊
         role_service.role_repo.update = Mock(return_value=mock_role)
         
-        # 鎵ц鏇存柊
-        update_data = {"description": "鏇存柊鍚庣殑鎻忚堪"}
+        # 鎵ц更新
+        update_data = {"description": "更新鍚庣殑描述"}
         result = role_service.update_role("test_role_id", update_data)
         
         # 楠岃瘉缁撴灉
@@ -139,11 +139,11 @@ class TestRoleService:
         role_service.role_repo.update.assert_called_once()
     
     def test_delete_role_success(self, role_service):
-        """娴嬭瘯鍒犻櫎瑙掕壊鎴愬姛"""
-        # 妯℃嫙鍒犻櫎瑙掕壊
+        """娴嬭瘯删除瑙掕壊鎴愬姛"""
+        # 妯℃嫙删除瑙掕壊
         role_service.role_repo.delete = Mock()
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         role_service.delete_role("test_role_id")
         
         # 楠岃瘉缁撴灉
@@ -170,7 +170,7 @@ class TestRoleService:
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
         # 妯℃嫙鏉冮檺瀛樺湪
         role_service.perm_repo.get_by_id = Mock(return_value=Mock())
-        # 妯℃嫙鏇存柊瑙掕壊
+        # 妯℃嫙更新瑙掕壊
         role_service.role_repo.update = Mock(return_value=mock_role)
         
         # 鎵ц鍒嗛厤鏉冮檺
@@ -183,7 +183,7 @@ class TestRoleService:
         """娴嬭瘯鎾ら攢瑙掕壊鏉冮檺鎴愬姛"""
         # 妯℃嫙瑙掕壊瀛樺湪
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙鏇存柊瑙掕壊
+        # 妯℃嫙更新瑙掕壊
         role_service.role_repo.update = Mock(return_value=mock_role)
         
         # 鎵ц鎾ら攢鏉冮檺锛堜娇鐢╝ssign_permissions锛屼紶鍏ョ┖鍒楄〃锛?        result = role_service.assign_permissions("test_role_id", [])
@@ -214,7 +214,7 @@ class TestRoleService:
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
         # 妯℃嫙鑿滃崟瀛樺湪
         role_service.menu_repo.get_by_id = Mock(return_value=Mock())
-        # 妯℃嫙鏇存柊瑙掕壊
+        # 妯℃嫙更新瑙掕壊
         role_service.role_repo.update = Mock(return_value=mock_role)
         
         # 鎵ц鍒嗛厤鑿滃崟

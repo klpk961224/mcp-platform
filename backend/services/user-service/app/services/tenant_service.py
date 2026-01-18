@@ -3,8 +3,8 @@
 绉熸埛涓氬姟閫昏緫灞?
 鍔熻兘璇存槑锛?1. 绉熸埛CRUD鎿嶄綔
 2. 绉熸埛濂楅绠＄悊
-3. 绉熸埛璧勬簮閰嶉绠＄悊
-4. 绉熸埛鐘舵€佺鐞?5. 绉熸埛杩囨湡妫€鏌?
+3. 绉熸埛资源閰嶉绠＄悊
+4. 绉熸埛状态佺鐞?5. 绉熸埛杩囨湡妫€鏌?
 浣跨敤绀轰緥锛?    from app.services.tenant_service import TenantService
     
     tenant_service = TenantService(db)
@@ -28,8 +28,8 @@ class TenantService:
     绉熸埛涓氬姟閫昏緫灞?    
     鍔熻兘锛?    - 绉熸埛CRUD鎿嶄綔
     - 绉熸埛濂楅绠＄悊
-    - 绉熸埛璧勬簮閰嶉绠＄悊
-    - 绉熸埛鐘舵€佺鐞?    - 绉熸埛杩囨湡妫€鏌?    
+    - 绉熸埛资源閰嶉绠＄悊
+    - 绉熸埛状态佺鐞?    - 绉熸埛杩囨湡妫€鏌?    
     浣跨敤鏂规硶锛?        tenant_service = TenantService(db)
         tenant = tenant_service.create_tenant({
             "name": "绀轰緥鍏徃",
@@ -78,35 +78,35 @@ class TenantService:
     
     def create_tenant(self, tenant_data: Dict) -> Tenant:
         """
-        鍒涘缓绉熸埛
+        创建绉熸埛
         
-        鍔熻兘锛?        - 楠岃瘉绉熸埛缂栫爜鍞竴鎬?        - 楠岃瘉绉熸埛鍚嶇О鍞竴鎬?        - 鑷姩搴旂敤濂楅閰嶇疆
+        鍔熻兘锛?        - 楠岃瘉绉熸埛编码鍞竴鎬?        - 楠岃瘉绉熸埛名称鍞竴鎬?        - 鑷姩搴旂敤濂楅閰嶇疆
         - 鑷姩璁＄畻杩囨湡鏃堕棿
         
         Args:
             tenant_data: 绉熸埛鏁版嵁
-                - name: 绉熸埛鍚嶇О锛堝繀濉級
-                - code: 绉熸埛缂栫爜锛堝繀濉級
-                - description: 鎻忚堪锛堝彲閫夛級
-                - package_id: 濂楅ID锛堝彲閫夛紝榛樿basic锛?                - status: 鐘舵€侊紙鍙€夛紝榛樿active锛?        
+                - name: 绉熸埛名称锛堝繀濉級
+                - code: 绉熸埛编码锛堝繀濉級
+                - description: 描述锛堝彲閫夛級
+                - package_id: 濂楅ID锛堝彲閫夛紝默认basic锛?                - status: 状态侊紙鍙€夛紝默认active锛?        
         Returns:
-            Tenant: 鍒涘缓鐨勭鎴峰璞?        
+            Tenant: 创建鐨勭鎴峰璞?        
         Raises:
-            ValueError: 绉熸埛缂栫爜宸插瓨鍦ㄦ垨绉熸埛鍚嶇О宸插瓨鍦?        """
-        logger.info(f"鍒涘缓绉熸埛: name={tenant_data.get('name')}, code={tenant_data.get('code')}")
+            ValueError: 绉熸埛编码宸插瓨鍦ㄦ垨绉熸埛名称宸插瓨鍦?        """
+        logger.info(f"创建绉熸埛: name={tenant_data.get('name')}, code={tenant_data.get('code')}")
         
-        # 楠岃瘉蹇呭～瀛楁
+        # 楠岃瘉必填瀛楁
         if not tenant_data.get('name'):
-            raise ValueError("绉熸埛鍚嶇О涓嶈兘涓虹┖")
+            raise ValueError("绉熸埛名称涓嶈兘涓虹┖")
         
         if not tenant_data.get('code'):
-            raise ValueError("绉熸埛缂栫爜涓嶈兘涓虹┖")
+            raise ValueError("绉熸埛编码涓嶈兘涓虹┖")
         
         # 妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?        if self.tenant_repo.exists_by_code(tenant_data['code']):
-            raise ValueError(f"绉熸埛缂栫爜宸插瓨鍦? {tenant_data['code']}")
+            raise ValueError(f"绉熸埛编码宸插瓨鍦? {tenant_data['code']}")
         
         # 妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?        if self.tenant_repo.exists_by_name(tenant_data['name']):
-            raise ValueError(f"绉熸埛鍚嶇О宸插瓨鍦? {tenant_data['name']}")
+            raise ValueError(f"绉熸埛名称宸插瓨鍦? {tenant_data['name']}")
         
         # 鑾峰彇濂楅閰嶇疆
         package_id = tenant_data.get('package_id', 'basic')
@@ -118,7 +118,7 @@ class TenantService:
             duration_days = package_config['duration_days']
             expires_at = datetime.now() + timedelta(days=duration_days)
         
-        # 鍒涘缓绉熸埛
+        # 创建绉熸埛
         tenant = Tenant(
             name=tenant_data['name'],
             code=tenant_data['code'],
@@ -138,7 +138,7 @@ class TenantService:
         鑾峰彇绉熸埛璇︽儏
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -147,45 +147,45 @@ class TenantService:
     
     def update_tenant(self, tenant_id: str, tenant_data: Dict) -> Tenant:
         """
-        鏇存柊绉熸埛
+        更新绉熸埛
         
-        鍔熻兘锛?        - 楠岃瘉绉熸埛缂栫爜鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-        - 楠岃瘉绉熸埛鍚嶇О鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-        - 鏇存柊濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?        - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡鐘舵€佹垨濂楅锛?        
+        鍔熻兘锛?        - 楠岃瘉绉熸埛编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
+        - 楠岃瘉绉熸埛名称鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
+        - 更新濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?        - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡状态佹垨濂楅锛?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             tenant_data: 绉熸埛鏁版嵁
         
         Returns:
-            Tenant: 鏇存柊鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
         
         Raises:
             ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨楠岃瘉澶辫触
         """
-        logger.info(f"鏇存柊绉熸埛: tenant_id={tenant_id}")
+        logger.info(f"更新绉熸埛: tenant_id={tenant_id}")
         
         # 鑾峰彇绉熸埛
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
             raise ValueError(f"绉熸埛涓嶅瓨鍦? {tenant_id}")
         
-        # 鏇存柊绉熸埛鍚嶇О
+        # 更新绉熸埛名称
         if tenant_data.get('name') and tenant_data['name'] != tenant.name:
             # 妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?            if self.tenant_repo.exists_by_name(tenant_data['name']):
-                raise ValueError(f"绉熸埛鍚嶇О宸插瓨鍦? {tenant_data['name']}")
+                raise ValueError(f"绉熸埛名称宸插瓨鍦? {tenant_data['name']}")
             tenant.name = tenant_data['name']
         
-        # 鏇存柊绉熸埛缂栫爜
+        # 更新绉熸埛编码
         if tenant_data.get('code') and tenant_data['code'] != tenant.code:
             # 妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?            if self.tenant_repo.exists_by_code(tenant_data['code']):
-                raise ValueError(f"绉熸埛缂栫爜宸插瓨鍦? {tenant_data['code']}")
+                raise ValueError(f"绉熸埛编码宸插瓨鍦? {tenant_data['code']}")
             tenant.code = tenant_data['code']
         
-        # 鏇存柊鎻忚堪
+        # 更新描述
         if tenant_data.get('description') is not None:
             tenant.description = tenant_data['description']
         
-        # 鏇存柊鐘舵€?        if tenant_data.get('status') and tenant_data['status'] != tenant.status:
+        # 更新状态?        if tenant_data.get('status') and tenant_data['status'] != tenant.status:
             tenant.status = tenant_data['status']
             # 閲嶆柊璁＄畻杩囨湡鏃堕棿
             if tenant.status == 'active':
@@ -194,7 +194,7 @@ class TenantService:
                     duration_days = package_config['duration_days']
                     tenant.expires_at = datetime.now() + timedelta(days=duration_days)
         
-        # 鏇存柊濂楅
+        # 更新濂楅
         if tenant_data.get('package_id') and tenant_data['package_id'] != tenant.package_id:
             package_id = tenant_data['package_id']
             package_config = self.PACKAGES.get(package_id, self.PACKAGES['basic'])
@@ -211,20 +211,20 @@ class TenantService:
     
     def delete_tenant(self, tenant_id: str) -> bool:
         """
-        鍒犻櫎绉熸埛
+        删除绉熸埛
         
         鍔熻兘锛?        - 妫€鏌ョ鎴锋槸鍚﹀瓨鍦?        - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         - 妫€鏌ユ槸鍚︽湁閮ㄩ棬
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         
         Raises:
             ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨鏈夌敤鎴锋垨鏈夐儴闂?        """
-        logger.info(f"鍒犻櫎绉熸埛: tenant_id={tenant_id}")
+        logger.info(f"删除绉熸埛: tenant_id={tenant_id}")
         
         # 鑾峰彇绉熸埛
         tenant = self.tenant_repo.get_by_id(tenant_id)
@@ -233,11 +233,11 @@ class TenantService:
         
         # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if tenant.users:
-            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
+            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
         
         # 妫€鏌ユ槸鍚︽湁閮ㄩ棬
         if tenant.departments:
-            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
+            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
         
         return self.tenant_repo.delete(tenant_id)
     
@@ -252,22 +252,22 @@ class TenantService:
         鑾峰彇绉熸埛鍒楄〃
         
         Args:
-            status: 鐘舵€侊紙鍙€夛級
+            status: 状态侊紙鍙€夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             Dict: 绉熸埛鍒楄〃
                 - total: 鎬绘暟
                 - items: 绉熸埛鍒楄〃
                 - page: 椤电爜
-                - page_size: 姣忛〉鏁伴噺
+                - page_size: 姣忛〉数量
         """
-        # 鏍规嵁鏉′欢鏌ヨ
+        # 根据鏉′欢查询
         if keyword:
             tenants = self.tenant_repo.search(keyword, page, page_size)
-            total = len(tenants)  # TODO: 闇€瑕佷紭鍖栵紝搴旇鍗曠嫭鏌ヨ鎬绘暟
+            total = len(tenants)  # TODO: 闇€瑕佷紭鍖栵紝搴旇鍗曠嫭查询鎬绘暟
         elif status == 'active':
             tenants = self.tenant_repo.get_active_tenants(page, page_size)
             total = self.tenant_repo.count_active()
@@ -289,8 +289,8 @@ class TenantService:
         """
         妫€鏌ョ鎴疯祫婧愰厤棰?        
         Args:
-            tenant_id: 绉熸埛ID
-            quota_type: 閰嶉绫诲瀷锛坲sers/departments/storage锛?        
+            tenant_id: 租户ID
+            quota_type: 閰嶉类型锛坲sers/departments/storage锛?        
         Returns:
             Dict: 閰嶉淇℃伅
                 - used: 宸蹭娇鐢ㄩ噺
@@ -310,7 +310,7 @@ class TenantService:
             used = 0
             max_quota = tenant.max_storage
         else:
-            raise ValueError(f"涓嶆敮鎸佺殑閰嶉绫诲瀷: {quota_type}")
+            raise ValueError(f"涓嶆敮鎸佺殑閰嶉类型: {quota_type}")
         
         available = max_quota - used
         percentage = (used / max_quota * 100) if max_quota > 0 else 0
@@ -343,28 +343,28 @@ class TenantService:
     
     def update_package(self, tenant_id: str, package_id: str) -> Tenant:
         """
-        鏇存柊绉熸埛濂楅
+        更新绉熸埛濂楅
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             package_id: 濂楅ID
         
         Returns:
-            Tenant: 鏇存柊鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
         
         Raises:
             ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨濂楅涓嶅瓨鍦?        """
         # 妫€鏌ュ椁愭槸鍚﹀瓨鍦?        if package_id not in self.PACKAGES:
             raise ValueError(f"濂楅涓嶅瓨鍦? {package_id}")
         
-        # 鏇存柊绉熸埛濂楅
+        # 更新绉熸埛濂楅
         return self.update_tenant(tenant_id, {"package_id": package_id})
     
     def check_expiration(self, tenant_id: str) -> bool:
         """
         妫€鏌ョ鎴锋槸鍚﹁繃鏈?        
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             bool: 鏄惁宸茶繃鏈?        """
@@ -379,11 +379,11 @@ class TenantService:
         缁垂绉熸埛
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             days: 缁垂澶╂暟
         
         Returns:
-            Tenant: 鏇存柊鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
         
         Raises:
             ValueError: 绉熸埛涓嶅瓨鍦?        """

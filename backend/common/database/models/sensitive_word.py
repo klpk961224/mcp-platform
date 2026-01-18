@@ -17,7 +17,7 @@ class SensitiveWord(BaseModel, TimestampMixin):
 
     word = Column(String(200), nullable=False, comment="鏁忔劅璇?)
     category = Column(String(50), nullable=False, comment="鍒嗙被")
-    level = Column(Integer, nullable=False, default=1, comment="鏁忔劅绾у埆")
+    level = Column(Integer, nullable=False, default=1, comment="鏁忔劅级别")
     replacement = Column(String(200), nullable=True, comment="鏇挎崲璇?)
-    description = Column(Text, nullable=True, comment="鎻忚堪")
-    status = Column(String(20), nullable=False, default="active", comment="鐘舵€?)
+    description = Column(Text, nullable=True, comment="描述")
+    status = Column(String(20), nullable=False, default="active", comment="状态?)

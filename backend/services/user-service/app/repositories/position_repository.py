@@ -2,7 +2,7 @@
 """
 宀椾綅鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 宀椾綅CRUD鎿嶄綔
-2. 宀椾綅鏌ヨ鎿嶄綔
+2. 宀椾綅查询鎿嶄綔
 3. 宀椾綅缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.position_repository import PositionRepository
@@ -23,7 +23,7 @@ class PositionRepository:
     """
     宀椾綅鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 宀椾綅CRUD鎿嶄綔
-    - 宀椾綅鏌ヨ鎿嶄綔
+    - 宀椾綅查询鎿嶄綔
     - 宀椾綅缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        position_repo = PositionRepository(db)
@@ -40,14 +40,14 @@ class PositionRepository:
     
     def create(self, position: Position) -> Position:
         """
-        鍒涘缓宀椾綅
+        创建宀椾綅
         
         Args:
             position: 宀椾綅瀵硅薄
         
         Returns:
-            Position: 鍒涘缓鐨勫矖浣嶅璞?        """
-        logger.info(f"鍒涘缓宀椾綅: name={position.name}, code={position.code}, tenant_id={position.tenant_id}")
+            Position: 创建鐨勫矖浣嶅璞?        """
+        logger.info(f"创建宀椾綅: name={position.name}, code={position.code}, tenant_id={position.tenant_id}")
         self.db.add(position)
         self.db.commit()
         self.db.refresh(position)
@@ -55,10 +55,10 @@ class PositionRepository:
     
     def get_by_id(self, position_id: str) -> Optional[Position]:
         """
-        鏍规嵁ID鑾峰彇宀椾綅
+        根据ID鑾峰彇宀椾綅
         
         Args:
-            position_id: 宀椾綅ID
+            position_id: 岗位ID
         
         Returns:
             Optional[Position]: 宀椾綅瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -67,10 +67,10 @@ class PositionRepository:
     
     def get_by_code(self, code: str) -> Optional[Position]:
         """
-        鏍规嵁缂栫爜鑾峰彇宀椾綅
+        根据编码鑾峰彇宀椾綅
         
         Args:
-            code: 宀椾綅缂栫爜
+            code: 宀椾綅编码
         
         Returns:
             Optional[Position]: 宀椾綅瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -79,12 +79,12 @@ class PositionRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Position]:
         """
-        鏍规嵁绉熸埛ID鑾峰彇宀椾綅鍒楄〃
+        根据租户ID鑾峰彇宀椾綅鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Position]: 宀椾綅鍒楄〃
@@ -97,9 +97,9 @@ class PositionRepository:
         鎼滅储宀椾綅
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Position]: 宀椾綅鍒楄〃
@@ -123,7 +123,7 @@ class PositionRepository:
         鑾峰彇鎵€鏈夊矖浣?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Position]: 宀椾綅鍒楄〃
@@ -133,30 +133,30 @@ class PositionRepository:
     
     def update(self, position: Position) -> Position:
         """
-        鏇存柊宀椾綅
+        更新宀椾綅
         
         Args:
             position: 宀椾綅瀵硅薄
         
         Returns:
-            Position: 鏇存柊鍚庣殑宀椾綅瀵硅薄
+            Position: 更新鍚庣殑宀椾綅瀵硅薄
         """
-        logger.info(f"鏇存柊宀椾綅: position_id={position.id}")
+        logger.info(f"更新宀椾綅: position_id={position.id}")
         self.db.commit()
         self.db.refresh(position)
         return position
     
     def delete(self, position_id: str) -> bool:
         """
-        鍒犻櫎宀椾綅
+        删除宀椾綅
         
         Args:
-            position_id: 宀椾綅ID
+            position_id: 岗位ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎宀椾綅: position_id={position_id}")
+        logger.info(f"删除宀椾綅: position_id={position_id}")
         position = self.get_by_id(position_id)
         if not position:
             return False
@@ -167,13 +167,13 @@ class PositionRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛宀椾綅鏁伴噺
+        缁熻绉熸埛宀椾綅数量
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            int: 宀椾綅鏁伴噺
+            int: 宀椾綅数量
         """
         return self.db.query(Position).filter(Position.tenant_id == tenant_id).count()
     
@@ -181,7 +181,7 @@ class PositionRepository:
         """
         缁熻鎵€鏈夊矖浣嶆暟閲?        
         Returns:
-            int: 宀椾綅鏁伴噺
+            int: 宀椾綅数量
         """
         return self.db.query(Position).count()
     
@@ -189,7 +189,7 @@ class PositionRepository:
         """
         妫€鏌ュ矖浣嶇紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 宀椾綅缂栫爜
+            code: 宀椾綅编码
         
         Returns:
             bool: 鏄惁瀛樺湪

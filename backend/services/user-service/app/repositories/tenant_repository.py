@@ -2,7 +2,7 @@
 """
 绉熸埛鏁版嵁璁块棶灞?
 鍔熻兘璇存槑锛?1. 绉熸埛CRUD鎿嶄綔
-2. 绉熸埛鏌ヨ鎿嶄綔
+2. 绉熸埛查询鎿嶄綔
 3. 绉熸埛缁熻鎿嶄綔
 
 浣跨敤绀轰緥锛?    from app.repositories.tenant_repository import TenantRepository
@@ -23,7 +23,7 @@ class TenantRepository:
     """
     绉熸埛鏁版嵁璁块棶灞?    
     鍔熻兘锛?    - 绉熸埛CRUD鎿嶄綔
-    - 绉熸埛鏌ヨ鎿嶄綔
+    - 绉熸埛查询鎿嶄綔
     - 绉熸埛缁熻鎿嶄綔
     
     浣跨敤鏂规硶锛?        tenant_repo = TenantRepository(db)
@@ -40,14 +40,14 @@ class TenantRepository:
     
     def create(self, tenant: Tenant) -> Tenant:
         """
-        鍒涘缓绉熸埛
+        创建绉熸埛
         
         Args:
             tenant: 绉熸埛瀵硅薄
         
         Returns:
-            Tenant: 鍒涘缓鐨勭鎴峰璞?        """
-        logger.info(f"鍒涘缓绉熸埛: name={tenant.name}, code={tenant.code}")
+            Tenant: 创建鐨勭鎴峰璞?        """
+        logger.info(f"创建绉熸埛: name={tenant.name}, code={tenant.code}")
         self.db.add(tenant)
         self.db.commit()
         self.db.refresh(tenant)
@@ -55,10 +55,10 @@ class TenantRepository:
     
     def get_by_id(self, tenant_id: str) -> Optional[Tenant]:
         """
-        鏍规嵁ID鑾峰彇绉熸埛
+        根据ID鑾峰彇绉熸埛
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
             Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -67,10 +67,10 @@ class TenantRepository:
     
     def get_by_code(self, code: str) -> Optional[Tenant]:
         """
-        鏍规嵁缂栫爜鑾峰彇绉熸埛
+        根据编码鑾峰彇绉熸埛
         
         Args:
-            code: 绉熸埛缂栫爜
+            code: 绉熸埛编码
         
         Returns:
             Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -79,10 +79,10 @@ class TenantRepository:
     
     def get_by_name(self, name: str) -> Optional[Tenant]:
         """
-        鏍规嵁鍚嶇О鑾峰彇绉熸埛
+        根据名称鑾峰彇绉熸埛
         
         Args:
-            name: 绉熸埛鍚嶇О
+            name: 绉熸埛名称
         
         Returns:
             Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -91,12 +91,12 @@ class TenantRepository:
     
     def get_by_package_id(self, package_id: str, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        鏍规嵁濂楅ID鑾峰彇绉熸埛鍒楄〃
+        根据濂楅ID鑾峰彇绉熸埛鍒楄〃
         
         Args:
             package_id: 濂楅ID
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Tenant]: 绉熸埛鍒楄〃
@@ -110,7 +110,7 @@ class TenantRepository:
         
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Tenant]: 绉熸埛鍒楄〃
@@ -132,7 +132,7 @@ class TenantRepository:
         鑾峰彇杩囨湡鐨勭鎴峰垪琛?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Tenant]: 绉熸埛鍒楄〃
@@ -152,7 +152,7 @@ class TenantRepository:
         
         Args:
             keyword: 鍏抽敭璇?            page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Tenant]: 绉熸埛鍒楄〃
@@ -171,7 +171,7 @@ class TenantRepository:
         鑾峰彇鎵€鏈夌鎴?        
         Args:
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Tenant]: 绉熸埛鍒楄〃
@@ -181,41 +181,41 @@ class TenantRepository:
     
     def update(self, tenant: Tenant) -> Tenant:
         """
-        鏇存柊绉熸埛
+        更新绉熸埛
         
         Args:
             tenant: 绉熸埛瀵硅薄
         
         Returns:
-            Tenant: 鏇存柊鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
         """
-        logger.info(f"鏇存柊绉熸埛: tenant_id={tenant.id}")
+        logger.info(f"更新绉熸埛: tenant_id={tenant.id}")
         self.db.commit()
         self.db.refresh(tenant)
         return tenant
     
     def delete(self, tenant_id: str) -> bool:
         """
-        鍒犻櫎绉熸埛
+        删除绉熸埛
         
         Args:
-            tenant_id: 绉熸埛ID
+            tenant_id: 租户ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎绉熸埛: tenant_id={tenant_id}")
+        logger.info(f"删除绉熸埛: tenant_id={tenant_id}")
         tenant = self.get_by_id(tenant_id)
         if not tenant:
             return False
         
         # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if tenant.users:
-            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
+            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
         
         # 妫€鏌ユ槸鍚︽湁閮ㄩ棬
         if tenant.departments:
-            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
+            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
         
         self.db.delete(tenant)
         self.db.commit()
@@ -223,22 +223,22 @@ class TenantRepository:
     
     def count_by_package(self, package_id: str) -> int:
         """
-        缁熻濂楅绉熸埛鏁伴噺
+        缁熻濂楅绉熸埛数量
         
         Args:
             package_id: 濂楅ID
         
         Returns:
-            int: 绉熸埛鏁伴噺
+            int: 绉熸埛数量
         """
         return self.db.query(Tenant).filter(Tenant.package_id == package_id).count()
     
     def count_active(self) -> int:
         """
-        缁熻婵€娲荤殑绉熸埛鏁伴噺
+        缁熻婵€娲荤殑绉熸埛数量
         
         Returns:
-            int: 绉熸埛鏁伴噺
+            int: 绉熸埛数量
         """
         from datetime import datetime
         return self.db.query(Tenant).filter(
@@ -255,7 +255,7 @@ class TenantRepository:
         """
         缁熻杩囨湡鐨勭鎴锋暟閲?        
         Returns:
-            int: 绉熸埛鏁伴噺
+            int: 绉熸埛数量
         """
         from datetime import datetime
         return self.db.query(Tenant).filter(
@@ -269,7 +269,7 @@ class TenantRepository:
         """
         缁熻鎵€鏈夌鎴锋暟閲?        
         Returns:
-            int: 绉熸埛鏁伴噺
+            int: 绉熸埛数量
         """
         return self.db.query(Tenant).count()
     
@@ -277,7 +277,7 @@ class TenantRepository:
         """
         妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 绉熸埛缂栫爜
+            code: 绉熸埛编码
         
         Returns:
             bool: 鏄惁瀛樺湪
@@ -288,7 +288,7 @@ class TenantRepository:
         """
         妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?        
         Args:
-            name: 绉熸埛鍚嶇О
+            name: 绉熸埛名称
         
         Returns:
             bool: 鏄惁瀛樺湪

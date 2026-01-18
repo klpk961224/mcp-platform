@@ -41,25 +41,25 @@ class WorkflowTemplateService:
                        description: Optional[str] = None, category: str = "custom",
                        version: str = "1.0") -> WorkflowTemplate:
         """
-        鍒涘缓宸ヤ綔娴佹ā鏉?        
+        创建宸ヤ綔娴佹ā鏉?        
         Args:
-            name: 妯℃澘鍚嶇О
-            code: 妯℃澘缂栫爜
-            tenant_id: 绉熸埛ID
+            name: 妯℃澘名称
+            code: 妯℃澘编码
+            tenant_id: 租户ID
             definition: 娴佺▼瀹氫箟
-            description: 妯℃澘鎻忚堪锛堝彲閫夛級
+            description: 妯℃澘描述锛堝彲閫夛級
             category: 鍒嗙被
             version: 鐗堟湰
         
         Returns:
-            WorkflowTemplate: 鍒涘缓鐨勬ā鏉垮璞?        
+            WorkflowTemplate: 创建鐨勬ā鏉垮璞?        
         Raises:
-            ValueError: 妯℃澘缂栫爜宸插瓨鍦?        """
-        logger.info(f"鍒涘缓宸ヤ綔娴佹ā鏉? name={name}, code={code}")
+            ValueError: 妯℃澘编码宸插瓨鍦?        """
+        logger.info(f"创建宸ヤ綔娴佹ā鏉? name={name}, code={code}")
         
         # 妫€鏌ユā鏉跨紪鐮佹槸鍚﹀凡瀛樺湪
         if self.template_repo.get_by_code(code):
-            raise ValueError("妯℃澘缂栫爜宸插瓨鍦?)
+            raise ValueError("妯℃澘编码宸插瓨鍦?)
         
         import json
         template = WorkflowTemplate(
@@ -90,10 +90,10 @@ class WorkflowTemplateService:
     
     def get_template_by_code(self, code: str) -> Optional[WorkflowTemplate]:
         """
-        鏍规嵁缂栫爜鑾峰彇妯℃澘
+        根据编码鑾峰彇妯℃澘
         
         Args:
-            code: 妯℃澘缂栫爜
+            code: 妯℃澘编码
         
         Returns:
             Optional[WorkflowTemplate]: 妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -102,22 +102,22 @@ class WorkflowTemplateService:
     
     def update_template(self, template_id: str, template_data: Dict[str, Any]) -> Optional[WorkflowTemplate]:
         """
-        鏇存柊妯℃澘
+        更新妯℃澘
         
         Args:
             template_id: 妯℃澘ID
             template_data: 妯℃澘鏁版嵁
         
         Returns:
-            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTemplate]: 更新鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"鏇存柊宸ヤ綔娴佹ā鏉? template_id={template_id}")
+        logger.info(f"更新宸ヤ綔娴佹ā鏉? template_id={template_id}")
         
         template = self.template_repo.get_by_id(template_id)
         if not template:
             return None
         
-        # 鏇存柊妯℃澘
+        # 更新妯℃澘
         for key, value in template_data.items():
             if hasattr(template, key):
                 setattr(template, key, value)
@@ -126,15 +126,15 @@ class WorkflowTemplateService:
     
     def delete_template(self, template_id: str) -> bool:
         """
-        鍒犻櫎妯℃澘
+        删除妯℃澘
         
         Args:
             template_id: 妯℃澘ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎宸ヤ綔娴佹ā鏉? template_id={template_id}")
+        logger.info(f"删除宸ヤ綔娴佹ā鏉? template_id={template_id}")
         return self.template_repo.delete(template_id)
     
     def list_templates(self, tenant_id: Optional[str] = None, category: Optional[str] = None,
@@ -143,11 +143,11 @@ class WorkflowTemplateService:
         鑾峰彇妯℃澘鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
             category: 鍒嗙被锛堝彲閫夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[WorkflowTemplate]: 妯℃澘鍒楄〃
@@ -168,7 +168,7 @@ class WorkflowTemplateService:
             template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTemplate]: 更新鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"婵€娲诲伐浣滄祦妯℃澘: template_id={template_id}")
         
@@ -187,7 +187,7 @@ class WorkflowTemplateService:
             template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[WorkflowTemplate]: 更新鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         logger.info(f"鍋滅敤宸ヤ綔娴佹ā鏉? template_id={template_id}")
         
@@ -200,13 +200,13 @@ class WorkflowTemplateService:
     
     def count_templates(self, tenant_id: Optional[str] = None) -> int:
         """
-        缁熻妯℃澘鏁伴噺
+        缁熻妯℃澘数量
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
         
         Returns:
-            int: 妯℃澘鏁伴噺
+            int: 妯℃澘数量
         """
         if tenant_id:
             return self.template_repo.count_by_tenant(tenant_id)

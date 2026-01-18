@@ -46,27 +46,27 @@ class RoleService:
     
     def create_role(self, role_data: Dict[str, Any]) -> Role:
         """
-        鍒涘缓瑙掕壊
+        创建瑙掕壊
         
         Args:
             role_data: 瑙掕壊鏁版嵁
         
         Returns:
-            Role: 鍒涘缓鐨勮鑹插璞?        
+            Role: 创建鐨勮鑹插璞?        
         Raises:
-            ValueError: 瑙掕壊缂栫爜宸插瓨鍦?            ValueError: 瑙掕壊鍚嶇О宸插瓨鍦?        """
-        logger.info(f"鍒涘缓瑙掕壊: name={role_data.get('name')}, code={role_data.get('code')}")
+            ValueError: 角色编码宸插瓨鍦?            ValueError: 角色名称宸插瓨鍦?        """
+        logger.info(f"创建瑙掕壊: name={role_data.get('name')}, code={role_data.get('code')}")
         
-        # 妫€鏌ヨ鑹茬紪鐮佹槸鍚﹀凡瀛樺湪
+        # 妫€查询鑹茬紪鐮佹槸鍚﹀凡瀛樺湪
         if self.role_repo.exists_by_code(role_data.get("code")):
-            raise ValueError("瑙掕壊缂栫爜宸插瓨鍦?)
+            raise ValueError("角色编码宸插瓨鍦?)
         
-        # 妫€鏌ヨ鑹插悕绉版槸鍚﹀凡瀛樺湪
+        # 妫€查询鑹插悕绉版槸鍚﹀凡瀛樺湪
         tenant_id = role_data.get("tenant_id")
         if tenant_id and self.role_repo.exists_by_name_in_tenant(role_data.get("name"), tenant_id):
-            raise ValueError("瑙掕壊鍚嶇О宸插瓨鍦?)
+            raise ValueError("角色名称宸插瓨鍦?)
         
-        # 鍒涘缓瑙掕壊
+        # 创建瑙掕壊
         role = Role(**role_data)
         return self.role_repo.create(role)
     
@@ -75,7 +75,7 @@ class RoleService:
         鑾峰彇瑙掕壊
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             Optional[Role]: 瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -84,10 +84,10 @@ class RoleService:
     
     def get_role_by_code(self, code: str) -> Optional[Role]:
         """
-        鏍规嵁缂栫爜鑾峰彇瑙掕壊
+        根据编码鑾峰彇瑙掕壊
         
         Args:
-            code: 瑙掕壊缂栫爜
+            code: 角色编码
         
         Returns:
             Optional[Role]: 瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
@@ -96,30 +96,30 @@ class RoleService:
     
     def update_role(self, role_id: str, role_data: Dict[str, Any]) -> Optional[Role]:
         """
-        鏇存柊瑙掕壊
+        更新瑙掕壊
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
             role_data: 瑙掕壊鏁版嵁
         
         Returns:
-            Optional[Role]: 鏇存柊鍚庣殑瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Role]: 更新鍚庣殑瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
         
         Raises:
-            ValueError: 瑙掕壊鍚嶇О宸茶鍏朵粬瑙掕壊浣跨敤
+            ValueError: 角色名称宸茶鍏朵粬瑙掕壊浣跨敤
         """
-        logger.info(f"鏇存柊瑙掕壊: role_id={role_id}")
+        logger.info(f"更新瑙掕壊: role_id={role_id}")
         
         role = self.role_repo.get_by_id(role_id)
         if not role:
             return None
         
-        # 妫€鏌ヨ鑹插悕绉版槸鍚﹁鍏朵粬瑙掕壊浣跨敤
+        # 妫€查询鑹插悕绉版槸鍚﹁鍏朵粬瑙掕壊浣跨敤
         if "name" in role_data and role_data["name"] != role.name:
             if self.role_repo.exists_by_name_in_tenant(role_data["name"], role.tenant_id):
-                raise ValueError("瑙掕壊鍚嶇О宸茶鍏朵粬瑙掕壊浣跨敤")
+                raise ValueError("角色名称宸茶鍏朵粬瑙掕壊浣跨敤")
         
-        # 鏇存柊瑙掕壊
+        # 更新瑙掕壊
         for key, value in role_data.items():
             if hasattr(role, key):
                 setattr(role, key, value)
@@ -128,15 +128,15 @@ class RoleService:
     
     def delete_role(self, role_id: str) -> bool:
         """
-        鍒犻櫎瑙掕壊
+        删除瑙掕壊
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
-            bool: 鍒犻櫎鏄惁鎴愬姛
+            bool: 删除鏄惁鎴愬姛
         """
-        logger.info(f"鍒犻櫎瑙掕壊: role_id={role_id}")
+        logger.info(f"删除瑙掕壊: role_id={role_id}")
         return self.role_repo.delete(role_id)
     
     def list_roles(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None, 
@@ -145,10 +145,10 @@ class RoleService:
         鑾峰彇瑙掕壊鍒楄〃
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
             keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
             page: 椤电爜
-            page_size: 姣忛〉鏁伴噺
+            page_size: 姣忛〉数量
         
         Returns:
             List[Role]: 瑙掕壊鍒楄〃
@@ -165,11 +165,11 @@ class RoleService:
         鍒嗛厤鏉冮檺
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
             permission_ids: 鏉冮檺ID鍒楄〃
         
         Returns:
-            Role: 鏇存柊鍚庣殑瑙掕壊瀵硅薄
+            Role: 更新鍚庣殑瑙掕壊瀵硅薄
         """
         logger.info(f"鍒嗛厤鏉冮檺: role_id={role_id}, permission_count={len(permission_ids)}")
         return self.role_repo.assign_permissions(role_id, permission_ids)
@@ -179,11 +179,11 @@ class RoleService:
         鍒嗛厤鑿滃崟
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
             menu_ids: 鑿滃崟ID鍒楄〃
         
         Returns:
-            Role: 鏇存柊鍚庣殑瑙掕壊瀵硅薄
+            Role: 更新鍚庣殑瑙掕壊瀵硅薄
         """
         logger.info(f"鍒嗛厤鑿滃崟: role_id={role_id}, menu_count={len(menu_ids)}")
         return self.role_repo.assign_menus(role_id, menu_ids)
@@ -193,7 +193,7 @@ class RoleService:
         鑾峰彇瑙掕壊鏉冮檺
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             List: 鏉冮檺鍒楄〃
@@ -208,7 +208,7 @@ class RoleService:
         鑾峰彇瑙掕壊鑿滃崟
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             List: 鑿滃崟鍒楄〃
@@ -220,10 +220,10 @@ class RoleService:
     
     def check_permission(self, role_id: str, permission_code: str) -> bool:
         """
-        妫€鏌ヨ鑹叉槸鍚︽嫢鏈夋寚瀹氭潈闄?        
+        妫€查询鑹叉槸鍚︽嫢鏈夋寚瀹氭潈闄?        
         Args:
-            role_id: 瑙掕壊ID
-            permission_code: 鏉冮檺缂栫爜
+            role_id: 角色ID
+            permission_code: 鏉冮檺编码
         
         Returns:
             bool: 鏄惁鎷ユ湁鏉冮檺
@@ -235,13 +235,13 @@ class RoleService:
     
     def count_roles(self, tenant_id: Optional[str] = None) -> int:
         """
-        缁熻瑙掕壊鏁伴噺
+        缁熻瑙掕壊数量
         
         Args:
-            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            tenant_id: 租户ID锛堝彲閫夛級
         
         Returns:
-            int: 瑙掕壊鏁伴噺
+            int: 瑙掕壊数量
         """
         if tenant_id:
             return self.role_repo.count_by_tenant(tenant_id)

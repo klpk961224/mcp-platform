@@ -2,8 +2,8 @@
 """
 MessageService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓绔欏唴淇?2. 鑾峰彇绔欏唴淇?3. 鏇存柊绔欏唴淇?4. 鍒犻櫎绔欏唴淇?5. 鏍囪宸茶
-6. 鑾峰彇鏈鏁伴噺
+娴嬭瘯鍐呭锛?1. 创建绔欏唴淇?2. 鑾峰彇绔欏唴淇?3. 更新绔欏唴淇?4. 删除绔欏唴淇?5. 鏍囪宸茶
+6. 鑾峰彇鏈数量
 7. 鑾峰彇缁熻淇℃伅
 """
 
@@ -44,7 +44,7 @@ def mock_message():
 
 @pytest.fixture
 def message_service(mock_db):
-    """鍒涘缓MessageService瀹炰緥"""
+    """创建MessageService瀹炰緥"""
     return MessageService(mock_db)
 
 
@@ -58,10 +58,10 @@ class TestMessageService:
         assert service.repository is not None
     
     def test_get_message_by_id_success(self, message_service, mock_message):
-        """娴嬭瘯鏍规嵁ID鑾峰彇绔欏唴淇℃垚鍔?""
-        # 妯℃嫙鏌ヨ绔欏唴淇?        message_service.repository.get_by_id = Mock(return_value=mock_message)
+        """娴嬭瘯根据ID鑾峰彇绔欏唴淇℃垚鍔?""
+        # 妯℃嫙查询绔欏唴淇?        message_service.repository.get_by_id = Mock(return_value=mock_message)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_message_by_id("test_message_id")
         
         # 楠岃瘉缁撴灉
@@ -70,11 +70,11 @@ class TestMessageService:
         assert result["title"] == "娴嬭瘯娑堟伅"
     
     def test_get_message_by_id_not_found(self, message_service):
-        """娴嬭瘯鏍规嵁ID鑾峰彇绔欏唴淇″け璐?""
-        # 妯℃嫙鏌ヨ绔欏唴淇¤繑鍥濶one
+        """娴嬭瘯根据ID鑾峰彇绔欏唴淇″け璐?""
+        # 妯℃嫙查询绔欏唴淇¤繑鍥濶one
         message_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_message_by_id("nonexistent_id")
         
         # 楠岃瘉缁撴灉
@@ -82,10 +82,10 @@ class TestMessageService:
     
     def test_get_all_messages_success(self, message_service, mock_message):
         """娴嬭瘯鑾峰彇鎵€鏈夌珯鍐呬俊鎴愬姛"""
-        # 妯℃嫙鏌ヨ绔欏唴淇″垪琛?        message_service.repository.get_all = Mock(return_value=[mock_message])
+        # 妯℃嫙查询绔欏唴淇″垪琛?        message_service.repository.get_all = Mock(return_value=[mock_message])
         message_service.repository.count = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_all_messages()
         
         # 楠岃瘉缁撴灉
@@ -94,11 +94,11 @@ class TestMessageService:
         assert result["items"][0]["title"] == "娴嬭瘯娑堟伅"
     
     def test_get_messages_by_sender_success(self, message_service, mock_message):
-        """娴嬭瘯鏍规嵁鍙戦€佽€呰幏鍙栫珯鍐呬俊鎴愬姛"""
-        # 妯℃嫙鏌ヨ绔欏唴淇″垪琛?        message_service.repository.get_by_sender = Mock(return_value=[mock_message])
+        """娴嬭瘯根据鍙戦€佽€呰幏鍙栫珯鍐呬俊鎴愬姛"""
+        # 妯℃嫙查询绔欏唴淇″垪琛?        message_service.repository.get_by_sender = Mock(return_value=[mock_message])
         message_service.repository.count_by_sender = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_messages_by_sender("user_001")
         
         # 楠岃瘉缁撴灉
@@ -106,11 +106,11 @@ class TestMessageService:
         assert result["items"][0]["sender_id"] == "user_001"
     
     def test_get_messages_by_receiver_success(self, message_service, mock_message):
-        """娴嬭瘯鏍规嵁鎺ユ敹鑰呰幏鍙栫珯鍐呬俊鎴愬姛"""
-        # 妯℃嫙鏌ヨ绔欏唴淇″垪琛?        message_service.repository.get_by_receiver = Mock(return_value=[mock_message])
+        """娴嬭瘯根据鎺ユ敹鑰呰幏鍙栫珯鍐呬俊鎴愬姛"""
+        # 妯℃嫙查询绔欏唴淇″垪琛?        message_service.repository.get_by_receiver = Mock(return_value=[mock_message])
         message_service.repository.count_by_receiver = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_messages_by_receiver("user_002")
         
         # 楠岃瘉缁撴灉
@@ -118,11 +118,11 @@ class TestMessageService:
         assert result["items"][0]["receiver_id"] == "user_002"
     
     def test_get_unread_messages_by_receiver_success(self, message_service, mock_message):
-        """娴嬭瘯鏍规嵁鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊鎴愬姛"""
-        # 妯℃嫙鏌ヨ鏈绔欏唴淇″垪琛?        message_service.repository.get_unread_by_receiver = Mock(return_value=[mock_message])
+        """娴嬭瘯根据鎺ユ敹鑰呰幏鍙栨湭璇荤珯鍐呬俊鎴愬姛"""
+        # 妯℃嫙查询鏈绔欏唴淇″垪琛?        message_service.repository.get_unread_by_receiver = Mock(return_value=[mock_message])
         message_service.repository.count_unread_by_receiver = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = message_service.get_unread_messages_by_receiver("user_002")
         
         # 楠岃瘉缁撴灉
@@ -141,10 +141,10 @@ class TestMessageService:
         assert len(result["items"]) == 1
     
     def test_create_message_success(self, message_service, mock_message):
-        """娴嬭瘯鍒涘缓绔欏唴淇℃垚鍔?""
-        # 妯℃嫙鍒涘缓绔欏唴淇?        message_service.repository.create = Mock(return_value=mock_message)
+        """娴嬭瘯创建绔欏唴淇℃垚鍔?""
+        # 妯℃嫙创建绔欏唴淇?        message_service.repository.create = Mock(return_value=mock_message)
         
-        # 鎵ц鍒涘缓绔欏唴淇?        result = message_service.create_message(
+        # 鎵ц创建绔欏唴淇?        result = message_service.create_message(
             tenant_id="default",
             type="private",
             title="娴嬭瘯娑堟伅",
@@ -160,14 +160,14 @@ class TestMessageService:
         message_service.repository.create.assert_called_once()
     
     def test_update_message_success(self, message_service, mock_message):
-        """娴嬭瘯鏇存柊绔欏唴淇℃垚鍔?""
-        # 妯℃嫙鏌ヨ绔欏唴淇?        message_service.repository.get_by_id = Mock(return_value=mock_message)
-        # 妯℃嫙鏇存柊绔欏唴淇?        message_service.repository.update = Mock(return_value=mock_message)
+        """娴嬭瘯更新绔欏唴淇℃垚鍔?""
+        # 妯℃嫙查询绔欏唴淇?        message_service.repository.get_by_id = Mock(return_value=mock_message)
+        # 妯℃嫙更新绔欏唴淇?        message_service.repository.update = Mock(return_value=mock_message)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = message_service.update_message(
             "test_message_id",
-            title="鏇存柊鍚庣殑鏍囬"
+            title="更新鍚庣殑鏍囬"
         )
         
         # 楠岃瘉缁撴灉
@@ -176,24 +176,24 @@ class TestMessageService:
         message_service.repository.update.assert_called_once()
     
     def test_update_message_not_found(self, message_service):
-        """娴嬭瘯鏇存柊绔欏唴淇″け璐ワ紙绔欏唴淇′笉瀛樺湪锛?""
-        # 妯℃嫙鏌ヨ绔欏唴淇¤繑鍥濶one
+        """娴嬭瘯更新绔欏唴淇″け璐ワ紙绔欏唴淇′笉瀛樺湪锛?""
+        # 妯℃嫙查询绔欏唴淇¤繑鍥濶one
         message_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = message_service.update_message(
             "nonexistent_id",
-            title="鏇存柊鍚庣殑鏍囬"
+            title="更新鍚庣殑鏍囬"
         )
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_delete_message_success(self, message_service):
-        """娴嬭瘯鍒犻櫎绔欏唴淇℃垚鍔?""
-        # 妯℃嫙鍒犻櫎绔欏唴淇?        message_service.repository.delete = Mock(return_value=True)
+        """娴嬭瘯删除绔欏唴淇℃垚鍔?""
+        # 妯℃嫙删除绔欏唴淇?        message_service.repository.delete = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = message_service.delete_message("test_message_id")
         
         # 楠岃瘉缁撴灉
@@ -204,7 +204,7 @@ class TestMessageService:
         """娴嬭瘯鏍囪绔欏唴淇′负宸茶鎴愬姛"""
         # 妯℃嫙鏍囪宸茶
         message_service.repository.mark_as_read = Mock(return_value=True)
-        # 妯℃嫙鍒涘缓闃呰璁板綍
+        # 妯℃嫙创建闃呰璁板綍
         message_service.repository.create_read_record = Mock()
         
         # 鎵ц鏍囪宸茶
@@ -217,10 +217,10 @@ class TestMessageService:
     
     def test_get_unread_count_success(self, message_service):
         """娴嬭瘯鑾峰彇鏈绔欏唴淇℃暟閲忔垚鍔?""
-        # 妯℃嫙缁熻鏈鏁伴噺
+        # 妯℃嫙缁熻鏈数量
         message_service.repository.count_unread_by_receiver = Mock(return_value=5)
         
-        # 鎵ц鑾峰彇鏈鏁伴噺
+        # 鎵ц鑾峰彇鏈数量
         result = message_service.get_unread_count("user_002")
         
         # 楠岃瘉缁撴灉

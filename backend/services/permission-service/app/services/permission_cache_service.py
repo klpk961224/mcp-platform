@@ -48,7 +48,7 @@ class PermissionCacheService:
         缂撳瓨鐢ㄦ埛鏉冮檺
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             permissions: 鏉冮檺鍒楄〃
         
         Returns:
@@ -69,7 +69,7 @@ class PermissionCacheService:
         鑾峰彇鐢ㄦ埛鏉冮檺缂撳瓨
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Optional[List[str]]: 鏉冮檺鍒楄〃锛屼笉瀛樺湪杩斿洖None
@@ -88,7 +88,7 @@ class PermissionCacheService:
         """
         浣跨敤鎴锋潈闄愮紦瀛樺け鏁?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -107,7 +107,7 @@ class PermissionCacheService:
         缂撳瓨瑙掕壊鏉冮檺
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
             permissions: 鏉冮檺鍒楄〃
         
         Returns:
@@ -128,7 +128,7 @@ class PermissionCacheService:
         鑾峰彇瑙掕壊鏉冮檺缂撳瓨
         
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             Optional[List[str]]: 鏉冮檺鍒楄〃锛屼笉瀛樺湪杩斿洖None
@@ -147,7 +147,7 @@ class PermissionCacheService:
         """
         浣胯鑹叉潈闄愮紦瀛樺け鏁?        
         Args:
-            role_id: 瑙掕壊ID
+            role_id: 角色ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -166,7 +166,7 @@ class PermissionCacheService:
         缂撳瓨鐢ㄦ埛鑿滃崟
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
             menus: 鑿滃崟鍒楄〃
         
         Returns:
@@ -187,7 +187,7 @@ class PermissionCacheService:
         鑾峰彇鐢ㄦ埛鑿滃崟缂撳瓨
         
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             Optional[List[Dict[str, Any]]]: 鑿滃崟鍒楄〃锛屼笉瀛樺湪杩斿洖None
@@ -206,7 +206,7 @@ class PermissionCacheService:
         """
         浣跨敤鎴疯彍鍗曠紦瀛樺け鏁?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛
@@ -224,7 +224,7 @@ class PermissionCacheService:
         """
         浣跨敤鎴锋墍鏈夌紦瀛樺け鏁?        
         Args:
-            user_id: 鐢ㄦ埛ID
+            user_id: 用户ID
         
         Returns:
             bool: 鏄惁鎴愬姛

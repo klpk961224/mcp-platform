@@ -48,7 +48,7 @@ def require_roles(roles: List[str]):
         async def wrapper(request: Request, *args, **kwargs):
             # 鑾峰彇鐢ㄦ埛瑙掕壊锛堜粠request.state锛?            user_roles = getattr(request.state, 'roles', [])
             
-            # 妫€鏌ヨ鑹?            if not any(role in user_roles for role in roles):
+            # 妫€查询鑹?            if not any(role in user_roles for role in roles):
                 logger.warning(f"瑙掕壊涓嶈冻: 闇€瑕?{roles}, 鐢ㄦ埛瑙掕壊: {user_roles}")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,

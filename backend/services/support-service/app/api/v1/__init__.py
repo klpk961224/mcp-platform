@@ -8,7 +8,7 @@ API v1妯″潡
 from fastapi import APIRouter
 from app.api.v1.routers import todos, logs, messages, announcements
 
-# 鍒涘缓v1璺敱鍣?router = APIRouter(prefix="/api/v1")
+# 创建v1璺敱鍣?router = APIRouter(prefix="/api/v1")
 
 # 娉ㄥ唽鎵€鏈夎矾鐢?router.include_router(todos.router, prefix="/todos", tags=["寰呭姙浠诲姟"])
 router.include_router(logs.router, tags=["鏃ュ織瀹¤"])

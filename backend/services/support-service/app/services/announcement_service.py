@@ -14,14 +14,14 @@ from app.repositories.announcement_repository import AnnouncementRepository
 class AnnouncementService:
     """閫氱煡鍏憡Service"""
 
-    # 閫氱煡鍏憡绫诲瀷甯搁噺
+    # 閫氱煡鍏憡类型甯搁噺
     TYPE_SYSTEM = "system"  # 绯荤粺鍏憡
     TYPE_ACTIVITY = "activity"  # 娲诲姩閫氱煡
     TYPE_MAINTENANCE = "maintenance"  # 缁存姢閫氱煡
-    TYPE_UPDATE = "update"  # 鏇存柊閫氱煡
+    TYPE_UPDATE = "update"  # 更新閫氱煡
     TYPE_OTHER = "other"  # 鍏朵粬
 
-    # 鐘舵€佸父閲?    STATUS_DRAFT = "draft"
+    # 状态佸父閲?    STATUS_DRAFT = "draft"
     STATUS_PUBLISHED = "published"
     STATUS_ARCHIVED = "archived"
 
@@ -35,7 +35,7 @@ class AnnouncementService:
         self.repository = AnnouncementRepository(db)
 
     def get_announcement_by_id(self, announcement_id: str) -> Optional[Dict[str, Any]]:
-        """鏍规嵁ID鑾峰彇閫氱煡鍏憡"""
+        """根据ID鑾峰彇閫氱煡鍏憡"""
         announcement = self.repository.get_by_id(announcement_id)
         if not announcement:
             return None
@@ -60,7 +60,7 @@ class AnnouncementService:
         }
 
     def get_announcements_by_publisher(self, publisher_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鏍规嵁鍙戝竷鑰呰幏鍙栭€氱煡鍏憡"""
+        """根据鍙戝竷鑰呰幏鍙栭€氱煡鍏憡"""
         announcements = self.repository.get_by_publisher(publisher_id, skip=skip, limit=limit)
         total = self.repository.count_by_publisher(publisher_id)
         return {
@@ -94,8 +94,8 @@ class AnnouncementService:
         expire_at: Optional[datetime] = None,
         is_top: int = 0
     ) -> Dict[str, Any]:
-        """鍒涘缓閫氱煡鍏憡"""
-        # 鍒涘缓閫氱煡鍏憡
+        """创建閫氱煡鍏憡"""
+        # 创建閫氱煡鍏憡
         announcement = Announcement(
             tenant_id=tenant_id,
             type=type,
@@ -123,12 +123,12 @@ class AnnouncementService:
         expire_at: Optional[datetime] = None,
         is_top: Optional[int] = None
     ) -> Optional[Dict[str, Any]]:
-        """鏇存柊閫氱煡鍏憡"""
+        """更新閫氱煡鍏憡"""
         announcement = self.repository.get_by_id(announcement_id)
         if not announcement:
             return None
 
-        # 鏇存柊瀛楁
+        # 更新瀛楁
         if title is not None:
             announcement.title = title
         if content is not None:
@@ -137,7 +137,7 @@ class AnnouncementService:
             announcement.priority = priority
         if status is not None:
             announcement.status = status
-            # 濡傛灉鐘舵€佹敼涓哄凡鍙戝竷锛屼笖娌℃湁鍙戝竷鏃堕棿锛屽垯璁剧疆鍙戝竷鏃堕棿
+            # 濡傛灉状态佹敼涓哄凡鍙戝竷锛屼笖娌℃湁鍙戝竷鏃堕棿锛屽垯璁剧疆鍙戝竷鏃堕棿
             if status == self.STATUS_PUBLISHED and not announcement.publish_at:
                 announcement.publish_at = datetime.now()
         if publish_at is not None:
@@ -151,7 +151,7 @@ class AnnouncementService:
         return self._to_dict(announcement)
 
     def delete_announcement(self, announcement_id: str) -> bool:
-        """鍒犻櫎閫氱煡鍏憡"""
+        """删除閫氱煡鍏憡"""
         return self.repository.delete(announcement_id)
 
     def publish_announcement(self, announcement_id: str) -> Optional[Dict[str, Any]]:
@@ -175,16 +175,16 @@ class AnnouncementService:
         if existing:
             return True
 
-        # 鍒涘缓闃呰璁板綍
+        # 创建闃呰璁板綍
         self.repository.create_read_record(announcement_id, user_id)
         return True
 
     def get_read_count(self, announcement_id: str) -> int:
-        """鑾峰彇闃呰鏁伴噺"""
+        """鑾峰彇闃呰数量"""
         return self.repository.count_reads(announcement_id)
 
     def get_user_unread_count(self, user_id: str) -> int:
-        """鑾峰彇鐢ㄦ埛鏈閫氱煡鍏憡鏁伴噺"""
+        """鑾峰彇鐢ㄦ埛鏈閫氱煡鍏憡数量"""
         # 鑾峰彇鎵€鏈夊凡鍙戝竷鐨勯€氱煡鍏憡
         published = self.repository.get_published(skip=0, limit=999999)
         unread_count = 0

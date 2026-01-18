@@ -18,17 +18,17 @@ from app.services.position_service import PositionService
 router = APIRouter(prefix="/positions", tags=["宀椾綅绠＄悊"])
 
 
-@router.post("", summary="鍒涘缓宀椾綅")
+@router.post("", summary="创建宀椾綅")
 async def create_position(
-    name: str = Query(..., description="宀椾綅鍚嶇О"),
-    code: str = Query(..., description="宀椾綅缂栫爜"),
-    tenant_id: str = Query(..., description="绉熸埛ID"),
-    level: int = Query(1, description="宀椾綅绾у埆"),
-    description: Optional[str] = Query(None, description="鎻忚堪"),
+    name: str = Query(..., description="宀椾綅名称"),
+    code: str = Query(..., description="宀椾綅编码"),
+    tenant_id: str = Query(..., description="租户ID"),
+    level: int = Query(1, description="宀椾綅级别"),
+    description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓宀椾綅"""
-    logger.info(f"鍒涘缓宀椾綅: name={name}, code={code}")
+    """创建宀椾綅"""
+    logger.info(f"创建宀椾綅: name={name}, code={code}")
     
     try:
         position_service = PositionService(db)
@@ -43,22 +43,22 @@ async def create_position(
         
         new_position = position_service.create_position(position_data)
         
-        logger.info(f"鍒涘缓宀椾綅鎴愬姛: name={name}, position_id={new_position.id}")
+        logger.info(f"创建宀椾綅鎴愬姛: name={name}, position_id={new_position.id}")
         
         return new_position.to_dict()
     except ValueError as e:
-        logger.warning(f"鍒涘缓宀椾綅澶辫触: name={name}, error={str(e)}")
+        logger.warning(f"创建宀椾綅澶辫触: name={name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓宀椾綅寮傚父: name={name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建宀椾綅寮傚父: name={name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.get("", summary="鑾峰彇宀椾綅鍒楄〃")
 async def get_positions(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
     keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
     db: Session = Depends(get_db)
 ):
@@ -112,17 +112,17 @@ async def get_position(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇宀椾綅璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{position_id}", summary="鏇存柊宀椾綅")
+@router.put("/{position_id}", summary="更新宀椾綅")
 async def update_position(
     position_id: str,
-    name: Optional[str] = Query(None, description="宀椾綅鍚嶇О"),
-    level: Optional[int] = Query(None, description="宀椾綅绾у埆"),
-    description: Optional[str] = Query(None, description="鎻忚堪"),
-    status: Optional[str] = Query(None, description="鐘舵€?),
+    name: Optional[str] = Query(None, description="宀椾綅名称"),
+    level: Optional[int] = Query(None, description="宀椾綅级别"),
+    description: Optional[str] = Query(None, description="描述"),
+    status: Optional[str] = Query(None, description="状态?),
     db: Session = Depends(get_db)
 ):
-    """鏇存柊宀椾綅"""
-    logger.info(f"鏇存柊宀椾綅: position_id={position_id}")
+    """更新宀椾綅"""
+    logger.info(f"更新宀椾綅: position_id={position_id}")
     
     try:
         position_service = PositionService(db)
@@ -143,23 +143,23 @@ async def update_position(
         
         updated_position = position_service.update_position(position_id, update_data)
         
-        logger.info(f"鏇存柊宀椾綅鎴愬姛: position_id={position_id}")
+        logger.info(f"更新宀椾綅鎴愬姛: position_id={position_id}")
         
         return updated_position.to_dict()
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鏇存柊宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{position_id}", summary="鍒犻櫎宀椾綅")
+@router.delete("/{position_id}", summary="删除宀椾綅")
 async def delete_position(
     position_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎宀椾綅"""
-    logger.info(f"鍒犻櫎宀椾綅: position_id={position_id}")
+    """删除宀椾綅"""
+    logger.info(f"删除宀椾綅: position_id={position_id}")
     
     try:
         position_service = PositionService(db)
@@ -170,11 +170,11 @@ async def delete_position(
         
         position_service.delete_position(position_id)
         
-        logger.info(f"鍒犻櫎宀椾綅鎴愬姛: position_id={position_id}")
+        logger.info(f"删除宀椾綅鎴愬姛: position_id={position_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")

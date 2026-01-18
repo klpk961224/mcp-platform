@@ -18,11 +18,11 @@ class SensitiveWordRepository:
         self.db = db
 
     def get_by_id(self, sensitive_word_id: str) -> Optional[SensitiveWord]:
-        """鏍规嵁ID鑾峰彇鏁忔劅璇?""
+        """根据ID鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.id == sensitive_word_id).first()
 
     def get_by_word(self, word: str) -> Optional[SensitiveWord]:
-        """鏍规嵁鏁忔劅璇嶈幏鍙?""
+        """根据鏁忔劅璇嶈幏鍙?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.word == word).first()
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
@@ -30,14 +30,14 @@ class SensitiveWordRepository:
         return self.db.query(SensitiveWord).order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
     def get_by_category(self, category: str, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
-        """鏍规嵁鍒嗙被鑾峰彇鏁忔劅璇?""
+        """根据鍒嗙被鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(
             SensitiveWord.category == category,
             SensitiveWord.status == "active"
         ).order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
     def get_by_level(self, level: int, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
-        """鏍规嵁鏁忔劅绾у埆鑾峰彇鏁忔劅璇?""
+        """根据鏁忔劅级别鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(
             SensitiveWord.level == level,
             SensitiveWord.status == "active"
@@ -54,11 +54,11 @@ class SensitiveWordRepository:
         if query_params.get("category"):
             query = query.filter(SensitiveWord.category == query_params["category"])
 
-        # 鏁忔劅绾у埆杩囨护
+        # 鏁忔劅级别杩囨护
         if query_params.get("level"):
             query = query.filter(SensitiveWord.level == query_params["level"])
 
-        # 鐘舵€佽繃婊?        if query_params.get("status"):
+        # 状态佽繃婊?        if query_params.get("status"):
             query = query.filter(SensitiveWord.status == query_params["status"])
 
         # 缁熻鎬绘暟
@@ -70,20 +70,20 @@ class SensitiveWordRepository:
         return sensitive_words, total
 
     def create(self, sensitive_word: SensitiveWord) -> SensitiveWord:
-        """鍒涘缓鏁忔劅璇?""
+        """创建鏁忔劅璇?""
         self.db.add(sensitive_word)
         self.db.commit()
         self.db.refresh(sensitive_word)
         return sensitive_word
 
     def update(self, sensitive_word: SensitiveWord) -> SensitiveWord:
-        """鏇存柊鏁忔劅璇?""
+        """更新鏁忔劅璇?""
         self.db.commit()
         self.db.refresh(sensitive_word)
         return sensitive_word
 
     def delete(self, sensitive_word_id: str) -> bool:
-        """鍒犻櫎鏁忔劅璇?""
+        """删除鏁忔劅璇?""
         sensitive_word = self.get_by_id(sensitive_word_id)
         if sensitive_word:
             self.db.delete(sensitive_word)
@@ -96,11 +96,11 @@ class SensitiveWordRepository:
         return self.db.query(SensitiveWord).count()
 
     def count_by_category(self, category: str) -> int:
-        """鏍规嵁鍒嗙被缁熻鏁忔劅璇嶆暟閲?""
+        """根据鍒嗙被缁熻鏁忔劅璇嶆暟閲?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.category == category).count()
 
     def count_by_level(self, level: int) -> int:
-        """鏍规嵁鏁忔劅绾у埆缁熻鏁忔劅璇嶆暟閲?""
+        """根据鏁忔劅级别缁熻鏁忔劅璇嶆暟閲?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.level == level).count()
 
     def get_all_active_words(self) -> List[str]:

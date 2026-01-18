@@ -2,15 +2,15 @@
 """
 AnnouncementService鍗曞厓娴嬭瘯
 
-娴嬭瘯鍐呭锛?1. 鍒涘缓閫氱煡鍏憡
+娴嬭瘯鍐呭锛?1. 创建閫氱煡鍏憡
 2. 鑾峰彇閫氱煡鍏憡
-3. 鏇存柊閫氱煡鍏憡
-4. 鍒犻櫎閫氱煡鍏憡
+3. 更新閫氱煡鍏憡
+4. 删除閫氱煡鍏憡
 5. 鍙戝竷閫氱煡鍏憡
 6. 褰掓。閫氱煡鍏憡
 7. 鏍囪宸茶
-8. 鑾峰彇闃呰鏁伴噺
-9. 鑾峰彇鐢ㄦ埛鏈鏁伴噺
+8. 鑾峰彇闃呰数量
+9. 鑾峰彇鐢ㄦ埛鏈数量
 """
 
 import pytest
@@ -49,7 +49,7 @@ def mock_announcement():
 
 @pytest.fixture
 def announcement_service(mock_db):
-    """鍒涘缓AnnouncementService瀹炰緥"""
+    """创建AnnouncementService瀹炰緥"""
     return AnnouncementService(mock_db)
 
 
@@ -63,11 +63,11 @@ class TestAnnouncementService:
         assert service.repository is not None
     
     def test_get_announcement_by_id_success(self, announcement_service, mock_announcement):
-        """娴嬭瘯鏍规嵁ID鑾峰彇閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡
+        """娴嬭瘯根据ID鑾峰彇閫氱煡鍏憡鎴愬姛"""
+        # 妯℃嫙查询閫氱煡鍏憡
         announcement_service.repository.get_by_id = Mock(return_value=mock_announcement)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = announcement_service.get_announcement_by_id("test_announcement_id")
         
         # 楠岃瘉缁撴灉
@@ -76,11 +76,11 @@ class TestAnnouncementService:
         assert result["title"] == "娴嬭瘯鍏憡"
     
     def test_get_announcement_by_id_not_found(self, announcement_service):
-        """娴嬭瘯鏍规嵁ID鑾峰彇閫氱煡鍏憡澶辫触"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡杩斿洖None
+        """娴嬭瘯根据ID鑾峰彇閫氱煡鍏憡澶辫触"""
+        # 妯℃嫙查询閫氱煡鍏憡杩斿洖None
         announcement_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = announcement_service.get_announcement_by_id("nonexistent_id")
         
         # 楠岃瘉缁撴灉
@@ -88,11 +88,11 @@ class TestAnnouncementService:
     
     def test_get_all_announcements_success(self, announcement_service, mock_announcement):
         """娴嬭瘯鑾峰彇鎵€鏈夐€氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡鍒楄〃
+        # 妯℃嫙查询閫氱煡鍏憡鍒楄〃
         announcement_service.repository.get_all = Mock(return_value=[mock_announcement])
         announcement_service.repository.count = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = announcement_service.get_all_announcements()
         
         # 楠岃瘉缁撴灉
@@ -102,11 +102,11 @@ class TestAnnouncementService:
     
     def test_get_published_announcements_success(self, announcement_service, mock_announcement):
         """娴嬭瘯鑾峰彇宸插彂甯冪殑閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ宸插彂甯冪殑閫氱煡鍏憡鍒楄〃
+        # 妯℃嫙查询宸插彂甯冪殑閫氱煡鍏憡鍒楄〃
         announcement_service.repository.get_published = Mock(return_value=[mock_announcement])
         announcement_service.repository.count_published = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = announcement_service.get_published_announcements()
         
         # 楠岃瘉缁撴灉
@@ -114,12 +114,12 @@ class TestAnnouncementService:
         assert result["items"][0]["status"] == "draft"
     
     def test_get_announcements_by_publisher_success(self, announcement_service, mock_announcement):
-        """娴嬭瘯鏍规嵁鍙戝竷鑰呰幏鍙栭€氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡鍒楄〃
+        """娴嬭瘯根据鍙戝竷鑰呰幏鍙栭€氱煡鍏憡鎴愬姛"""
+        # 妯℃嫙查询閫氱煡鍏憡鍒楄〃
         announcement_service.repository.get_by_publisher = Mock(return_value=[mock_announcement])
         announcement_service.repository.count_by_publisher = Mock(return_value=1)
         
-        # 鎵ц鏌ヨ
+        # 鎵ц查询
         result = announcement_service.get_announcements_by_publisher("user_001")
         
         # 楠岃瘉缁撴灉
@@ -139,11 +139,11 @@ class TestAnnouncementService:
         assert len(result["items"]) == 1
     
     def test_create_announcement_success(self, announcement_service, mock_announcement):
-        """娴嬭瘯鍒涘缓閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鍒涘缓閫氱煡鍏憡
+        """娴嬭瘯创建閫氱煡鍏憡鎴愬姛"""
+        # 妯℃嫙创建閫氱煡鍏憡
         announcement_service.repository.create = Mock(return_value=mock_announcement)
         
-        # 鎵ц鍒涘缓閫氱煡鍏憡
+        # 鎵ц创建閫氱煡鍏憡
         result = announcement_service.create_announcement(
             tenant_id="default",
             type="system",
@@ -159,16 +159,16 @@ class TestAnnouncementService:
         announcement_service.repository.create.assert_called_once()
     
     def test_update_announcement_success(self, announcement_service, mock_announcement):
-        """娴嬭瘯鏇存柊閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡
+        """娴嬭瘯更新閫氱煡鍏憡鎴愬姛"""
+        # 妯℃嫙查询閫氱煡鍏憡
         announcement_service.repository.get_by_id = Mock(return_value=mock_announcement)
-        # 妯℃嫙鏇存柊閫氱煡鍏憡
+        # 妯℃嫙更新閫氱煡鍏憡
         announcement_service.repository.update = Mock(return_value=mock_announcement)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = announcement_service.update_announcement(
             "test_announcement_id",
-            title="鏇存柊鍚庣殑鏍囬"
+            title="更新鍚庣殑鏍囬"
         )
         
         # 楠岃瘉缁撴灉
@@ -177,25 +177,25 @@ class TestAnnouncementService:
         announcement_service.repository.update.assert_called_once()
     
     def test_update_announcement_not_found(self, announcement_service):
-        """娴嬭瘯鏇存柊閫氱煡鍏憡澶辫触锛堥€氱煡鍏憡涓嶅瓨鍦級"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡杩斿洖None
+        """娴嬭瘯更新閫氱煡鍏憡澶辫触锛堥€氱煡鍏憡涓嶅瓨鍦級"""
+        # 妯℃嫙查询閫氱煡鍏憡杩斿洖None
         announcement_service.repository.get_by_id = Mock(return_value=None)
         
-        # 鎵ц鏇存柊
+        # 鎵ц更新
         result = announcement_service.update_announcement(
             "nonexistent_id",
-            title="鏇存柊鍚庣殑鏍囬"
+            title="更新鍚庣殑鏍囬"
         )
         
         # 楠岃瘉缁撴灉
         assert result is None
     
     def test_delete_announcement_success(self, announcement_service):
-        """娴嬭瘯鍒犻櫎閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鍒犻櫎閫氱煡鍏憡
+        """娴嬭瘯删除閫氱煡鍏憡鎴愬姛"""
+        # 妯℃嫙删除閫氱煡鍏憡
         announcement_service.repository.delete = Mock(return_value=True)
         
-        # 鎵ц鍒犻櫎
+        # 鎵ц删除
         result = announcement_service.delete_announcement("test_announcement_id")
         
         # 楠岃瘉缁撴灉
@@ -204,9 +204,9 @@ class TestAnnouncementService:
     
     def test_publish_announcement_success(self, announcement_service, mock_announcement):
         """娴嬭瘯鍙戝竷閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡
+        # 妯℃嫙查询閫氱煡鍏憡
         announcement_service.repository.get_by_id = Mock(return_value=mock_announcement)
-        # 妯℃嫙鏇存柊閫氱煡鍏憡
+        # 妯℃嫙更新閫氱煡鍏憡
         announcement_service.repository.update = Mock(return_value=mock_announcement)
         
         # 鎵ц鍙戝竷
@@ -218,9 +218,9 @@ class TestAnnouncementService:
     
     def test_archive_announcement_success(self, announcement_service, mock_announcement):
         """娴嬭瘯褰掓。閫氱煡鍏憡鎴愬姛"""
-        # 妯℃嫙鏌ヨ閫氱煡鍏憡
+        # 妯℃嫙查询閫氱煡鍏憡
         announcement_service.repository.get_by_id = Mock(return_value=mock_announcement)
-        # 妯℃嫙鏇存柊閫氱煡鍏憡
+        # 妯℃嫙更新閫氱煡鍏憡
         announcement_service.repository.update = Mock(return_value=mock_announcement)
         
         # 鎵ц褰掓。
@@ -234,7 +234,7 @@ class TestAnnouncementService:
         """娴嬭瘯鏍囪閫氱煡鍏憡涓哄凡璇绘垚鍔?""
         # 妯℃嫙妫€鏌ユ槸鍚﹀凡璇昏繃
         announcement_service.repository.get_read_record = Mock(return_value=None)
-        # 妯℃嫙鍒涘缓闃呰璁板綍
+        # 妯℃嫙创建闃呰璁板綍
         announcement_service.repository.create_read_record = Mock()
         
         # 鎵ц鏍囪宸茶
@@ -247,7 +247,7 @@ class TestAnnouncementService:
     def test_mark_as_read_already_read(self, announcement_service):
         """娴嬭瘯鏍囪閫氱煡鍏憡涓哄凡璇伙紙宸茶杩囷級"""
         # 妯℃嫙妫€鏌ユ槸鍚﹀凡璇昏繃锛堝凡璇昏繃锛?        announcement_service.repository.get_read_record = Mock(return_value=Mock())
-        # 鍒涘缓涓€涓狹ock瀵硅薄鏉ユā鎷焎reate_read_record
+        # 创建涓€涓狹ock瀵硅薄鏉ユā鎷焎reate_read_record
         mock_create = Mock()
         announcement_service.repository.create_read_record = mock_create
         
@@ -259,23 +259,23 @@ class TestAnnouncementService:
         # 涓嶅簲璇ュ垱寤烘柊鐨勯槄璇昏褰?        mock_create.assert_not_called()
     
     def test_get_read_count_success(self, announcement_service):
-        """娴嬭瘯鑾峰彇闃呰鏁伴噺鎴愬姛"""
-        # 妯℃嫙缁熻闃呰鏁伴噺
+        """娴嬭瘯鑾峰彇闃呰数量鎴愬姛"""
+        # 妯℃嫙缁熻闃呰数量
         announcement_service.repository.count_reads = Mock(return_value=5)
         
-        # 鎵ц鑾峰彇闃呰鏁伴噺
+        # 鎵ц鑾峰彇闃呰数量
         result = announcement_service.get_read_count("test_announcement_id")
         
         # 楠岃瘉缁撴灉
         assert result == 5
     
     def test_get_user_unread_count_success(self, announcement_service, mock_announcement):
-        """娴嬭瘯鑾峰彇鐢ㄦ埛鏈閫氱煡鍏憡鏁伴噺鎴愬姛"""
+        """娴嬭瘯鑾峰彇鐢ㄦ埛鏈閫氱煡鍏憡数量鎴愬姛"""
         # 妯℃嫙鑾峰彇宸插彂甯冪殑閫氱煡鍏憡
         announcement_service.repository.get_published = Mock(return_value=[mock_announcement])
         # 妯℃嫙妫€鏌ラ槄璇昏褰?        announcement_service.repository.get_read_record = Mock(return_value=None)
         
-        # 鎵ц鑾峰彇鐢ㄦ埛鏈鏁伴噺
+        # 鎵ц鑾峰彇鐢ㄦ埛鏈数量
         result = announcement_service.get_user_unread_count("user_002")
         
         # 楠岃瘉缁撴灉

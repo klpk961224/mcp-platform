@@ -110,7 +110,7 @@ async def get_current_active_user(
     if current_user.get("status") != "active":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="鐢ㄦ埛宸茶绂佺敤"
+            detail="鐢ㄦ埛宸茶禁用"
         )
     
     return current_user

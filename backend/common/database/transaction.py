@@ -4,20 +4,20 @@
 
 浣跨敤绀轰緥锛?    from common.database.transaction import SagaTransaction
     
-    # 鍒涘缓Saga浜嬪姟
+    # 创建Saga浜嬪姟
     saga = SagaTransaction()
     
     # 娣诲姞姝ラ
     saga.add_step(
         action=create_user,
         compensation=delete_user,
-        name='鍒涘缓鐢ㄦ埛'
+        name='创建鐢ㄦ埛'
     )
     
     saga.add_step(
         action=create_order,
         compensation=cancel_order,
-        name='鍒涘缓璁㈠崟'
+        name='创建璁㈠崟'
     )
     
     # 鎵ц浜嬪姟
@@ -41,11 +41,11 @@ class SagaStep:
     Saga姝ラ
     
     灞炴€э細
-        name: 姝ラ鍚嶇О
+        name: 姝ラ名称
         action: 涓氬姟鎿嶄綔鍑芥暟
         compensation: 琛ュ伩鎿嶄綔鍑芥暟
         result: 鎿嶄綔缁撴灉
-        status: 姝ラ鐘舵€侊紙pending, success, failed, compensated锛?        error: 閿欒淇℃伅
+        status: 姝ラ状态侊紙pending, success, failed, compensated锛?        error: 閿欒淇℃伅
     """
     name: str
     action: Callable
@@ -64,20 +64,20 @@ class SagaTransaction:
     鍔熻兘锛?    - 绠＄悊璺ㄦ暟鎹簮鐨勪簨鍔?    - 鏀寔姝ｅ悜鎵ц鍜岃ˉ鍋垮洖婊?    - 璁板綍浜嬪姟鎵ц鏃ュ織
     - 鏀寔浜嬪姟鎭㈠
     
-    浣跨敤鏂规硶锛?        # 鍒涘缓浜嬪姟
+    浣跨敤鏂规硶锛?        # 创建浜嬪姟
         saga = SagaTransaction(transaction_id='xxx')
         
         # 娣诲姞姝ラ
         saga.add_step(
             action=lambda: create_user(user_data),
             compensation=lambda user_id: delete_user(user_id),
-            name='鍒涘缓鐢ㄦ埛'
+            name='创建鐢ㄦ埛'
         )
         
         # 鎵ц浜嬪姟
         result = await saga.execute()
         
-        # 鏌ヨ浜嬪姟鐘舵€?        status = saga.get_status()
+        # 查询浜嬪姟状态?        status = saga.get_status()
     """
     
     def __init__(self, transaction_id: Optional[str] = None):
@@ -97,7 +97,7 @@ class SagaTransaction:
         self.completed_at: Optional[datetime] = None
         self.error: Optional[str] = None
         
-        logger.info(f"鍒涘缓Saga浜嬪姟: {self.transaction_id}")
+        logger.info(f"创建Saga浜嬪姟: {self.transaction_id}")
     
     def _generate_transaction_id(self) -> str:
         """鐢熸垚浜嬪姟ID"""
@@ -117,13 +117,13 @@ class SagaTransaction:
         Args:
             action: 涓氬姟鎿嶄綔鍑芥暟锛堟棤鍙傛暟锛岃繑鍥炵粨鏋滐級
             compensation: 琛ュ伩鎿嶄綔鍑芥暟锛堟帴鏀禷ction鐨勭粨鏋滀綔涓哄弬鏁帮級
-            name: 姝ラ鍚嶇О
+            name: 姝ラ名称
             **kwargs: 棰濆鐨勬楠ゅ弬鏁?        
         浣跨敤绀轰緥锛?            # 娣诲姞姝ラ
             saga.add_step(
                 action=lambda: create_user(username='test'),
                 compensation=lambda user_id: delete_user(user_id),
-                name='鍒涘缓鐢ㄦ埛'
+                name='创建鐢ㄦ埛'
             )
             
             # 甯﹀弬鏁扮殑姝ラ
@@ -136,7 +136,7 @@ class SagaTransaction:
             saga.add_step(
                 action=lambda: create_order(user_id='xxx', amount=100),
                 compensation=lambda order_id: cancel_order(order_id),
-                name='鍒涘缓璁㈠崟'
+                name='创建璁㈠崟'
             )
         """
         step = SagaStep(
@@ -249,10 +249,10 @@ class SagaTransaction:
     
     def get_status(self) -> Dict[str, Any]:
         """
-        鑾峰彇浜嬪姟鐘舵€?        
+        鑾峰彇浜嬪姟状态?        
         Returns:
-            Dict[str, Any]: 浜嬪姟鐘舵€佷俊鎭?            - transaction_id: 浜嬪姟ID
-            - status: 浜嬪姟鐘舵€?            - steps: 姝ラ鐘舵€?            - created_at: 鍒涘缓鏃堕棿
+            Dict[str, Any]: 浜嬪姟状态佷俊鎭?            - transaction_id: 浜嬪姟ID
+            - status: 浜嬪姟状态?            - steps: 姝ラ状态?            - created_at: 创建时间
             - completed_at: 瀹屾垚鏃堕棿
             - error: 閿欒淇℃伅
         
@@ -305,11 +305,11 @@ class SagaOrchestrator:
     
     浣跨敤鏂规硶锛?        orchestrator = SagaOrchestrator()
         
-        # 鍒涘缓骞舵墽琛屼簨鍔?        saga = orchestrator.create_transaction()
+        # 创建骞舵墽琛屼簨鍔?        saga = orchestrator.create_transaction()
         saga.add_step(...)
         result = await orchestrator.execute(saga)
         
-        # 鏌ヨ鎵€鏈変簨鍔?        transactions = orchestrator.list_transactions()
+        # 查询鎵€鏈変簨鍔?        transactions = orchestrator.list_transactions()
     """
     
     def __init__(self):
@@ -319,7 +319,7 @@ class SagaOrchestrator:
     
     def create_transaction(self, transaction_id: Optional[str] = None) -> SagaTransaction:
         """
-        鍒涘缓鏂扮殑Saga浜嬪姟
+        创建鏂扮殑Saga浜嬪姟
         
         Args:
             transaction_id: 浜嬪姟ID锛堝彲閫夛級
@@ -368,7 +368,7 @@ class SagaOrchestrator:
         """
         鍒楀嚭鎵€鏈変簨鍔?        
         Args:
-            status: 鐘舵€佽繃婊わ紙鍙€夛級
+            status: 状态佽繃婊わ紙鍙€夛級
         
         Returns:
             List[SagaTransaction]: 浜嬪姟鍒楄〃

@@ -18,16 +18,16 @@ from app.services.dict_service import DictService
 router = APIRouter(prefix="/dictionaries", tags=["瀛楀吀绠＄悊"])
 
 
-@router.post("", summary="鍒涘缓瀛楀吀")
+@router.post("", summary="创建瀛楀吀")
 async def create_dict(
-    type: str = Query(..., description="瀛楀吀绫诲瀷"),
-    name: str = Query(..., description="瀛楀吀鍚嶇О"),
-    tenant_id: str = Query(..., description="绉熸埛ID"),
-    description: Optional[str] = Query(None, description="鎻忚堪"),
+    type: str = Query(..., description="瀛楀吀类型"),
+    name: str = Query(..., description="瀛楀吀名称"),
+    tenant_id: str = Query(..., description="租户ID"),
+    description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓瀛楀吀"""
-    logger.info(f"鍒涘缓瀛楀吀: type={type}, name={name}")
+    """创建瀛楀吀"""
+    logger.info(f"创建瀛楀吀: type={type}, name={name}")
     
     try:
         dict_service = DictService(db)
@@ -41,7 +41,7 @@ async def create_dict(
         
         new_dict = dict_service.create_dict(dict_data)
         
-        logger.info(f"鍒涘缓瀛楀吀鎴愬姛: type={type}, dict_id={new_dict.id}")
+        logger.info(f"创建瀛楀吀鎴愬姛: type={type}, dict_id={new_dict.id}")
         
         return {
             "id": new_dict.id,
@@ -54,18 +54,18 @@ async def create_dict(
             "updated_at": new_dict.updated_at.isoformat() if new_dict.updated_at else None,
         }
     except ValueError as e:
-        logger.warning(f"鍒涘缓瀛楀吀澶辫触: type={type}, error={str(e)}")
+        logger.warning(f"创建瀛楀吀澶辫触: type={type}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓瀛楀吀寮傚父: type={type}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建瀛楀吀寮傚父: type={type}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
 @router.get("", summary="鑾峰彇瀛楀吀鍒楄〃")
 async def get_dictionaries(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    tenant_id: Optional[str] = Query(None, description="租户ID"),
     keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
     db: Session = Depends(get_db)
 ):
@@ -140,16 +140,16 @@ async def get_dictionary(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瀛楀吀璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{dict_id}", summary="鏇存柊瀛楀吀")
+@router.put("/{dict_id}", summary="更新瀛楀吀")
 async def update_dictionary(
     dict_id: str,
-    name: Optional[str] = Query(None, description="瀛楀吀鍚嶇О"),
-    description: Optional[str] = Query(None, description="鎻忚堪"),
-    status: Optional[str] = Query(None, description="鐘舵€?),
+    name: Optional[str] = Query(None, description="瀛楀吀名称"),
+    description: Optional[str] = Query(None, description="描述"),
+    status: Optional[str] = Query(None, description="状态?),
     db: Session = Depends(get_db)
 ):
-    """鏇存柊瀛楀吀"""
-    logger.info(f"鏇存柊瀛楀吀: dict_id={dict_id}")
+    """更新瀛楀吀"""
+    logger.info(f"更新瀛楀吀: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
@@ -168,7 +168,7 @@ async def update_dictionary(
         
         updated_dict = dict_service.update_dict(dict_id, update_data)
         
-        logger.info(f"鏇存柊瀛楀吀鎴愬姛: dict_id={dict_id}")
+        logger.info(f"更新瀛楀吀鎴愬姛: dict_id={dict_id}")
         
         return {
             "id": updated_dict.id,
@@ -183,17 +183,17 @@ async def update_dictionary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鏇存柊瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{dict_id}", summary="鍒犻櫎瀛楀吀")
+@router.delete("/{dict_id}", summary="删除瀛楀吀")
 async def delete_dictionary(
     dict_id: str,
     db: Session = Depends(get_db)
 ):
-    """鍒犻櫎瀛楀吀"""
-    logger.info(f"鍒犻櫎瀛楀吀: dict_id={dict_id}")
+    """删除瀛楀吀"""
+    logger.info(f"删除瀛楀吀: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
@@ -204,27 +204,27 @@ async def delete_dictionary(
         
         dict_service.delete_dict(dict_id)
         
-        logger.info(f"鍒犻櫎瀛楀吀鎴愬姛: dict_id={dict_id}")
+        logger.info(f"删除瀛楀吀鎴愬姛: dict_id={dict_id}")
         
-        return {"message": "鍒犻櫎鎴愬姛"}
+        return {"message": "删除鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鍒犻櫎瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.post("/{dict_id}/items", summary="鍒涘缓瀛楀吀椤?)
+@router.post("/{dict_id}/items", summary="创建瀛楀吀椤?)
 async def create_dict_item(
     dict_id: str,
     label: str = Query(..., description="瀛楀吀椤规爣绛?),
     value: str = Query(..., description="瀛楀吀椤瑰€?),
-    sort_order: int = Query(0, description="鎺掑簭"),
-    description: Optional[str] = Query(None, description="鎻忚堪"),
+    sort_order: int = Query(0, description="排序"),
+    description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
 ):
-    """鍒涘缓瀛楀吀椤?""
-    logger.info(f"鍒涘缓瀛楀吀椤? dict_id={dict_id}, label={label}")
+    """创建瀛楀吀椤?""
+    logger.info(f"创建瀛楀吀椤? dict_id={dict_id}, label={label}")
     
     try:
         dict_service = DictService(db)
@@ -238,7 +238,7 @@ async def create_dict_item(
         
         new_dict_item = dict_service.create_dict_item(dict_id, dict_item_data)
         
-        logger.info(f"鍒涘缓瀛楀吀椤规垚鍔? dict_id={dict_id}, dict_item_id={new_dict_item.id}")
+        logger.info(f"创建瀛楀吀椤规垚鍔? dict_id={dict_id}, dict_item_id={new_dict_item.id}")
         
         return {
             "id": new_dict_item.id,
@@ -252,11 +252,11 @@ async def create_dict_item(
             "updated_at": new_dict_item.updated_at.isoformat() if new_dict_item.updated_at else None,
         }
     except ValueError as e:
-        logger.warning(f"鍒涘缓瀛楀吀椤瑰け璐? dict_id={dict_id}, error={str(e)}")
+        logger.warning(f"创建瀛楀吀椤瑰け璐? dict_id={dict_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"鍒涘缓瀛楀吀椤瑰紓甯? dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓瀛楀吀椤瑰け璐ワ紝璇风◢鍚庨噸璇?)
+        logger.error(f"创建瀛楀吀椤瑰紓甯? dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建瀛楀吀椤瑰け璐ワ紝璇风◢鍚庨噸璇?)
 
 
 @router.get("/{dict_id}/items", summary="鑾峰彇瀛楀吀椤瑰垪琛?)
