@@ -1,4 +1,4 @@
-"""
+﻿"""
 通知公告API路由
 
 提供通知公告管理的REST API
@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from common.database.session import get_db
+from app.core.deps import get_db
 from app.services.announcement_service import AnnouncementService
 
 

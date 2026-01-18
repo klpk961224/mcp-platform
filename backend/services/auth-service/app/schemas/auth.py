@@ -100,3 +100,43 @@ class LogoutResponse(BaseModel):
                 "message": "登出成功"
             }
         }
+
+
+class RegisterRequest(BaseModel):
+    """注册请求"""
+    
+    username: str = Field(..., description="用户名", min_length=4, max_length=50)
+    password: str = Field(..., description="密码", min_length=6)
+    email: EmailStr = Field(..., description="邮箱")
+    phone: Optional[str] = Field(None, description="手机号")
+    tenant_code: Optional[str] = Field(None, description="租户编码")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "username": "newuser",
+                "password": "123456",
+                "email": "newuser@example.com",
+                "phone": "13800138000",
+                "tenant_code": "default"
+            }
+        }
+
+
+class RegisterResponse(BaseModel):
+    """注册响应"""
+    
+    message: str = Field(default="注册成功", description="消息")
+    user_id: str = Field(..., description="用户ID")
+    username: str = Field(..., description="用户名")
+    email: str = Field(..., description="邮箱")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "注册成功",
+                "user_id": "123",
+                "username": "newuser",
+                "email": "newuser@example.com"
+            }
+        }

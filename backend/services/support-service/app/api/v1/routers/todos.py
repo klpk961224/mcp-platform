@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 待办任务API路由
 
@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 from loguru import logger
 from datetime import datetime
 
-from common.database.session import get_db
+from app.core.deps import get_db
 from app.services.todo_service import TodoService
 
 

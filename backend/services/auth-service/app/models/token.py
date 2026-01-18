@@ -19,7 +19,6 @@ Token模型
 """
 
 from sqlalchemy import Column, String, DateTime, Boolean
-from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 
 from common.database.base import BaseModel
@@ -58,9 +57,6 @@ class Token(BaseModel):
     # 吊销信息
     is_revoked = Column(Boolean, nullable=False, default=False, comment="是否已吊销")
     revoked_at = Column(DateTime, nullable=True, comment="吊销时间")
-    
-    # 关系
-    user = relationship("User", back_populates="tokens")
     
     def __repr__(self):
         return f"<Token(id={self.id}, user_id={self.user_id}, token_type={self.token_type})>"

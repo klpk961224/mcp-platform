@@ -41,22 +41,23 @@ class MCPTool(BaseModel):
 
 class LoginLog(BaseModel):
     """登录日志表"""
-    
+
     __tablename__ = 'login_logs'
-    
+
     user_id = Column(String(50), ForeignKey('users.id', ondelete='SET NULL'))
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     ip_address = Column(String(50))
     user_agent = Column(Text)
     login_status = Column(String(20), nullable=False)
     error_message = Column(Text)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
 class OperationLog(BaseModel):
     """操作日志表"""
-    
+
     __tablename__ = 'operation_logs'
-    
+
     user_id = Column(String(50), ForeignKey('users.id', ondelete='SET NULL'))
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     module = Column(String(50), nullable=False)
@@ -67,6 +68,7 @@ class OperationLog(BaseModel):
     response_data = Column(JSON)
     response_status = Column(Integer)
     response_time = Column(Integer)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
 class Dict(BaseModel):

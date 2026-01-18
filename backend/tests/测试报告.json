@@ -1,0 +1,491 @@
+{
+  "test_time": "2026-01-18T14:42:16.851961",
+  "total_tests": 23,
+  "total_passed": 23,
+  "total_failed": 0,
+  "pass_rate": "100.00%",
+  "health_checks": {
+    "auth": true,
+    "user": true,
+    "permission": true
+  },
+  "auth_service": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "user_service": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "permission_service": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "test_results": [
+    {
+      "test_case": "健康检查-auth",
+      "service": "auth",
+      "url": "http://localhost:8001/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.060781,
+      "timestamp": "2026-01-18T14:42:12.341851"
+    },
+    {
+      "test_case": "健康检查-user",
+      "service": "user",
+      "url": "http://localhost:8002/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.059996,
+      "timestamp": "2026-01-18T14:42:14.403995"
+    },
+    {
+      "test_case": "健康检查-permission",
+      "service": "permission",
+      "url": "http://localhost:8003/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.047708,
+      "timestamp": "2026-01-18T14:42:16.453661"
+    },
+    {
+      "test_case": "TC-001-用户登录",
+      "service": "auth",
+      "endpoint": "/auth/login",
+      "url": "http://localhost:8001/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.304046,
+      "response_body": null,
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTU2YjkzMS0xNmNiLTQ5NDMtODlkMC02ODY4OGMxOTBiYzAiLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzY4ODMzNzM2LCJpYXQiOjE3Njg3NDczMzYsInR5cGUiOiJhY2Nlc3MiLCJ0ZW5hbnRfaWQiOiI5ODQwYjMwYS1iNzZmLTRkOTktOTdiMC1kYzNjZDIzZTE4NmYifQ.3YMSFneopOpuPz0x_DFWlbIZjaXnfpTdyG6yjRDn2Po",
+        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTU2YjkzMS0xNmNiLTQ5NDMtODlkMC02ODY4OGMxOTBiYzAiLCJleHAiOjE3NzEzMzkzMzYsImlhdCI6MTc2ODc0NzMzNiwidHlwZSI6InJlZnJlc2gifQ.UT5VlELf62YscMUS3OuDZZaJ7AKylfbwnR_uoNXWJcE",
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "user_info": {
+          "tenant_id": "9840b30a-b76f-4d99-97b0-dc3cd23e186f",
+          "username": "admin",
+          "password": "$2b$12$0GAFx6ksUlLPXGHT1/L2je3j4JOAHu4JiCnWOGphLIPcpdOcyssDq",
+          "email": "admin@example.com",
+          "phone": null,
+          "dept_id": null,
+          "position_id": null,
+          "status": "active",
+          "last_login_at": "2026-01-18T14:42:17",
+          "last_login_ip": null,
+          "id": "7556b931-16cb-4943-89d0-68688c190bc0"
+        }
+      },
+      "timestamp": "2026-01-18T14:42:16.760733"
+    },
+    {
+      "test_case": "TC-002-刷新Token",
+      "service": "auth",
+      "endpoint": "/auth/refresh",
+      "url": "http://localhost:8001/api/v1/auth/refresh",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.005342,
+      "response_body": null,
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTU2YjkzMS0xNmNiLTQ5NDMtODlkMC02ODY4OGMxOTBiYzAiLCJ1c2VybmFtZSI6bnVsbCwiZXhwIjoxNzY4ODMzNzM2LCJpYXQiOjE3Njg3NDczMzYsInR5cGUiOiJhY2Nlc3MifQ.oHeJfbBWMBYHLgNYs2RQl4VwTtjikOrY5l-brxy0z8E",
+        "token_type": "bearer",
+        "expires_in": 86400
+      },
+      "timestamp": "2026-01-18T14:42:16.767153"
+    },
+    {
+      "test_case": "TC-003-用户登出",
+      "service": "auth",
+      "endpoint": "/auth/logout",
+      "url": "http://localhost:8001/api/v1/auth/logout",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.005599,
+      "response_body": null,
+      "response_data": {
+        "message": "登出成功"
+      },
+      "timestamp": "2026-01-18T14:42:16.774301"
+    },
+    {
+      "test_case": "TC-004-创建用户",
+      "service": "user",
+      "endpoint": "/users",
+      "url": "http://localhost:8002/api/v1/users",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003182,
+      "response_body": null,
+      "response_data": {
+        "username": "testuser",
+        "email": "test@example.com",
+        "phone": null,
+        "dept_id": null,
+        "position_id": null,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "last_login_at": null,
+        "last_login_ip": null,
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.779091"
+    },
+    {
+      "test_case": "TC-005-获取用户列表",
+      "service": "user",
+      "endpoint": "/users",
+      "url": "http://localhost:8002/api/v1/users",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003025,
+      "response_body": null,
+      "response_data": {
+        "total": 0,
+        "items": [],
+        "page": 1,
+        "page_size": 10
+      },
+      "timestamp": "2026-01-18T14:42:16.783143"
+    },
+    {
+      "test_case": "TC-006-获取用户详情",
+      "service": "user",
+      "endpoint": "/users/123",
+      "url": "http://localhost:8002/api/v1/users/123",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003912,
+      "response_body": null,
+      "response_data": {
+        "username": "admin",
+        "email": "admin@example.com",
+        "phone": null,
+        "dept_id": null,
+        "position_id": null,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "last_login_at": null,
+        "last_login_ip": null,
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.788555"
+    },
+    {
+      "test_case": "TC-007-更新用户",
+      "service": "user",
+      "endpoint": "/users/123",
+      "url": "http://localhost:8002/api/v1/users/123",
+      "method": "PUT",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003303,
+      "response_body": null,
+      "response_data": {
+        "username": "admin",
+        "email": "newemail@example.com",
+        "phone": null,
+        "dept_id": null,
+        "position_id": null,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "last_login_at": null,
+        "last_login_ip": null,
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.793062"
+    },
+    {
+      "test_case": "TC-008-删除用户",
+      "service": "user",
+      "endpoint": "/users/123",
+      "url": "http://localhost:8002/api/v1/users/123",
+      "method": "DELETE",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002564,
+      "response_body": null,
+      "response_data": {
+        "message": "删除成功"
+      },
+      "timestamp": "2026-01-18T14:42:16.796624"
+    },
+    {
+      "test_case": "TC-009-创建部门",
+      "service": "user",
+      "endpoint": "/departments",
+      "url": "http://localhost:8002/api/v1/departments",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003816,
+      "response_body": null,
+      "response_data": {
+        "name": "技术部",
+        "code": "tech",
+        "parent_id": null,
+        "level": 1,
+        "sort_order": 0,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.801503"
+    },
+    {
+      "test_case": "TC-010-获取部门列表",
+      "service": "user",
+      "endpoint": "/departments",
+      "url": "http://localhost:8002/api/v1/departments",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.00369,
+      "response_body": null,
+      "response_data": {
+        "total": 0,
+        "items": [],
+        "page": 1,
+        "page_size": 10
+      },
+      "timestamp": "2026-01-18T14:42:16.806381"
+    },
+    {
+      "test_case": "TC-011-获取部门树",
+      "service": "user",
+      "endpoint": "/departments/tree",
+      "url": "http://localhost:8002/api/v1/departments/tree",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003019,
+      "response_body": null,
+      "response_data": [],
+      "timestamp": "2026-01-18T14:42:16.810474"
+    },
+    {
+      "test_case": "TC-012-创建租户",
+      "service": "user",
+      "endpoint": "/tenants",
+      "url": "http://localhost:8002/api/v1/tenants",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002955,
+      "response_body": null,
+      "response_data": {
+        "name": "测试租户",
+        "code": "test_tenant",
+        "status": "active",
+        "description": null,
+        "id": "123",
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.815009"
+    },
+    {
+      "test_case": "TC-013-创建角色",
+      "service": "permission",
+      "endpoint": "/roles",
+      "url": "http://localhost:8003/api/v1/roles",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003035,
+      "response_body": null,
+      "response_data": {
+        "name": "管理员",
+        "code": "admin",
+        "description": null,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "is_system": false,
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.820562"
+    },
+    {
+      "test_case": "TC-014-获取角色列表",
+      "service": "permission",
+      "endpoint": "/roles",
+      "url": "http://localhost:8003/api/v1/roles",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003317,
+      "response_body": null,
+      "response_data": {
+        "total": 0,
+        "items": [],
+        "page": 1,
+        "page_size": 10
+      },
+      "timestamp": "2026-01-18T14:42:16.825529"
+    },
+    {
+      "test_case": "TC-015-获取角色详情",
+      "service": "permission",
+      "endpoint": "/roles/123",
+      "url": "http://localhost:8003/api/v1/roles/123",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002933,
+      "response_body": null,
+      "response_data": {
+        "name": "管理员",
+        "code": "admin",
+        "description": "系统管理员",
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "is_system": true,
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.829748"
+    },
+    {
+      "test_case": "TC-016-创建权限",
+      "service": "permission",
+      "endpoint": "/permissions",
+      "url": "http://localhost:8003/api/v1/permissions",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003593,
+      "response_body": null,
+      "response_data": {
+        "name": "用户创建",
+        "code": "user:create",
+        "type": "operation",
+        "description": null,
+        "id": "123",
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.834429"
+    },
+    {
+      "test_case": "TC-017-获取权限列表",
+      "service": "permission",
+      "endpoint": "/permissions",
+      "url": "http://localhost:8003/api/v1/permissions",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.0036,
+      "response_body": null,
+      "response_data": {
+        "total": 0,
+        "items": [],
+        "page": 1,
+        "page_size": 10
+      },
+      "timestamp": "2026-01-18T14:42:16.839245"
+    },
+    {
+      "test_case": "TC-018-创建菜单",
+      "service": "permission",
+      "endpoint": "/menus",
+      "url": "http://localhost:8003/api/v1/menus",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002672,
+      "response_body": null,
+      "response_data": {
+        "name": "系统管理",
+        "path": "/system",
+        "icon": "setting",
+        "parent_id": null,
+        "sort_order": 0,
+        "is_visible": true,
+        "status": "active",
+        "id": "123",
+        "tenant_id": "default",
+        "created_at": "2026-01-15T00:00:00",
+        "updated_at": "2026-01-15T00:00:00"
+      },
+      "timestamp": "2026-01-18T14:42:16.842988"
+    },
+    {
+      "test_case": "TC-019-获取菜单列表",
+      "service": "permission",
+      "endpoint": "/menus",
+      "url": "http://localhost:8003/api/v1/menus",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002927,
+      "response_body": null,
+      "response_data": {
+        "total": 0,
+        "items": [],
+        "page": 1,
+        "page_size": 10
+      },
+      "timestamp": "2026-01-18T14:42:16.846995"
+    },
+    {
+      "test_case": "TC-020-获取菜单树",
+      "service": "permission",
+      "endpoint": "/menus/tree",
+      "url": "http://localhost:8003/api/v1/menus/tree",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003316,
+      "response_body": null,
+      "response_data": [],
+      "timestamp": "2026-01-18T14:42:16.851538"
+    }
+  ]
+}

@@ -3,8 +3,9 @@
 
 功能说明：
 1. 用户登录
-2. 用户登出
-3. Token刷新
+2. 用户注册
+3. 用户登出
+4. Token刷新
 
 使用示例：
     # 登录
@@ -12,6 +13,14 @@
     {
         "username": "admin",
         "password": "123456"
+    }
+    
+    # 注册
+    POST /api/v1/auth/register
+    {
+        "username": "newuser",
+        "password": "123456",
+        "email": "newuser@example.com"
     }
     
     # 刷新Token
@@ -22,6 +31,9 @@
     
     # 登出
     POST /api/v1/auth/logout
+    {
+        "refresh_token": "xxx"
+    }
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -43,7 +55,9 @@ from app.schemas.auth import (
     LoginResponse,
     RefreshTokenRequest,
     RefreshTokenResponse,
-    LogoutResponse
+    LogoutResponse,
+    RegisterRequest,
+    RegisterResponse
 )
 from app.services.auth_service import AuthService
 
@@ -109,6 +123,71 @@ async def login(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="登录失败，请稍后重试"
+        )
+
+
+@router.post("/register", response_model=RegisterResponse, summary="用户注册")
+async def register(
+    request: RegisterRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    用户注册
+    
+    功能说明：
+    1. 验证用户名和邮箱是否已存在
+    2. 创建新用户
+    3. 返回用户信息
+    
+    Args:
+        request: 注册请求
+        db: 数据库会话
+    
+    Returns:
+        RegisterResponse: 注册响应
+    
+    使用示例：
+        POST /api/v1/auth/register
+        {
+            "username": "newuser",
+            "password": "123456",
+            "email": "newuser@example.com",
+            "phone": "13800138000",
+            "tenant_code": "default"
+        }
+    """
+    logger.info(f"用户注册请求: username={request.username}, email={request.email}")
+    
+    try:
+        # 使用AuthService进行注册
+        auth_service = AuthService(db)
+        result = auth_service.register(
+            username=request.username,
+            password=request.password,
+            email=request.email,
+            phone=request.phone,
+            tenant_id=getattr(request, 'tenant_code', None)
+        )
+        
+        logger.info(f"用户注册成功: username={request.username}, user_id={result['user_id']}")
+        
+        return RegisterResponse(
+            message=result["message"],
+            user_id=result["user_id"],
+            username=result["username"],
+            email=result["email"]
+        )
+    except ValueError as e:
+        logger.warning(f"用户注册失败: username={request.username}, error={str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"用户注册异常: username={request.username}, error={str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="注册失败，请稍后重试"
         )
 
 

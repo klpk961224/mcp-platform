@@ -126,6 +126,14 @@ class APITester:
             
             success = response.status_code == expected_status
             
+            # 尝试解析响应数据
+            response_data = None
+            try:
+                if response.text:
+                    response_data = response.json()
+            except:
+                pass
+            
             self.results.append({
                 "test_case": test_case,
                 "service": service,
@@ -137,6 +145,7 @@ class APITester:
                 "success": success,
                 "response_time": response.elapsed.total_seconds(),
                 "response_body": response.text if not success else None,
+                "response_data": response_data,
                 "timestamp": datetime.now().isoformat()
             })
             
@@ -172,6 +181,7 @@ class APITester:
         
         # TC-001: 用户登录
         results["total"] += 1
+        login_response = None
         if self.test_api(
             test_case="TC-001-用户登录",
             service="auth",
@@ -184,36 +194,57 @@ class APITester:
             expected_status=200
         ):
             results["passed"] += 1
+            # 获取登录响应，用于后续测试
+            if self.results and self.results[-1]["success"]:
+                try:
+                    login_response = self.results[-1].get("response_data", {})
+                except:
+                    pass
         else:
             results["failed"] += 1
         
-        # TC-002: 刷新Token
+        # TC-002: 刷新Token（使用登录获取的refresh_token）
         results["total"] += 1
-        if self.test_api(
-            test_case="TC-002-刷新Token",
-            service="auth",
-            endpoint="/auth/refresh",
-            method="POST",
-            data={
-                "refresh_token": "test_token"
-            },
-            expected_status=200
-        ):
-            results["passed"] += 1
+        refresh_token = None
+        if login_response:
+            refresh_token = login_response.get("refresh_token")
+        
+        if refresh_token:
+            if self.test_api(
+                test_case="TC-002-刷新Token",
+                service="auth",
+                endpoint="/auth/refresh",
+                method="POST",
+                data={
+                    "refresh_token": refresh_token
+                },
+                expected_status=200
+            ):
+                results["passed"] += 1
+            else:
+                results["failed"] += 1
         else:
+            logger.warning("TC-002-刷新Token: 跳过测试（无法获取refresh_token）")
             results["failed"] += 1
         
-        # TC-003: 用户登出
+        # TC-003: 用户登出（使用登录获取的refresh_token）
         results["total"] += 1
-        if self.test_api(
-            test_case="TC-003-用户登出",
-            service="auth",
-            endpoint="/auth/logout",
-            method="POST",
-            expected_status=200
-        ):
-            results["passed"] += 1
+        if refresh_token:
+            if self.test_api(
+                test_case="TC-003-用户登出",
+                service="auth",
+                endpoint="/auth/logout",
+                method="POST",
+                data={
+                    "refresh_token": refresh_token
+                },
+                expected_status=200
+            ):
+                results["passed"] += 1
+            else:
+                results["failed"] += 1
         else:
+            logger.warning("TC-003-用户登出: 跳过测试（无法获取refresh_token）")
             results["failed"] += 1
         
         logger.info(f"认证域服务测试完成: 通过 {results['passed']}/{results['total']}")

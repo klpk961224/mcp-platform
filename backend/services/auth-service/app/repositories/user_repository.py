@@ -18,8 +18,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from typing import Optional, List
 from loguru import logger
-
-from app.models.user import User
+from common.database.models.user import User
 
 
 class UserRepository:

@@ -10,7 +10,10 @@ from fastapi import APIRouter
 # 创建v1路由器
 router = APIRouter(prefix="/api/v1")
 
-# TODO: 添加更多路由
-# router.include_router(workflows.router, prefix="/workflows", tags=["工作流"])
+# 导入路由
+from app.api.v1.routers import workflows
+
+# 注册路由
+router.include_router(workflows.router, tags=["工作流"])
 
 __all__ = ["router"]

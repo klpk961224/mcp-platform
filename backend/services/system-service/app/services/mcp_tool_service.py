@@ -20,7 +20,7 @@ from typing import Optional, Dict, Any, List
 import httpx
 from datetime import datetime
 
-from app.models.mcp_tool import MCPTool
+from common.database.models.system import MCPTool
 from app.repositories.mcp_tool_repository import MCPToolRepository
 
 
@@ -133,6 +133,7 @@ class MCPToolService:
         return self.tool_repo.delete(tool_id)
     
     def list_tools(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None,
+                   status: Optional[str] = None, is_public: Optional[bool] = None,
                    page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
         获取工具列表
@@ -140,6 +141,8 @@ class MCPToolService:
         Args:
             tenant_id: 租户ID（可选）
             keyword: 搜索关键词（可选）
+            status: 状态（可选）
+            is_public: 是否公开（可选）
             page: 页码
             page_size: 每页数量
         

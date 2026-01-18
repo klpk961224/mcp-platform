@@ -1,0 +1,259 @@
+{
+  "test_time": "2026-01-18T12:10:53.054294",
+  "total_tests": 22,
+  "total_passed": 16,
+  "total_failed": 6,
+  "pass_rate": "72.73%",
+  "health_checks": {
+    "auth": true,
+    "user": true,
+    "permission": true,
+    "system": true,
+    "support": true,
+    "business": true
+  },
+  "test_results": [
+    {
+      "test_case": "健康检查-auth",
+      "service": "auth",
+      "url": "http://localhost:8001/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.047878,
+      "timestamp": "2026-01-18T12:10:30.290485"
+    },
+    {
+      "test_case": "健康检查-user",
+      "service": "user",
+      "url": "http://localhost:8002/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.051555,
+      "timestamp": "2026-01-18T12:10:32.343483"
+    },
+    {
+      "test_case": "健康检查-permission",
+      "service": "permission",
+      "url": "http://localhost:8003/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.081467,
+      "timestamp": "2026-01-18T12:10:34.425982"
+    },
+    {
+      "test_case": "健康检查-system",
+      "service": "system",
+      "url": "http://localhost:8004/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.063639,
+      "timestamp": "2026-01-18T12:10:36.490564"
+    },
+    {
+      "test_case": "健康检查-support",
+      "service": "support",
+      "url": "http://localhost:8005/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.077163,
+      "timestamp": "2026-01-18T12:10:38.568742"
+    },
+    {
+      "test_case": "健康检查-business",
+      "service": "business",
+      "url": "http://localhost:8006/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.04886,
+      "timestamp": "2026-01-18T12:10:40.618808"
+    },
+    {
+      "test_case": "认证服务-用户登录",
+      "service": "auth",
+      "url": "http://localhost:8001/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 500,
+      "success": false,
+      "response_time": 2.053818,
+      "timestamp": "2026-01-18T12:10:42.674395"
+    },
+    {
+      "test_case": "认证服务-用户注册",
+      "service": "auth",
+      "url": "http://localhost:8001/api/v1/auth/register",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 404,
+      "success": false,
+      "response_time": 0.002231,
+      "timestamp": "2026-01-18T12:10:42.677885"
+    },
+    {
+      "test_case": "认证服务-用户登出",
+      "service": "auth",
+      "url": "http://localhost:8001/api/v1/auth/logout",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 422,
+      "success": false,
+      "response_time": 0.00936,
+      "timestamp": "2026-01-18T12:10:42.693940"
+    },
+    {
+      "test_case": "认证服务-用户登录",
+      "service": "auth",
+      "url": "http://localhost:8001/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 500,
+      "success": false,
+      "response_time": 0.006251,
+      "timestamp": "2026-01-18T12:10:42.701462"
+    },
+    {
+      "test_case": "用户服务-获取用户列表",
+      "service": "user",
+      "url": "http://localhost:8002/api/v1/users",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.042509,
+      "timestamp": "2026-01-18T12:10:44.745822"
+    },
+    {
+      "test_case": "用户服务-获取部门列表",
+      "service": "user",
+      "url": "http://localhost:8002/api/v1/departments",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003381,
+      "timestamp": "2026-01-18T12:10:44.750870"
+    },
+    {
+      "test_case": "用户服务-获取租户列表",
+      "service": "user",
+      "url": "http://localhost:8002/api/v1/tenants",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003822,
+      "timestamp": "2026-01-18T12:10:44.756544"
+    },
+    {
+      "test_case": "权限服务-获取角色列表",
+      "service": "permission",
+      "url": "http://localhost:8003/api/v1/roles",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.056891,
+      "timestamp": "2026-01-18T12:10:46.814689"
+    },
+    {
+      "test_case": "权限服务-获取权限列表",
+      "service": "permission",
+      "url": "http://localhost:8003/api/v1/permissions",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.002986,
+      "timestamp": "2026-01-18T12:10:46.819048"
+    },
+    {
+      "test_case": "权限服务-获取菜单列表",
+      "service": "permission",
+      "url": "http://localhost:8003/api/v1/menus",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.003986,
+      "timestamp": "2026-01-18T12:10:46.824481"
+    },
+    {
+      "test_case": "系统服务-获取MCP工具列表",
+      "service": "system",
+      "url": "http://localhost:8004/api/v1/mcp-tools",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.0071,
+      "timestamp": "2026-01-18T12:10:48.895853"
+    },
+    {
+      "test_case": "系统服务-获取字典列表",
+      "service": "system",
+      "url": "http://localhost:8004/api/v1/dictionaries",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.009194,
+      "timestamp": "2026-01-18T12:10:48.906396"
+    },
+    {
+      "test_case": "支撑服务-获取登录日志",
+      "service": "support",
+      "url": "http://localhost:8005/api/v1/logs/login",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.05659,
+      "timestamp": "2026-01-18T12:10:50.964100"
+    },
+    {
+      "test_case": "支撑服务-获取操作日志",
+      "service": "support",
+      "url": "http://localhost:8005/api/v1/logs/operation",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.00946,
+      "timestamp": "2026-01-18T12:10:50.974690"
+    },
+    {
+      "test_case": "支撑服务-获取待办任务列表",
+      "service": "support",
+      "url": "http://localhost:8005/api/v1/todos",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 500,
+      "success": false,
+      "response_time": 0.006155,
+      "timestamp": "2026-01-18T12:10:50.992033"
+    },
+    {
+      "test_case": "业务服务-获取工作流列表",
+      "service": "business",
+      "url": "http://localhost:8006/api/v1/workflows",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 404,
+      "success": false,
+      "response_time": 2.060745,
+      "timestamp": "2026-01-18T12:10:53.053998"
+    }
+  ]
+}

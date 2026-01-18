@@ -22,6 +22,7 @@ from loguru import logger
 import uvicorn
 
 from common.config.settings import settings
+from common.database.connection import datasource_manager
 from app.api.v1 import router as v1_router
 
 
@@ -100,7 +101,40 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup_event():
     """应用启动事件"""
-    logger.info("系统服务启动")
+    logger.info(f"{settings.APP_NAME} 启动中...")
+    logger.info(f"环境: {settings.APP_ENV}")
+    logger.info(f"端口: {settings.APP_PORT}")
+    
+    # 注册数据源
+    try:
+        # 解析 DATABASE_URL
+        db_url = settings.DATABASE_URL
+        if db_url.startswith("mysql+pymysql://"):
+            # 格式: mysql+pymysql://username:password@host:port/database
+            url_without_prefix = db_url.replace("mysql+pymysql://", "")
+            auth_part, host_port_db = url_without_prefix.split("@")
+            username, password = auth_part.split(":")
+            host_port, database = host_port_db.split("/")
+            host, port = host_port.split(":")
+            
+            datasource_manager.register_datasource(
+                name='mysql',
+                db_type='mysql',
+                host=host,
+                port=int(port),
+                username=username,
+                password=password,
+                database=database,
+                pool_size=10,
+                max_overflow=20,
+                echo=False
+            )
+            logger.info(f"数据源注册成功: mysql -> {host}:{port}/{database}")
+    except Exception as e:
+        logger.error(f"数据源注册失败: {e}")
+        raise
+    
+    logger.info(f"{settings.APP_NAME} 启动完成")
 
 
 # 关闭事件

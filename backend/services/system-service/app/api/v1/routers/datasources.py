@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 数据源API路由
 
@@ -19,7 +19,7 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 from loguru import logger
 
-from common.database.session import get_db
+from app.core.deps import get_db
 from app.services.datasource_service import DataSourceService
 
 

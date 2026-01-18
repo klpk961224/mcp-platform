@@ -1,4 +1,4 @@
-"""
+﻿"""
 敏感词API路由
 
 提供敏感词管理的REST API
@@ -9,7 +9,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from common.database.session import get_db
+from app.core.deps import get_db
 from app.services.sensitive_word_service import SensitiveWordService
 
 

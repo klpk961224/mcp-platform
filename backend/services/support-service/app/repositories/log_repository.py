@@ -20,7 +20,7 @@ from typing import Optional, List, Dict, Any
 from loguru import logger
 from datetime import datetime, timedelta
 
-from app.models.log import LoginLog, OperationLog
+from common.database.models.system import LoginLog, OperationLog
 
 
 class LogRepository:
@@ -57,7 +57,7 @@ class LogRepository:
         Returns:
             LoginLog: 创建的登录日志对象
         """
-        logger.info(f"创建登录日志: username={login_log.username}, status={login_log.status}")
+        logger.info(f"创建登录日志: user_id={login_log.user_id}, login_status={login_log.login_status}")
         self.db.add(login_log)
         self.db.commit()
         self.db.refresh(login_log)
@@ -90,7 +90,7 @@ class LogRepository:
         offset = (page - 1) * page_size
         return self.db.query(LoginLog).filter(
             LoginLog.user_id == user_id
-        ).order_by(LoginLog.login_time.desc()).offset(offset).limit(page_size).all()
+        ).order_by(LoginLog.created_at.desc()).offset(offset).limit(page_size).all()
     
     def get_tenant_login_logs(self, tenant_id: str, start_date: Optional[datetime] = None,
                                end_date: Optional[datetime] = None, page: int = 1, page_size: int = 10) -> List[LoginLog]:
@@ -111,11 +111,11 @@ class LogRepository:
         query = self.db.query(LoginLog).filter(LoginLog.tenant_id == tenant_id)
         
         if start_date:
-            query = query.filter(LoginLog.login_time >= start_date)
+            query = query.filter(LoginLog.created_at >= start_date)
         if end_date:
-            query = query.filter(LoginLog.login_time <= end_date)
+            query = query.filter(LoginLog.created_at <= end_date)
         
-        return query.order_by(LoginLog.login_time.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(LoginLog.created_at.desc()).offset(offset).limit(page_size).all()
     
     def get_failed_login_logs(self, start_date: Optional[datetime] = None, 
                               end_date: Optional[datetime] = None, page: int = 1, page_size: int = 10) -> List[LoginLog]:
@@ -132,14 +132,14 @@ class LogRepository:
             List[LoginLog]: 失败的登录日志列表
         """
         offset = (page - 1) * page_size
-        query = self.db.query(LoginLog).filter(LoginLog.status == "failed")
+        query = self.db.query(LoginLog).filter(LoginLog.login_status == "failed")
         
         if start_date:
-            query = query.filter(LoginLog.login_time >= start_date)
+            query = query.filter(LoginLog.created_at >= start_date)
         if end_date:
-            query = query.filter(LoginLog.login_time <= end_date)
+            query = query.filter(LoginLog.created_at <= end_date)
         
-        return query.order_by(LoginLog.login_time.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(LoginLog.created_at.desc()).offset(offset).limit(page_size).all()
     
     def search_login_logs(self, keyword: str, tenant_id: Optional[str] = None,
                           page: int = 1, page_size: int = 10) -> List[LoginLog]:
@@ -158,16 +158,16 @@ class LogRepository:
         offset = (page - 1) * page_size
         query = self.db.query(LoginLog).filter(
             or_(
-                LoginLog.username.like(f"%{keyword}%"),
-                LoginLog.ip.like(f"%{keyword}%"),
-                LoginLog.device_type.like(f"%{keyword}%")
+                LoginLog.user_id.like(f"%{keyword}%"),
+                LoginLog.ip_address.like(f"%{keyword}%"),
+                LoginLog.user_agent.like(f"%{keyword}%")
             )
         )
         
         if tenant_id:
             query = query.filter(LoginLog.tenant_id == tenant_id)
         
-        return query.order_by(LoginLog.login_time.desc()).offset(offset).limit(page_size).all()
+        return query.order_by(LoginLog.created_at.desc()).offset(offset).limit(page_size).all()
     
     def update_login_log(self, login_log: LoginLog) -> LoginLog:
         """
@@ -195,7 +195,7 @@ class LogRepository:
         Returns:
             OperationLog: 创建的操作日志对象
         """
-        logger.info(f"创建操作日志: username={operation_log.username}, action={operation_log.action}")
+        logger.info(f"创建操作日志: user_id={operation_log.user_id}, operation={operation_log.operation}")
         self.db.add(operation_log)
         self.db.commit()
         self.db.refresh(operation_log)
@@ -272,10 +272,10 @@ class LogRepository:
         offset = (page - 1) * page_size
         query = self.db.query(OperationLog).filter(
             or_(
-                OperationLog.username.like(f"%{keyword}%"),
+                OperationLog.user_id.like(f"%{keyword}%"),
                 OperationLog.module.like(f"%{keyword}%"),
-                OperationLog.action.like(f"%{keyword}%"),
-                OperationLog.description.like(f"%{keyword}%")
+                OperationLog.operation.like(f"%{keyword}%"),
+                OperationLog.path.like(f"%{keyword}%")
             )
         )
         
@@ -298,8 +298,8 @@ class LogRepository:
         """
         offset = (page - 1) * page_size
         return self.db.query(OperationLog).filter(
-            OperationLog.execution_time > threshold
-        ).order_by(OperationLog.execution_time.desc()).offset(offset).limit(page_size).all()
+            OperationLog.response_time > threshold
+        ).order_by(OperationLog.response_time.desc()).offset(offset).limit(page_size).all()
     
     # 统计方法
     def count_login_logs_by_date(self, date: datetime) -> int:
@@ -316,8 +316,8 @@ class LogRepository:
         end_date = start_date + timedelta(days=1)
         return self.db.query(LoginLog).filter(
             and_(
-                LoginLog.login_time >= start_date,
-                LoginLog.login_time < end_date
+                LoginLog.created_at >= start_date,
+                LoginLog.created_at < end_date
             )
         ).count()
     
@@ -336,8 +336,8 @@ class LogRepository:
         return self.db.query(LoginLog).filter(
             and_(
                 LoginLog.user_id == user_id,
-                LoginLog.status == "failed",
-                LoginLog.login_time >= start_time
+                LoginLog.login_status == "failed",
+                LoginLog.created_at >= start_time
             )
         ).count()
     
@@ -377,7 +377,7 @@ class LogRepository:
         total_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
-                LoginLog.login_time >= start_date
+                LoginLog.created_at >= start_date
             )
         ).count()
         
@@ -385,8 +385,8 @@ class LogRepository:
         success_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
-                LoginLog.status == "success",
-                LoginLog.login_time >= start_date
+                LoginLog.login_status == "success",
+                LoginLog.created_at >= start_date
             )
         ).count()
         
@@ -394,21 +394,21 @@ class LogRepository:
         failed_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
-                LoginLog.status == "failed",
-                LoginLog.login_time >= start_date
+                LoginLog.login_status == "failed",
+                LoginLog.created_at >= start_date
             )
         ).count()
         
         # 每日登录统计
         daily_stats = self.db.query(
-            func.date(LoginLog.login_time).label('date'),
+            func.date(LoginLog.created_at).label('date'),
             func.count(LoginLog.id).label('count')
         ).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
-                LoginLog.login_time >= start_date
+                LoginLog.created_at >= start_date
             )
-        ).group_by(func.date(LoginLog.login_time)).all()
+        ).group_by(func.date(LoginLog.created_at)).all()
         
         return {
             "total_logins": total_logins,

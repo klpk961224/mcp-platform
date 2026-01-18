@@ -87,6 +87,42 @@ class TodoService:
         
         return self.todo_repo.create_todo(todo)
     
+    def get_todo(self, todo_id: str) -> Optional[TodoTask]:
+        """
+        获取待办任务
+        
+        Args:
+            todo_id: 任务ID
+        
+        Returns:
+            Optional[TodoTask]: 待办任务对象，不存在返回None
+        """
+        return self.todo_repo.get_todo_by_id(todo_id)
+    
+    def update_todo(self, todo_id: str, todo_data: Dict[str, Any]) -> Optional[TodoTask]:
+        """
+        更新待办任务
+        
+        Args:
+            todo_id: 任务ID
+            todo_data: 更新数据
+        
+        Returns:
+            Optional[TodoTask]: 更新后的任务对象，不存在返回None
+        """
+        logger.info(f"更新待办任务: todo_id={todo_id}")
+        
+        todo = self.todo_repo.get_todo_by_id(todo_id)
+        if not todo:
+            return None
+        
+        # 更新任务
+        for key, value in todo_data.items():
+            if hasattr(todo, key):
+                setattr(todo, key, value)
+        
+        return self.todo_repo.update_todo(todo)
+    
     def get_user_todos(self, user_id: str, status: Optional[str] = None,
                        priority: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
@@ -103,6 +139,29 @@ class TodoService:
             List[TodoTask]: 待办任务列表
         """
         return self.todo_repo.get_user_todos(user_id, status, priority, page, page_size)
+    
+    def list_todos(self, user_id: str, status: Optional[str] = None,
+                   task_type: Optional[str] = None, priority: Optional[str] = None,
+                   is_overdue: Optional[bool] = None, page: int = 1, page_size: int = 10) -> List[TodoTask]:
+        """
+        获取待办任务列表
+        
+        Args:
+            user_id: 用户ID
+            status: 状态（可选）
+            task_type: 任务类型（可选）
+            priority: 优先级（可选）
+            is_overdue: 是否逾期（可选）
+            page: 页码
+            page_size: 每页数量
+        
+        Returns:
+            List[TodoTask]: 待办任务列表
+        """
+        if is_overdue is not None:
+            return self.todo_repo.get_overdue_todos(page, page_size)
+        else:
+            return self.todo_repo.get_user_todos(user_id, status, priority, page, page_size)
     
     def complete_todo(self, todo_id: str) -> Optional[TodoTask]:
         """

@@ -15,11 +15,12 @@
 """
 
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from loguru import logger
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
-from app.models.log import LoginLog, OperationLog
+from common.database.models.system import LoginLog, OperationLog
 from app.repositories.log_repository import LogRepository
 
 
@@ -47,25 +48,19 @@ class LogService:
         self.db = db
         self.log_repo = LogRepository(db)
     
-    def create_login_log(self, user_id: str, username: str, tenant_id: str,
-                         ip: Optional[str] = None, user_agent: Optional[str] = None,
-                         status: str = "success", failure_reason: Optional[str] = None,
-                         device_type: Optional[str] = None, device_info: Optional[str] = None,
-                         location: Optional[str] = None) -> LoginLog:
+    def create_login_log(self, user_id: str, tenant_id: str,
+                         ip_address: Optional[str] = None, user_agent: Optional[str] = None,
+                         login_status: str = "success", error_message: Optional[str] = None) -> LoginLog:
         """
         创建登录日志
         
         Args:
             user_id: 用户ID
-            username: 用户名
             tenant_id: 租户ID
-            ip: IP地址（可选）
+            ip_address: IP地址（可选）
             user_agent: 用户代理（可选）
-            status: 状态
-            failure_reason: 失败原因（可选）
-            device_type: 设备类型（可选）
-            device_info: 设备信息（可选）
-            location: 地理位置（可选）
+            login_status: 登录状态
+            error_message: 错误信息（可选）
         
         Returns:
             LoginLog: 创建的登录日志对象
@@ -73,67 +68,55 @@ class LogService:
         login_log = LoginLog(
             tenant_id=tenant_id,
             user_id=user_id,
-            username=username,
-            ip=ip,
+            ip_address=ip_address,
             user_agent=user_agent,
-            status=status,
-            failure_reason=failure_reason,
-            device_type=device_type,
-            device_info=device_info,
-            location=location,
-            login_time=datetime.now()
+            login_status=login_status,
+            error_message=error_message
         )
         return self.log_repo.create_login_log(login_log)
     
-    def record_login_success(self, user_id: str, username: str, tenant_id: str,
-                             ip: Optional[str] = None, user_agent: Optional[str] = None,
-                             device_type: Optional[str] = None) -> LoginLog:
+    def record_login_success(self, user_id: str, tenant_id: str,
+                             ip_address: Optional[str] = None, user_agent: Optional[str] = None) -> LoginLog:
         """
         记录成功登录
         
         Args:
             user_id: 用户ID
-            username: 用户名
             tenant_id: 租户ID
-            ip: IP地址（可选）
+            ip_address: IP地址（可选）
             user_agent: 用户代理（可选）
-            device_type: 设备类型（可选）
         
         Returns:
             LoginLog: 创建的登录日志对象
         """
         return self.create_login_log(
             user_id=user_id,
-            username=username,
             tenant_id=tenant_id,
-            ip=ip,
+            ip_address=ip_address,
             user_agent=user_agent,
-            status="success",
-            device_type=device_type
+            login_status="success"
         )
     
-    def record_login_failure(self, user_id: str, username: str, tenant_id: str,
-                             ip: Optional[str] = None, failure_reason: Optional[str] = None) -> LoginLog:
+    def record_login_failure(self, user_id: str, tenant_id: str,
+                             ip_address: Optional[str] = None, error_message: Optional[str] = None) -> LoginLog:
         """
         记录失败登录
         
         Args:
             user_id: 用户ID
-            username: 用户名
             tenant_id: 租户ID
-            ip: IP地址（可选）
-            failure_reason: 失败原因（可选）
+            ip_address: IP地址（可选）
+            error_message: 错误信息（可选）
         
         Returns:
             LoginLog: 创建的登录日志对象
         """
         return self.create_login_log(
             user_id=user_id,
-            username=username,
             tenant_id=tenant_id,
-            ip=ip,
-            status="failed",
-            failure_reason=failure_reason
+            ip_address=ip_address,
+            login_status="failed",
+            error_message=error_message
         )
     
     def record_logout(self, user_id: str) -> bool:
@@ -148,48 +131,30 @@ class LogService:
         """
         logger.info(f"记录登出: user_id={user_id}")
         
-        # 获取最新的成功登录日志
-        login_log = self.db.query(LoginLog).filter(
-            and_(
-                LoginLog.user_id == user_id,
-                LoginLog.status == "success",
-                LoginLog.logout_time.is_(None)
-            )
-        ).order_by(LoginLog.login_time.desc()).first()
-        
-        if login_log:
-            login_log.logout_time = datetime.now()
-            self.log_repo.update_login_log(login_log)
-            return True
-        
+        # 注意：当前表结构不支持logout_time字段，此方法暂时不实现
+        # 如果需要记录登出，需要修改表结构添加logout_time字段
         return False
     
-    def create_operation_log(self, user_id: str, username: str, tenant_id: str,
-                              module: str, action: str, description: Optional[str] = None,
-                              method: str = "POST", url: Optional[str] = None,
-                              params: Optional[str] = None, result: Optional[str] = None,
-                              status: str = "success", error_message: Optional[str] = None,
-                              ip: Optional[str] = None, user_agent: Optional[str] = None,
-                              execution_time: Optional[int] = None) -> OperationLog:
+    def create_operation_log(self, user_id: str, tenant_id: str,
+                              module: str, operation: str,
+                              method: str = "POST", path: Optional[str] = None,
+                              request_params: Optional[str] = None, response_data: Optional[str] = None,
+                              response_status: Optional[int] = None,
+                              response_time: Optional[int] = None) -> OperationLog:
         """
         创建操作日志
         
         Args:
             user_id: 用户ID
-            username: 用户名
             tenant_id: 租户ID
             module: 模块名称
-            action: 操作动作
-            description: 操作描述（可选）
+            operation: 操作动作
             method: 请求方法
-            url: 请求URL（可选）
-            params: 请求参数（可选）
-            result: 操作结果（可选）
-            status: 状态
-            error_message: 错误信息（可选）
-            ip: IP地址（可选）
-            user_agent: 用户代理（可选）
-            execution_time: 执行时间（可选）
+            path: 请求路径（可选）
+            request_params: 请求参数（可选）
+            response_data: 响应数据（可选）
+            response_status: 响应状态（可选）
+            response_time: 响应时间（可选）
         
         Returns:
             OperationLog: 创建的操作日志对象
@@ -197,19 +162,14 @@ class LogService:
         operation_log = OperationLog(
             tenant_id=tenant_id,
             user_id=user_id,
-            username=username,
             module=module,
-            action=action,
-            description=description,
+            operation=operation,
             method=method,
-            url=url,
-            params=params,
-            result=result,
-            status=status,
-            error_message=error_message,
-            ip=ip,
-            user_agent=user_agent,
-            execution_time=execution_time
+            path=path,
+            request_params=request_params,
+            response_data=response_data,
+            response_status=response_status,
+            response_time=response_time
         )
         return self.log_repo.create_operation_log(operation_log)
     

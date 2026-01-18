@@ -22,8 +22,8 @@ todo_task_tags = Table(
     'todo_task_tags',
     BaseModel.metadata,
     Column('id', String(50), primary_key=True),
-    Column('todo_task_id', String(50), ForeignKey('todotask.id', ondelete='CASCADE'), nullable=False),
-    Column('tag_id', String(50), ForeignKey('todotag.id', ondelete='CASCADE'), nullable=False),
+    Column('todo_task_id', String(50), ForeignKey('todo_tasks.id', ondelete='CASCADE'), nullable=False),
+    Column('tag_id', String(50), ForeignKey('todo_tags.id', ondelete='CASCADE'), nullable=False),
     Column('created_at', DateTime, nullable=False, default=datetime.now)
 )
 
@@ -33,8 +33,8 @@ daily_plan_tasks = Table(
     'daily_plan_tasks',
     BaseModel.metadata,
     Column('id', String(50), primary_key=True),
-    Column('daily_plan_id', String(50), ForeignKey('dailyplan.id', ondelete='CASCADE'), nullable=False),
-    Column('todo_task_id', String(50), ForeignKey('todotask.id', ondelete='CASCADE'), nullable=False),
+    Column('daily_plan_id', String(50), ForeignKey('daily_plans.id', ondelete='CASCADE'), nullable=False),
+    Column('todo_task_id', String(50), ForeignKey('todo_tasks.id', ondelete='CASCADE'), nullable=False),
     Column('sort_order', Integer, nullable=False, default=0),
     Column('created_at', DateTime, nullable=False, default=datetime.now)
 )
@@ -42,7 +42,9 @@ daily_plan_tasks = Table(
 
 class TodoTask(BaseModel):
     """待办任务表"""
-    
+
+    __tablename__ = 'todo_tasks'
+
     tenant_id: Mapped[str] = mapped_column(String(50), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[str] = mapped_column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -54,7 +56,9 @@ class TodoTask(BaseModel):
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     workflow_instance_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("workflow_instances.id", ondelete="SET NULL"))
     workflow_task_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("workflow_tasks.id", ondelete="SET NULL"))
-    
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+
     user = relationship('User')
     tags = relationship('TodoTag', secondary=todo_task_tags, back_populates='tasks')
     attachments = relationship('TodoAttachment', back_populates='task')
@@ -62,43 +66,55 @@ class TodoTask(BaseModel):
 
 class TodoTag(BaseModel):
     """待办任务标签表"""
-    
+
+    __tablename__ = 'todo_tags'
+
     tenant_id: Mapped[str] = mapped_column(String(50), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     color: Mapped[Optional[str]] = mapped_column(String(20))
-    
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+
     tasks = relationship('TodoTask', secondary=todo_task_tags, back_populates='tags')
 
 
 class TodoAttachment(BaseModel):
     """待办任务附件表"""
-    
-    todo_task_id: Mapped[str] = mapped_column(String(50), ForeignKey("todotask.id", ondelete="CASCADE"), nullable=False)
+
+    __tablename__ = 'todo_attachments'
+
+    todo_task_id: Mapped[str] = mapped_column(String(50), ForeignKey("todo_tasks.id", ondelete="CASCADE"), nullable=False)
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
     file_size: Mapped[Optional[int]] = mapped_column(Integer)
     file_type: Mapped[Optional[str]] = mapped_column(String(50))
-    
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+
     task = relationship('TodoTask', back_populates='attachments')
 
 
 class DailyPlan(BaseModel):
     """每日计划表"""
-    
+
+    __tablename__ = 'daily_plans'
+
     tenant_id: Mapped[str] = mapped_column(String(50), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[str] = mapped_column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     plan_date: Mapped[datetime] = mapped_column(Date, nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default='active')
-    
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+
     user = relationship('User')
     tasks = relationship('TodoTask', secondary=daily_plan_tasks)
 
 
 class TodoReminder(BaseModel):
     """任务提醒表"""
-    
-    todo_task_id: Mapped[str] = mapped_column(String(50), ForeignKey("todotask.id", ondelete="CASCADE"), nullable=False)
+
+    __tablename__ = 'todo_reminders'
+
+    todo_task_id: Mapped[str] = mapped_column(String(50), ForeignKey("todo_tasks.id", ondelete="CASCADE"), nullable=False)
     reminder_type: Mapped[str] = mapped_column(String(20), nullable=False)
     reminder_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_sent: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)

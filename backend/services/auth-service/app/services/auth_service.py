@@ -20,7 +20,7 @@ from loguru import logger
 from typing import Optional, Dict, Any
 from datetime import datetime
 
-from app.models.user import User
+from common.database.models.user import User
 from app.models.token import Token
 from common.security.password import hash_password, verify_password
 from common.security.jwt import create_access_token, create_refresh_token, verify_token
@@ -54,6 +54,72 @@ class AuthService:
         self.user_repo = UserRepository(db)
         self.token_repo = TokenRepository(db)
     
+    def register(self, username: str, password: str, email: str, 
+                 phone: Optional[str] = None, tenant_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        用户注册
+        
+        Args:
+            username: 用户名
+            password: 密码
+            email: 邮箱
+            phone: 手机号（可选）
+            tenant_id: 租户ID（可选）
+        
+        Returns:
+            Dict: 注册结果，包含用户信息
+        
+        Raises:
+            ValueError: 用户名已存在
+            ValueError: 邮箱已存在
+        """
+        logger.info(f"用户注册尝试: username={username}, email={email}")
+        
+        # 检查用户名是否已存在
+        existing_user = self.user_repo.get_by_username(username)
+        if existing_user:
+            logger.warning(f"用户名已存在: username={username}")
+            raise ValueError("用户名已存在")
+        
+        # 检查邮箱是否已存在
+        existing_email = self.user_repo.get_by_email(email)
+        if existing_email:
+            logger.warning(f"邮箱已存在: email={email}")
+            raise ValueError("邮箱已存在")
+        
+        # 如果没有提供租户ID，使用默认租户
+        if not tenant_id:
+            from common.database.models.tenant import Tenant
+            default_tenant = self.db.query(Tenant).filter(Tenant.code == "default").first()
+            if default_tenant:
+                tenant_id = default_tenant.id
+            else:
+                raise ValueError("默认租户不存在")
+        
+        # 创建新用户
+        import uuid
+        user = User(
+            id=str(uuid.uuid4()),
+            tenant_id=tenant_id,
+            username=username,
+            password=hash_password(password),
+            email=email,
+            phone=phone,
+            status="active"
+        )
+        
+        # 保存用户
+        self.user_repo.create(user)
+        
+        logger.info(f"用户注册成功: username={username}, user_id={user.id}")
+        
+        return {
+            "message": "注册成功",
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
+    
     def login(self, username: str, password: str, tenant_id: Optional[str] = None) -> Dict[str, Any]:
         """
         用户登录
@@ -79,7 +145,7 @@ class AuthService:
             raise ValueError("用户名或密码错误")
         
         # 验证密码
-        if not verify_password(password, user.password_hash):
+        if not verify_password(password, user.password):
             logger.warning(f"密码错误: username={username}")
             raise ValueError("用户名或密码错误")
         
@@ -105,18 +171,20 @@ class AuthService:
         )
         
         # 保存Token到数据库
+        from datetime import timedelta
+        
         self.token_repo.create_token(
             user_id=user.id,
             token_type="access",
             token_hash=access_token,
-            expires_at=None  # 由JWT自动管理
+            expires_at=datetime.now() + timedelta(hours=24)  # 24小时后过期
         )
         
         self.token_repo.create_token(
             user_id=user.id,
             token_type="refresh",
             token_hash=refresh_token,
-            expires_at=None  # 由JWT自动管理
+            expires_at=datetime.now() + timedelta(days=30)  # 30天后过期
         )
         
         # 更新最后登录时间
@@ -171,7 +239,10 @@ class AuthService:
         if not payload:
             raise ValueError("Token无效或已过期")
         
-        user_id = payload.get("user_id")
+        # 从sub字段获取user_id（JWT标准使用sub表示subject）
+        user_id = payload.get("sub")
+        if not user_id:
+            raise ValueError("Token中缺少用户ID")
         
         # 生成新的访问Token
         new_access_token = create_access_token(

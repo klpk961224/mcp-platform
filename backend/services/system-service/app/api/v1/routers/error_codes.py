@@ -1,4 +1,4 @@
-"""
+﻿"""
 错误码API路由
 
 提供错误码管理的REST API
@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from common.database.session import get_db
+from app.core.deps import get_db
 from app.services.error_code_service import ErrorCodeService
 
 
