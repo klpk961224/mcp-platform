@@ -121,6 +121,84 @@ services:
       retries: 3
       start_period: 40s
 
+  # 系统服务
+  system-service:
+    build: ./services/system-service
+    container_name: mcp-system-service
+    ports:
+      - "8004:8004"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=mysql+pymysql://root:12345678@mysql:3306/mcp_platform
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mcp-platform
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 支撑服务
+  support-service:
+    build: ./services/support-service
+    container_name: mcp-support-service
+    ports:
+      - "8005:8005"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=mysql+pymysql://root:12345678@mysql:3306/mcp_platform
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mcp-platform
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 业务服务
+  business-service:
+    build: ./services/business-service
+    container_name: mcp-business-service
+    ports:
+      - "8006:8006"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=mysql+pymysql://root:12345678@mysql:3306/mcp_platform
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mcp-platform
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
   mysql_data:
   redis_data:

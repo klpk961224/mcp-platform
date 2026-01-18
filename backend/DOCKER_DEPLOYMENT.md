@@ -22,3 +22,6 @@ docker-compose logs -f
 - auth-service: 8001
 - user-service: 8002
 - permission-service: 8003
+- system-service: 8004
+- support-service: 8005
+- business-service: 8006
