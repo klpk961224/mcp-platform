@@ -85,7 +85,7 @@ class IntegrationTester:
                 url,
                 json={
                     "username": "admin",
-                    "password": "123456"
+                    "password": "admin123456"
                 },
                 timeout=10
             )

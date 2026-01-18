@@ -81,6 +81,13 @@ mcp-platform/
 - **容器化**: Docker 24.0+（可选）
 - **CI/CD**: GitHub Actions（可选）
 
+### Mixin类说明
+- **TimestampMixin**: 提供created_at和updated_at字段（时间戳）
+- **SoftDeleteMixin**: 提供is_deleted和deleted_at字段（软删除）
+- **AuditMixin**: 提供created_by、updated_by、deleted_by字段（审计）
+- **FullModelMixin**: 组合以上三个Mixin（完整模型）
+- **CreatedAtMixin**: 仅提供created_at字段（日志表专用）
+
 ### 前端技术栈
 - **框架**: Vue 3.3+
 - **语言**: TypeScript 5.0+
