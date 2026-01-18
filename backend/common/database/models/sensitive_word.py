@@ -6,10 +6,10 @@
 """
 
 from sqlalchemy import Column, String, Integer, Text
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
-class SensitiveWord(BaseModel):
+class SensitiveWord(BaseModel, TimestampMixin):
     """
     敏感词表
 

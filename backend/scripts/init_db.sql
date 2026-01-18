@@ -24,7 +24,13 @@ CREATE TABLE IF NOT EXISTS tenants (
     description TEXT COMMENT '描述',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    INDEX idx_status (status)
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否删除',
+    deleted_at DATETIME COMMENT '删除时间',
+    created_by VARCHAR(36) COMMENT '创建人ID',
+    updated_by VARCHAR(36) COMMENT '更新人ID',
+    deleted_by VARCHAR(36) COMMENT '删除人ID',
+    INDEX idx_status (status),
+    INDEX idx_is_deleted (is_deleted)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租户表';
 
 -- =====================================================
@@ -41,10 +47,16 @@ CREATE TABLE IF NOT EXISTS departments (
     status VARCHAR(20) NOT NULL DEFAULT 'active' COMMENT '状态（active/inactive）',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否删除',
+    deleted_at DATETIME COMMENT '删除时间',
+    created_by VARCHAR(36) COMMENT '创建人ID',
+    updated_by VARCHAR(36) COMMENT '更新人ID',
+    deleted_by VARCHAR(36) COMMENT '删除人ID',
     UNIQUE KEY uk_tenant_code (tenant_id, code),
     INDEX idx_tenant_id (tenant_id),
     INDEX idx_parent_id (parent_id),
     INDEX idx_level (level),
+    INDEX idx_is_deleted (is_deleted),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
     FOREIGN KEY (parent_id) REFERENCES departments(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='部门表';
@@ -66,10 +78,16 @@ CREATE TABLE IF NOT EXISTS users (
     last_login_ip VARCHAR(50) COMMENT '最后登录IP',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否删除',
+    deleted_at DATETIME COMMENT '删除时间',
+    created_by VARCHAR(36) COMMENT '创建人ID',
+    updated_by VARCHAR(36) COMMENT '更新人ID',
+    deleted_by VARCHAR(36) COMMENT '删除人ID',
     UNIQUE KEY uk_tenant_username (tenant_id, username),
     INDEX idx_tenant_id (tenant_id),
     INDEX idx_dept_id (dept_id),
     INDEX idx_status (status),
+    INDEX idx_is_deleted (is_deleted),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
     FOREIGN KEY (dept_id) REFERENCES departments(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
@@ -87,9 +105,15 @@ CREATE TABLE IF NOT EXISTS roles (
     status VARCHAR(20) NOT NULL DEFAULT 'active' COMMENT '状态（active/inactive）',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否删除',
+    deleted_at DATETIME COMMENT '删除时间',
+    created_by VARCHAR(36) COMMENT '创建人ID',
+    updated_by VARCHAR(36) COMMENT '更新人ID',
+    deleted_by VARCHAR(36) COMMENT '删除人ID',
     UNIQUE KEY uk_tenant_code (tenant_id, code),
     INDEX idx_tenant_id (tenant_id),
     INDEX idx_is_system (is_system),
+    INDEX idx_is_deleted (is_deleted),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色表';
 
@@ -195,9 +219,15 @@ CREATE TABLE IF NOT EXISTS mcp_tools (
     avg_response_time INT COMMENT '平均响应时间（毫秒）',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否删除',
+    deleted_at DATETIME COMMENT '删除时间',
+    created_by VARCHAR(36) COMMENT '创建人ID',
+    updated_by VARCHAR(36) COMMENT '更新人ID',
+    deleted_by VARCHAR(36) COMMENT '删除人ID',
     INDEX idx_tenant_id (tenant_id),
     INDEX idx_status (status),
     INDEX idx_tool_type (tool_type),
+    INDEX idx_is_deleted (is_deleted),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='MCP工具表';
 
@@ -600,6 +630,25 @@ CREATE TABLE IF NOT EXISTS workflow_templates (
     INDEX idx_status (status),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='工作流模板表';
+
+-- =====================================================
+-- 31. 错误码表（error_codes）
+-- =====================================================
+CREATE TABLE IF NOT EXISTS error_codes (
+    id VARCHAR(50) PRIMARY KEY COMMENT '错误码ID',
+    code VARCHAR(50) NOT NULL UNIQUE COMMENT '错误码',
+    message VARCHAR(500) NOT NULL COMMENT '错误信息',
+    level VARCHAR(20) NOT NULL DEFAULT 'error' COMMENT '错误级别',
+    module VARCHAR(50) NOT NULL COMMENT '模块',
+    description TEXT COMMENT '描述',
+    status VARCHAR(20) NOT NULL DEFAULT 'active' COMMENT '状态',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_code (code),
+    INDEX idx_level (level),
+    INDEX idx_module (module),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='错误码表';
 
 -- =====================================================
 -- 初始化完成

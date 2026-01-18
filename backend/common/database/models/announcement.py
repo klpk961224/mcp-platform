@@ -10,10 +10,10 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 from typing import Optional
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
-class Announcement(BaseModel):
+class Announcement(BaseModel, TimestampMixin):
     """
     通知公告表
 
@@ -40,7 +40,7 @@ class Announcement(BaseModel):
     publisher = relationship("User", backref="announcements")
 
 
-class AnnouncementRead(BaseModel):
+class AnnouncementRead(BaseModel, TimestampMixin):
     """
     通知公告阅读记录表
 

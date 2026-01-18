@@ -7,10 +7,10 @@
 
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
-class Region(BaseModel):
+class Region(BaseModel, TimestampMixin):
     """
     地区表
 

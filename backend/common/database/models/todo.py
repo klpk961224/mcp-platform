@@ -14,7 +14,7 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 from typing import Optional
-from ..base import BaseModel
+from ..base import BaseModel, FullModelMixin, TimestampMixin
 
 
 # 待办任务标签关联表
@@ -42,7 +42,7 @@ daily_plan_tasks = Table(
 )
 
 
-class TodoTask(BaseModel):
+class TodoTask(BaseModel, FullModelMixin):
     """待办任务表"""
 
     __tablename__ = 'todo_tasks'
@@ -58,15 +58,13 @@ class TodoTask(BaseModel):
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     workflow_instance_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("workflow_instances.id", ondelete="SET NULL"))
     workflow_task_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("workflow_tasks.id", ondelete="SET NULL"))
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
 
     user = relationship('User')
     tags = relationship('TodoTag', secondary=todo_task_tags, back_populates='tasks')
     attachments = relationship('TodoAttachment', back_populates='task')
 
 
-class TodoTag(BaseModel):
+class TodoTag(BaseModel, TimestampMixin):
     """待办任务标签表"""
 
     __tablename__ = 'todo_tags'
@@ -74,12 +72,11 @@ class TodoTag(BaseModel):
     tenant_id: Mapped[str] = mapped_column(String(50), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     color: Mapped[Optional[str]] = mapped_column(String(20))
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
 
     tasks = relationship('TodoTask', secondary=todo_task_tags, back_populates='tags')
 
 
-class TodoAttachment(BaseModel):
+class TodoAttachment(BaseModel, TimestampMixin):
     """待办任务附件表"""
 
     __tablename__ = 'todo_attachments'
@@ -89,12 +86,11 @@ class TodoAttachment(BaseModel):
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
     file_size: Mapped[Optional[int]] = mapped_column(Integer)
     file_type: Mapped[Optional[str]] = mapped_column(String(50))
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
 
     task = relationship('TodoTask', back_populates='attachments')
 
 
-class DailyPlan(BaseModel):
+class DailyPlan(BaseModel, TimestampMixin):
     """每日计划表"""
 
     __tablename__ = 'daily_plans'
@@ -103,13 +99,12 @@ class DailyPlan(BaseModel):
     user_id: Mapped[str] = mapped_column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     plan_date: Mapped[datetime] = mapped_column(Date, nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default='active')
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
 
     user = relationship('User')
     tasks = relationship('TodoTask', secondary=daily_plan_tasks)
 
 
-class TodoReminder(BaseModel):
+class TodoReminder(BaseModel, TimestampMixin):
     """任务提醒表"""
 
     __tablename__ = 'todo_reminders'
@@ -119,4 +114,3 @@ class TodoReminder(BaseModel):
     reminder_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_sent: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)

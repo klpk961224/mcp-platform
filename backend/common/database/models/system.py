@@ -13,14 +13,14 @@
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..base import BaseModel
+from ..base import BaseModel, FullModelMixin, CreatedAtMixin, TimestampMixin
 
 
-class MCPTool(BaseModel):
+class MCPTool(BaseModel, FullModelMixin):
     """MCP工具表"""
-    
+
     __tablename__ = 'mcp_tools'
-    
+
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text)
@@ -35,11 +35,11 @@ class MCPTool(BaseModel):
     success_count = Column(Integer, nullable=False, default=0)
     failure_count = Column(Integer, nullable=False, default=0)
     avg_response_time = Column(Integer)
-    
+
     tenant = relationship('Tenant', back_populates='mcp_tools')
 
 
-class LoginLog(BaseModel):
+class LoginLog(BaseModel, CreatedAtMixin):
     """登录日志表"""
 
     __tablename__ = 'login_logs'
@@ -50,10 +50,9 @@ class LoginLog(BaseModel):
     user_agent = Column(Text)
     login_status = Column(String(20), nullable=False)
     error_message = Column(Text)
-    created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
-class OperationLog(BaseModel):
+class OperationLog(BaseModel, CreatedAtMixin):
     """操作日志表"""
 
     __tablename__ = 'operation_logs'
@@ -68,14 +67,13 @@ class OperationLog(BaseModel):
     response_data = Column(JSON)
     response_status = Column(Integer)
     response_time = Column(Integer)
-    created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
-class Dict(BaseModel):
+class Dict(BaseModel, TimestampMixin):
     """字典表"""
-    
+
     __tablename__ = 'dicts'
-    
+
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     type = Column(String(50), nullable=False)
     name = Column(String(100), nullable=False)
@@ -83,11 +81,11 @@ class Dict(BaseModel):
     status = Column(String(20), nullable=False, default='active')
 
 
-class DictItem(BaseModel):
+class DictItem(BaseModel, TimestampMixin):
     """字典项表"""
-    
+
     __tablename__ = 'dict_items'
-    
+
     dict_id = Column(String(50), ForeignKey('dicts.id', ondelete='CASCADE'), nullable=False)
     label = Column(String(100), nullable=False)
     value = Column(String(100), nullable=False)
@@ -95,7 +93,7 @@ class DictItem(BaseModel):
     status = Column(String(20), nullable=False, default='active')
 
 
-class SystemNotification(BaseModel):
+class SystemNotification(BaseModel, TimestampMixin):
     """系统通知表"""
 
     __tablename__ = 'notifications'
@@ -109,7 +107,7 @@ class SystemNotification(BaseModel):
     status = Column(String(20), nullable=False, default='unread')
 
 
-class ErrorCode(BaseModel):
+class ErrorCode(BaseModel, TimestampMixin):
     """错误码表"""
 
     __tablename__ = 'error_codes'

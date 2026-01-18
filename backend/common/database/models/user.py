@@ -11,7 +11,7 @@
 from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..base import BaseModel, TimestampMixin
+from ..base import BaseModel, TimestampMixin, FullModelMixin
 
 
 # 用户角色关联表
@@ -26,7 +26,7 @@ user_roles = Table(
 )
 
 
-class User(BaseModel, TimestampMixin):
+class User(BaseModel, FullModelMixin):
     """用户表"""
     
     __tablename__ = 'users'
@@ -51,7 +51,7 @@ class User(BaseModel, TimestampMixin):
         return f"<User(id={self.id}, username={self.username})>"
 
 
-class Department(BaseModel, TimestampMixin):
+class Department(BaseModel, FullModelMixin):
     """部门表"""
     
     __tablename__ = 'departments'
@@ -73,7 +73,7 @@ class Department(BaseModel, TimestampMixin):
         return f"<Department(id={self.id}, name={self.name}, code={self.code})>"
 
 
-class Role(BaseModel, TimestampMixin):
+class Role(BaseModel, FullModelMixin):
     """角色表"""
     
     __tablename__ = 'roles'

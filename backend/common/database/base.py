@@ -61,10 +61,15 @@ class SoftDeleteMixin:
 
 class AuditMixin:
     """审计混入类"""
-    
+
     created_by: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, comment='创建人ID')
     updated_by: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, comment='更新人ID')
     deleted_by: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, comment='删除人ID')
+
+class CreatedAtMixin:
+    """仅创建时间混入类"""
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False, comment='创建时间')
 
 class FullModelMixin(TimestampMixin, SoftDeleteMixin, AuditMixin):
     """完整模型混入类"""

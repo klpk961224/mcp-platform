@@ -21,17 +21,17 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
-class DataScope(BaseModel):
+class DataScope(BaseModel, TimestampMixin):
     """
     数据范围类型表
-    
+
     功能：
     - 定义数据范围类型（全部、本部门、本部门及以下、仅本人等）
     - 配置数据范围的描述和说明
-    
+
     属性说明：
     - id: 数据范围ID（主键）
     - name: 数据范围名称
@@ -41,20 +41,20 @@ class DataScope(BaseModel):
     - created_at: 创建时间
     - updated_at: 更新时间
     """
-    
+
     __tablename__ = "data_scopes"
-    
+
     # 基本信息
     name = Column(String(100), nullable=False, comment="数据范围名称")
     code = Column(String(50), nullable=False, unique=True, comment="数据范围编码")
     description = Column(Text, nullable=True, comment="描述")
-    
+
     # 权限级别
     level = Column(Integer, nullable=False, default=0, comment="权限级别")
-    
+
     def __repr__(self):
         return f"<DataScope(id={self.id}, name={self.name}, code={self.code})>"
-    
+
     def to_dict(self):
         """转换为字典"""
         return {
@@ -68,14 +68,14 @@ class DataScope(BaseModel):
         }
 
 
-class UserDataScope(BaseModel):
+class UserDataScope(BaseModel, TimestampMixin):
     """
     用户数据范围权限表
-    
+
     功能：
     - 定义用户的数据范围权限
     - 支持按模块配置不同的数据范围
-    
+
     属性说明：
     - id: 用户数据范围ID（主键）
     - user_id: 用户ID
@@ -84,21 +84,21 @@ class UserDataScope(BaseModel):
     - created_at: 创建时间
     - updated_at: 更新时间
     """
-    
+
     __tablename__ = "user_data_scopes"
-    
+
     # 基本信息
     user_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, comment="用户ID")
     module = Column(String(50), nullable=False, comment="模块")
     data_scope_id = Column(String(50), ForeignKey("data_scopes.id", ondelete="CASCADE"), nullable=False, comment="数据范围ID")
-    
+
     # 关系
     user = relationship("User", backref="data_scopes")
     data_scope = relationship("DataScope", backref="user_data_scopes")
-    
+
     def __repr__(self):
         return f"<UserDataScope(id={self.id}, user_id={self.user_id}, module={self.module}, data_scope_id={self.data_scope_id})>"
-    
+
     def to_dict(self):
         """转换为字典"""
         return {

@@ -10,10 +10,10 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 from typing import Optional
-from ..base import BaseModel
+from ..base import BaseModel, TimestampMixin
 
 
-class Message(BaseModel):
+class Message(BaseModel, TimestampMixin):
     """
     站内信表
 
@@ -40,7 +40,7 @@ class Message(BaseModel):
     receiver = relationship("User", foreign_keys=[receiver_id], backref="received_messages")
 
 
-class MessageRead(BaseModel):
+class MessageRead(BaseModel, TimestampMixin):
     """
     站内信阅读记录表
 

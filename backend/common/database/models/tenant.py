@@ -8,10 +8,10 @@
 from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from ..base import BaseModel, TimestampMixin
+from ..base import BaseModel, TimestampMixin, FullModelMixin
 
 
-class Tenant(BaseModel, TimestampMixin):
+class Tenant(BaseModel, FullModelMixin):
     """租户表"""
     
     __tablename__ = 'tenants'
