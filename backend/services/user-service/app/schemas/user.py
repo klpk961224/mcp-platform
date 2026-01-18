@@ -1,5 +1,5 @@
 ﻿"""
-鐢ㄦ埛鐩稿叧Schema
+用户相关Schema
 """
 
 from pydantic import BaseModel, EmailStr, Field
@@ -8,20 +8,20 @@ from datetime import datetime
 
 
 class UserBase(BaseModel):
-    """鐢ㄦ埛鍩虹妯″瀷"""
+    """用户基础模型"""
     
-    username: str = Field(..., description="用户名?, min_length=4, max_length=50)
-    email: Optional[EmailStr] = Field(None, description="邮箱")
-    phone: Optional[str] = Field(None, description="手机号)
+    username: str = Field(..., description="用户名", min_length=4, max_length=50)
+    email: Optional[EmailStr] = Field(None, description="邮箱")
+    phone: Optional[str] = Field(None, description="手机号")
     dept_id: Optional[str] = Field(None, description="部门ID")
     position_id: Optional[str] = Field(None, description="岗位ID")
-    status: str = Field(default="active", description="状态?)
+    status: str = Field(default="active", description="状态")
 
 
 class UserCreate(UserBase):
-    """创建鐢ㄦ埛"""
+    """创建用户"""
     
-    password: str = Field(..., description="瀵嗙爜", min_length=6)
+    password: str = Field(..., description="密码", min_length=6)
     tenant_id: str = Field(..., description="租户ID")
     
     class Config:
@@ -36,7 +36,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    """更新鐢ㄦ埛"""
+    """更新用户"""
     
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
@@ -46,7 +46,7 @@ class UserUpdate(BaseModel):
 
 
 class UserResponse(UserBase):
-    """鐢ㄦ埛鍝嶅簲"""
+    """用户响应"""
     
     id: str
     tenant_id: str
@@ -60,7 +60,7 @@ class UserResponse(UserBase):
 
 
 class UserListResponse(BaseModel):
-    """鐢ㄦ埛鍒楄〃鍝嶅簲"""
+    """用户列表响应"""
     
     total: int
     items: List[UserResponse]

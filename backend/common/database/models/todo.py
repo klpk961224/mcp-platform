@@ -1,7 +1,14 @@
 ﻿"""
-寰呭姙浠诲姟鐩稿叧妯″瀷
+待办任务相关模型
 
-鍖呭惈锛?- TodoTask: 寰呭姙浠诲姟琛?- TodoTag: 寰呭姙浠诲姟鏍囩琛?- TodoAttachment: 寰呭姙浠诲姟闄勪欢琛?- DailyPlan: 姣忔棩璁″垝琛?- DailyPlanTask: 姣忔棩璁″垝浠诲姟鍏宠仈琛?- TodoReminder: 浠诲姟鎻愰啋琛?"""
+包含：
+- TodoTask: 待办任务表
+- TodoTag: 待办任务标签表
+- TodoAttachment: 待办任务附件表
+- DailyPlan: 每日计划表
+- DailyPlanTask: 每日计划任务关联表
+- TodoReminder: 任务提醒表
+"""
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime, Table, Date, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -10,7 +17,8 @@ from typing import Optional
 from ..base import BaseModel, FullModelMixin, TimestampMixin
 
 
-# 寰呭姙浠诲姟鏍囩鍏宠仈琛?todo_task_tags = Table(
+# 待办任务标签关联表
+todo_task_tags = Table(
     'todo_task_tags',
     BaseModel.metadata,
     Column('id', String(50), primary_key=True),
@@ -21,7 +29,8 @@ from ..base import BaseModel, FullModelMixin, TimestampMixin
 )
 
 
-# 姣忔棩璁″垝浠诲姟鍏宠仈琛?daily_plan_tasks = Table(
+# 每日计划任务关联表
+daily_plan_tasks = Table(
     'daily_plan_tasks',
     BaseModel.metadata,
     Column('id', String(50), primary_key=True),
@@ -34,7 +43,7 @@ from ..base import BaseModel, FullModelMixin, TimestampMixin
 
 
 class TodoTask(BaseModel, FullModelMixin):
-    """寰呭姙浠诲姟琛?""
+    """待办任务表"""
 
     __tablename__ = 'todo_tasks'
 
@@ -56,7 +65,7 @@ class TodoTask(BaseModel, FullModelMixin):
 
 
 class TodoTag(BaseModel, TimestampMixin):
-    """寰呭姙浠诲姟鏍囩琛?""
+    """待办任务标签表"""
 
     __tablename__ = 'todo_tags'
 
@@ -68,7 +77,7 @@ class TodoTag(BaseModel, TimestampMixin):
 
 
 class TodoAttachment(BaseModel, TimestampMixin):
-    """寰呭姙浠诲姟闄勪欢琛?""
+    """待办任务附件表"""
 
     __tablename__ = 'todo_attachments'
 
@@ -82,7 +91,7 @@ class TodoAttachment(BaseModel, TimestampMixin):
 
 
 class DailyPlan(BaseModel, TimestampMixin):
-    """姣忔棩璁″垝琛?""
+    """每日计划表"""
 
     __tablename__ = 'daily_plans'
 
@@ -96,7 +105,7 @@ class DailyPlan(BaseModel, TimestampMixin):
 
 
 class TodoReminder(BaseModel, TimestampMixin):
-    """浠诲姟鎻愰啋琛?""
+    """任务提醒表"""
 
     __tablename__ = 'todo_reminders'
 

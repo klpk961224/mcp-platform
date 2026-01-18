@@ -1,8 +1,14 @@
 ﻿"""
-绯荤粺鐩稿叧妯″瀷
+系统相关模型
 
-鍖呭惈锛?- MCPTool: MCP宸ュ叿琛?- LoginLog: 鐧诲綍鏃ュ織琛?- OperationLog: 鎿嶄綔鏃ュ織琛?- Dict: 瀛楀吀琛?- DictItem: 瀛楀吀椤硅〃
-- SystemNotification: 绯荤粺閫氱煡琛?"""
+包含：
+- MCPTool: MCP工具表
+- LoginLog: 登录日志表
+- OperationLog: 操作日志表
+- Dict: 字典表
+- DictItem: 字典项表
+- SystemNotification: 系统通知表
+"""
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship
@@ -11,7 +17,7 @@ from ..base import BaseModel, FullModelMixin, CreatedAtMixin, TimestampMixin
 
 
 class MCPTool(BaseModel, FullModelMixin):
-    """MCP宸ュ叿琛?""
+    """MCP工具表"""
 
     __tablename__ = 'mcp_tools'
 
@@ -34,7 +40,7 @@ class MCPTool(BaseModel, FullModelMixin):
 
 
 class LoginLog(BaseModel, CreatedAtMixin):
-    """鐧诲綍鏃ュ織琛?""
+    """登录日志表"""
 
     __tablename__ = 'login_logs'
 
@@ -47,7 +53,7 @@ class LoginLog(BaseModel, CreatedAtMixin):
 
 
 class OperationLog(BaseModel, CreatedAtMixin):
-    """鎿嶄綔鏃ュ織琛?""
+    """操作日志表"""
 
     __tablename__ = 'operation_logs'
 
@@ -64,7 +70,7 @@ class OperationLog(BaseModel, CreatedAtMixin):
 
 
 class Dict(BaseModel, TimestampMixin):
-    """瀛楀吀琛?""
+    """字典表"""
 
     __tablename__ = 'dicts'
 
@@ -76,7 +82,7 @@ class Dict(BaseModel, TimestampMixin):
 
 
 class DictItem(BaseModel, TimestampMixin):
-    """瀛楀吀椤硅〃"""
+    """字典项表"""
 
     __tablename__ = 'dict_items'
 
@@ -88,7 +94,7 @@ class DictItem(BaseModel, TimestampMixin):
 
 
 class SystemNotification(BaseModel, TimestampMixin):
-    """绯荤粺閫氱煡琛?""
+    """系统通知表"""
 
     __tablename__ = 'notifications'
 
@@ -102,13 +108,13 @@ class SystemNotification(BaseModel, TimestampMixin):
 
 
 class ErrorCode(BaseModel, TimestampMixin):
-    """閿欒鐮佽〃"""
+    """错误码表"""
 
     __tablename__ = 'error_codes'
 
-    code = Column(String(50), unique=True, nullable=False, comment='閿欒鐮?)
-    message = Column(String(500), nullable=False, comment='閿欒淇℃伅')
-    level = Column(String(20), nullable=False, default='error', comment='閿欒级别')
-    module = Column(String(50), nullable=False, comment='妯″潡')
+    code = Column(String(50), unique=True, nullable=False, comment='错误码')
+    message = Column(String(500), nullable=False, comment='错误信息')
+    level = Column(String(20), nullable=False, default='error', comment='错误级别')
+    module = Column(String(50), nullable=False, comment='模块')
     description = Column(Text, comment='描述')
-    status = Column(String(20), nullable=False, default='active', comment='状态?)
+    status = Column(String(20), nullable=False, default='active', comment='状态')

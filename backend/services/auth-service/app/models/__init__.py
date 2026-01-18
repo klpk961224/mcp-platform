@@ -1,12 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鏁版嵁妯″瀷妯″潡
+数据模型模块
 
-鍔熻兘璇存槑锛?1. SQLAlchemy ORM妯″瀷瀹氫箟
-2. 鏁版嵁搴撹〃缁撴瀯鏄犲皠
-3. 妯″瀷鍏崇郴瀹氫箟
+功能说明：
+1. SQLAlchemy ORM模型定义
+2. 数据库表结构映射
+3. 模型关系定义
 
-浣跨敤绀轰緥锛?    from app.models.token import Token
+使用示例：
+    from app.models.token import Token
 """
 
 from .token import Token

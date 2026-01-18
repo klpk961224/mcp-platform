@@ -8,7 +8,6 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28001
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
@@ -27,11 +26,12 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28002
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+    depends_on:
+      - auth-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:28002/health"]
@@ -47,11 +47,13 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28003
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+    depends_on:
+      - auth-service
+      - user-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:28003/health"]
@@ -67,11 +69,12 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28004
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+    depends_on:
+      - auth-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:28004/health"]
@@ -87,11 +90,12 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28005
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+    depends_on:
+      - auth-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:28005/health"]
@@ -107,11 +111,12 @@ services:
     network_mode: host
     environment:
       - APP_ENV=production
-      - APP_PORT=28006
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+    depends_on:
+      - auth-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:28006/health"]

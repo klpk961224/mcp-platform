@@ -1,13 +1,15 @@
 ﻿# -*- coding: utf-8 -*-
 """
-Token绠＄悊鏈嶅姟
+Token管理服务
 
-鍔熻兘璇存槑锛?1. Token鐢熸垚
-2. Token楠岃瘉
-3. Token鍚婇攢
-4. Token娓呯悊
+功能说明：
+1. Token生成
+2. Token验证
+3. Token吊销
+4. Token清理
 
-浣跨敤绀轰緥锛?    from app.services.token_service import TokenService
+使用示例：
+    from app.services.token_service import TokenService
     
     token_service = TokenService(db)
     token_service.create_token(user_id="123", token_type="access")
@@ -24,23 +26,26 @@ from app.repositories.token_repository import TokenRepository
 
 class TokenService:
     """
-    Token绠＄悊鏈嶅姟
+    Token管理服务
     
-    鍔熻兘锛?    - Token鐢熸垚
-    - Token楠岃瘉
-    - Token鍚婇攢
-    - Token娓呯悊
+    功能：
+    - Token生成
+    - Token验证
+    - Token吊销
+    - Token清理
     
-    浣跨敤鏂规硶锛?        token_service = TokenService(db)
+    使用方法：
+        token_service = TokenService(db)
         token = token_service.create_token(user_id="123", token_type="access")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖朤oken鏈嶅姟
+        初始化Token服务
         
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.token_repo = TokenRepository(db)
     
@@ -51,11 +56,11 @@ class TokenService:
         Args:
             user_id: 用户ID
             token_type: Token类型
-            token_hash: Token鍝堝笇
-            expires_at: 杩囨湡鏃堕棿
+            token_hash: Token哈希
+            expires_at: 过期时间
         
         Returns:
-            Token: Token瀵硅薄
+            Token: Token对象
         """
         logger.info(f"创建Token: user_id={user_id}, token_type={token_type}")
         
@@ -70,15 +75,15 @@ class TokenService:
     
     def revoke_token(self, token_hash: str) -> bool:
         """
-        鍚婇攢Token
+        吊销Token
         
         Args:
-            token_hash: Token鍝堝笇
+            token_hash: Token哈希
         
         Returns:
-            bool: 鍚婇攢鏄惁鎴愬姛
+            bool: 吊销是否成功
         """
-        logger.info(f"鍚婇攢Token: token_hash={token_hash[:20]}...")
+        logger.info(f"吊销Token: token_hash={token_hash[:20]}...")
         
         token = self.token_repo.get_by_token_hash(token_hash)
         if not token:
@@ -91,15 +96,15 @@ class TokenService:
     
     def revoke_all_tokens(self, user_id: str) -> int:
         """
-        鍚婇攢鐢ㄦ埛鎵€鏈塗oken
+        吊销用户所有Token
         
         Args:
             user_id: 用户ID
         
         Returns:
-            int: 鍚婇攢鐨凾oken数量
+            int: 吊销的Token数量
         """
-        logger.info(f"鍚婇攢鐢ㄦ埛鎵€鏈塗oken: user_id={user_id}")
+        logger.info(f"吊销用户所有Token: user_id={user_id}")
         
         tokens = self.token_repo.get_by_user_id(user_id)
         count = 0
@@ -112,12 +117,12 @@ class TokenService:
     
     def clean_expired_tokens(self) -> int:
         """
-        娓呯悊杩囨湡Token
+        清理过期Token
         
         Returns:
-            int: 娓呯悊鐨凾oken数量
+            int: 清理的Token数量
         """
-        logger.info("娓呯悊杩囨湡Token")
+        logger.info("清理过期Token")
         
         tokens = self.token_repo.get_expired_tokens()
         count = 0
@@ -125,5 +130,5 @@ class TokenService:
             self.token_repo.delete(token.id)
             count += 1
         
-        logger.info(f"娓呯悊杩囨湡Token瀹屾垚: 娓呯悊浜唟count}涓猅oken")
+        logger.info(f"清理过期Token完成: 清理了{count}个Token")
         return count

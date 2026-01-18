@@ -1,11 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 """
-MCP宸ュ叿鏁版嵁璁块棶灞?
-鍔熻兘璇存槑锛?1. MCP宸ュ叿CRUD鎿嶄綔
-2. MCP宸ュ叿查询鎿嶄綔
-3. MCP宸ュ叿缁熻鎿嶄綔
+MCP工具数据访问层
 
-浣跨敤绀轰緥锛?    from app.repositories.mcp_tool_repository import MCPToolRepository
+功能说明：
+1. MCP工具CRUD操作
+2. MCP工具查询操作
+3. MCP工具统计操作
+
+使用示例：
+    from app.repositories.mcp_tool_repository import MCPToolRepository
     
     tool_repo = MCPToolRepository(db)
     tool = tool_repo.get_by_code("data_analysis")
@@ -21,32 +24,38 @@ from common.database.models.system import MCPTool
 
 class MCPToolRepository:
     """
-    MCP宸ュ叿鏁版嵁璁块棶灞?    
-    鍔熻兘锛?    - MCP宸ュ叿CRUD鎿嶄綔
-    - MCP宸ュ叿查询鎿嶄綔
-    - MCP宸ュ叿缁熻鎿嶄綔
+    MCP工具数据访问层
     
-    浣跨敤鏂规硶锛?        tool_repo = MCPToolRepository(db)
+    功能：
+    - MCP工具CRUD操作
+    - MCP工具查询操作
+    - MCP工具统计操作
+    
+    使用方法：
+        tool_repo = MCPToolRepository(db)
         tool = tool_repo.get_by_code("data_analysis")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖朚CP宸ュ叿鏁版嵁璁块棶灞?        
+        初始化MCP工具数据访问层
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
     
     def create(self, tool: MCPTool) -> MCPTool:
         """
-        创建MCP宸ュ叿
+        创建MCP工具
         
         Args:
-            tool: 宸ュ叿瀵硅薄
+            tool: 工具对象
         
         Returns:
-            MCPTool: 创建鐨勫伐鍏峰璞?        """
-        logger.info(f"创建MCP宸ュ叿: name={tool.name}, code={tool.code}")
+            MCPTool: 创建的工具对象
+        """
+        logger.info(f"创建MCP工具: name={tool.name}, code={tool.code}")
         self.db.add(tool)
         self.db.commit()
         self.db.refresh(tool)
@@ -54,67 +63,68 @@ class MCPToolRepository:
     
     def get_by_id(self, tool_id: str) -> Optional[MCPTool]:
         """
-        根据ID鑾峰彇宸ュ叿
+        根据ID获取工具
         
         Args:
-            tool_id: 宸ュ叿ID
+            tool_id: 工具ID
         
         Returns:
-            Optional[MCPTool]: 宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[MCPTool]: 工具对象，不存在返回None
         """
         return self.db.query(MCPTool).filter(MCPTool.id == tool_id).first()
     
     def get_by_code(self, code: str) -> Optional[MCPTool]:
         """
-        根据编码鑾峰彇宸ュ叿
+        根据编码获取工具
         
         Args:
-            code: 宸ュ叿编码
+            code: 工具编码
         
         Returns:
-            Optional[MCPTool]: 宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[MCPTool]: 工具对象，不存在返回None
         """
         return self.db.query(MCPTool).filter(MCPTool.code == code).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        根据租户ID鑾峰彇宸ュ叿鍒楄〃
+        根据租户ID获取工具列表
         
         Args:
             tenant_id: 租户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         offset = (page - 1) * page_size
         return self.db.query(MCPTool).filter(MCPTool.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_public_tools(self, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鑾峰彇鍏紑宸ュ叿鍒楄〃
+        获取公开工具列表
         
         Args:
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         offset = (page - 1) * page_size
         return self.db.query(MCPTool).filter(MCPTool.is_public == True).offset(offset).limit(page_size).all()
     
     def get_available_tools(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鑾峰彇绉熸埛鍙敤鐨勫伐鍏峰垪琛紙绉熸埛绉佹湁 + 鍏紑锛?        
+        获取租户可用的工具列表（租户私有 + 公开）
+        
         Args:
             tenant_id: 租户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         offset = (page - 1) * page_size
         return self.db.query(MCPTool).filter(
@@ -126,15 +136,16 @@ class MCPToolRepository:
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鎼滅储宸ュ叿
+        搜索工具
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            keyword: 关键词
+            tenant_id: 租户ID（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         offset = (page - 1) * page_size
         query = self.db.query(MCPTool).filter(
@@ -157,43 +168,44 @@ class MCPToolRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鑾峰彇鎵€鏈夊伐鍏?        
+        获取所有工具
+        
         Args:
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         offset = (page - 1) * page_size
         return self.db.query(MCPTool).offset(offset).limit(page_size).all()
     
     def update(self, tool: MCPTool) -> MCPTool:
         """
-        更新宸ュ叿
+        更新工具
         
         Args:
-            tool: 宸ュ叿瀵硅薄
+            tool: 工具对象
         
         Returns:
-            MCPTool: 更新鍚庣殑宸ュ叿瀵硅薄
+            MCPTool: 更新后的工具对象
         """
-        logger.info(f"更新MCP宸ュ叿: tool_id={tool.id}")
+        logger.info(f"更新MCP工具: tool_id={tool.id}")
         self.db.commit()
         self.db.refresh(tool)
         return tool
     
     def delete(self, tool_id: str) -> bool:
         """
-        删除宸ュ叿
+        删除工具
         
         Args:
-            tool_id: 宸ュ叿ID
+            tool_id: 工具ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         """
-        logger.info(f"删除MCP宸ュ叿: tool_id={tool_id}")
+        logger.info(f"删除MCP工具: tool_id={tool_id}")
         tool = self.get_by_id(tool_id)
         if not tool:
             return False
@@ -204,31 +216,33 @@ class MCPToolRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        缁熻绉熸埛宸ュ叿数量
+        统计租户工具数量
         
         Args:
             tenant_id: 租户ID
         
         Returns:
-            int: 宸ュ叿数量
+            int: 工具数量
         """
         return self.db.query(MCPTool).filter(MCPTool.tenant_id == tenant_id).count()
     
     def count_all(self) -> int:
         """
-        缁熻鎵€鏈夊伐鍏锋暟閲?        
+        统计所有工具数量
+        
         Returns:
-            int: 宸ュ叿数量
+            int: 工具数量
         """
         return self.db.query(MCPTool).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        妫€鏌ュ伐鍏风紪鐮佹槸鍚﹀瓨鍦?        
+        检查工具编码是否存在
+        
         Args:
-            code: 宸ュ叿编码
+            code: 工具编码
         
         Returns:
-            bool: 鏄惁瀛樺湪
+            bool: 是否存在
         """
         return self.db.query(MCPTool).filter(MCPTool.code == code).first() is not None

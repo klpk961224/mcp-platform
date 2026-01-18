@@ -1,9 +1,9 @@
-﻿"""鍩虹寮傚父绫?""
+﻿"""基础异常类"""
 from typing import Optional
 
 
 class BaseException(Exception):
-    """鍩虹寮傚父绫?""
+    """基础异常类"""
     
     def __init__(
         self,
@@ -18,35 +18,35 @@ class BaseException(Exception):
 
 
 class ValidationError(BaseException):
-    """楠岃瘉寮傚父"""
+    """验证异常"""
     
     def __init__(self, message: str, detail: Optional[str] = None):
         super().__init__(message, code=400, detail=detail)
 
 
 class NotFoundError(BaseException):
-    """鏈壘鍒板紓甯?""
+    """未找到异常"""
     
     def __init__(self, message: str, detail: Optional[str] = None):
         super().__init__(message, code=404, detail=detail)
 
 
 class UnauthorizedError(BaseException):
-    """鏈巿鏉冨紓甯?""
+    """未授权异常"""
     
     def __init__(self, message: str, detail: Optional[str] = None):
         super().__init__(message, code=401, detail=detail)
 
 
 class ForbiddenError(BaseException):
-    """绂佹璁块棶寮傚父"""
+    """禁止访问异常"""
     
     def __init__(self, message: str, detail: Optional[str] = None):
         super().__init__(message, code=403, detail=detail)
 
 
 class ConflictError(BaseException):
-    """鍐茬獊寮傚父"""
+    """冲突异常"""
     
     def __init__(self, message: str, detail: Optional[str] = None):
         super().__init__(message, code=409, detail=detail)

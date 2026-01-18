@@ -1,17 +1,19 @@
 ﻿"""
-鏁版嵁鑼冨洿鏉冮檺妯″瀷
+数据范围权限模型
 
-鍔熻兘璇存槑锛?1. 鏁版嵁鑼冨洿类型瀹氫箟
-2. 鏁版嵁鑼冨洿鏉冮檺閰嶇疆
-3. 鐢ㄦ埛鏁版嵁鑼冨洿鏉冮檺鍏宠仈
+功能说明：
+1. 数据范围类型定义
+2. 数据范围权限配置
+3. 用户数据范围权限关联
 
-浣跨敤绀轰緥锛?    from common.database.models.data_scope import DataScope, UserDataScope
+使用示例：
+    from common.database.models.data_scope import DataScope, UserDataScope
     
-    # 创建鏁版嵁鑼冨洿
+    # 创建数据范围
     data_scope = DataScope(
-        name="鏈儴闂ㄦ暟鎹?,
+        name="本部门数据",
         code="department",
-        description="鍙兘鏌ョ湅鏈儴闂ㄧ殑鏁版嵁"
+        description="只能查看本部门的数据"
     )
 """
 
@@ -24,34 +26,37 @@ from ..base import BaseModel, TimestampMixin
 
 class DataScope(BaseModel, TimestampMixin):
     """
-    鏁版嵁鑼冨洿类型琛?
-    鍔熻兘锛?    - 瀹氫箟鏁版嵁鑼冨洿类型锛堝叏閮ㄣ€佹湰閮ㄩ棬銆佹湰閮ㄩ棬鍙婁互涓嬨€佷粎鏈汉绛夛級
-    - 閰嶇疆鏁版嵁鑼冨洿鐨勬弿杩板拰璇存槑
+    数据范围类型表
 
-    灞炴€ц鏄庯細
-    - id: 鏁版嵁鑼冨洿ID锛堜富閿級
-    - name: 鏁版嵁鑼冨洿名称
-    - code: 鏁版嵁鑼冨洿编码锛坅ll/department/department_and_below/self锛?    - description: 描述
-    - level: 鏉冮檺级别锛堟暟瀛楄秺澶ф潈闄愯秺楂橈級
+    功能：
+    - 定义数据范围类型（全部、本部门、本部门及以下、仅本人等）
+    - 配置数据范围的描述和说明
+
+    属性说明：
+    - id: 数据范围ID（主键）
+    - name: 数据范围名称
+    - code: 数据范围编码（all/department/department_and_below/self）
+    - description: 描述
+    - level: 权限级别（数字越大权限越高）
     - created_at: 创建时间
-    - updated_at: 更新鏃堕棿
+    - updated_at: 更新时间
     """
 
     __tablename__ = "data_scopes"
 
-    # 鍩烘湰淇℃伅
-    name = Column(String(100), nullable=False, comment="鏁版嵁鑼冨洿名称")
-    code = Column(String(50), nullable=False, unique=True, comment="鏁版嵁鑼冨洿编码")
+    # 基本信息
+    name = Column(String(100), nullable=False, comment="数据范围名称")
+    code = Column(String(50), nullable=False, unique=True, comment="数据范围编码")
     description = Column(Text, nullable=True, comment="描述")
 
-    # 鏉冮檺级别
-    level = Column(Integer, nullable=False, default=0, comment="鏉冮檺级别")
+    # 权限级别
+    level = Column(Integer, nullable=False, default=0, comment="权限级别")
 
     def __repr__(self):
         return f"<DataScope(id={self.id}, name={self.name}, code={self.code})>"
 
     def to_dict(self):
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": self.id,
             "name": self.name,
@@ -65,26 +70,29 @@ class DataScope(BaseModel, TimestampMixin):
 
 class UserDataScope(BaseModel, TimestampMixin):
     """
-    鐢ㄦ埛鏁版嵁鑼冨洿鏉冮檺琛?
-    鍔熻兘锛?    - 瀹氫箟鐢ㄦ埛鐨勬暟鎹寖鍥存潈闄?    - 鏀寔鎸夋ā鍧楅厤缃笉鍚岀殑鏁版嵁鑼冨洿
+    用户数据范围权限表
 
-    灞炴€ц鏄庯細
-    - id: 鐢ㄦ埛鏁版嵁鑼冨洿ID锛堜富閿級
+    功能：
+    - 定义用户的数据范围权限
+    - 支持按模块配置不同的数据范围
+
+    属性说明：
+    - id: 用户数据范围ID（主键）
     - user_id: 用户ID
-    - module: 妯″潡锛坲ser/department/tenant绛夛級
-    - data_scope_id: 鏁版嵁鑼冨洿ID
+    - module: 模块（user/department/tenant等）
+    - data_scope_id: 数据范围ID
     - created_at: 创建时间
-    - updated_at: 更新鏃堕棿
+    - updated_at: 更新时间
     """
 
     __tablename__ = "user_data_scopes"
 
-    # 鍩烘湰淇℃伅
+    # 基本信息
     user_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, comment="用户ID")
-    module = Column(String(50), nullable=False, comment="妯″潡")
-    data_scope_id = Column(String(50), ForeignKey("data_scopes.id", ondelete="CASCADE"), nullable=False, comment="鏁版嵁鑼冨洿ID")
+    module = Column(String(50), nullable=False, comment="模块")
+    data_scope_id = Column(String(50), ForeignKey("data_scopes.id", ondelete="CASCADE"), nullable=False, comment="数据范围ID")
 
-    # 鍏崇郴
+    # 关系
     user = relationship("User", backref="data_scopes")
     data_scope = relationship("DataScope", backref="user_data_scopes")
 
@@ -92,7 +100,7 @@ class UserDataScope(BaseModel, TimestampMixin):
         return f"<UserDataScope(id={self.id}, user_id={self.user_id}, module={self.module}, data_scope_id={self.data_scope_id})>"
 
     def to_dict(self):
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": self.id,
             "user_id": self.user_id,

@@ -1,24 +1,25 @@
 ﻿# -*- coding: utf-8 -*-
 """
-RoleService鍗曞厓娴嬭瘯
+RoleService单元测试
 
-娴嬭瘯鍐呭锛?1. 创建瑙掕壊
-2. 鑾峰彇瑙掕壊
-3. 更新瑙掕壊
-4. 删除瑙掕壊
-5. 鎼滅储瑙掕壊
-6. 瑙掕壊鏉冮檺绠＄悊
+测试内容：
+1. 创建角色
+2. 获取角色
+3. 更新角色
+4. 删除角色
+5. 搜索角色
+6. 角色权限管理
 """
 
 import pytest
 from unittest.mock import Mock
 from sqlalchemy.orm import Session
 
-# 瀵煎叆鎵€鏈夋ā鍨嬩互鍒濆鍖朣QLAlchemy mapper
+# 导入所有模型以初始化SQLAlchemy mapper
 from common.database.models.user import Role
 from common.database.models.permission import Permission, Menu
 
-# 鎵嬪姩閰嶇疆SQLAlchemy mapper
+# 手动配置SQLAlchemy mapper
 from sqlalchemy.orm import configure_mappers
 configure_mappers()
 
@@ -27,18 +28,18 @@ from app.services.role_service import RoleService
 
 @pytest.fixture
 def mock_db():
-    """妯℃嫙鏁版嵁搴撲細璇?""
+    """模拟数据库会话"""
     return Mock(spec=Session)
 
 
 @pytest.fixture
 def mock_role():
-    """妯℃嫙瑙掕壊瀵硅薄"""
+    """模拟角色对象"""
     role = Mock(spec=Role)
     role.id = "test_role_id"
-    role.name = "娴嬭瘯瑙掕壊"
+    role.name = "测试角色"
     role.code = "test_role"
-    role.description = "娴嬭瘯角色描述"
+    role.description = "测试角色描述"
     role.tenant_id = "default"
     role.is_system = False
     role.status = "active"
@@ -51,15 +52,15 @@ def mock_role():
 
 @pytest.fixture
 def role_service(mock_db):
-    """创建RoleService瀹炰緥"""
+    """创建RoleService实例"""
     return RoleService(mock_db)
 
 
 class TestRoleService:
-    """RoleService娴嬭瘯绫?""
+    """RoleService测试类"""
     
     def test_init(self, mock_db):
-        """娴嬭瘯RoleService鍒濆鍖?""
+        """测试RoleService初始化"""
         service = RoleService(mock_db)
         assert service.db == mock_db
         assert service.role_repo is not None
@@ -67,169 +68,173 @@ class TestRoleService:
         assert service.menu_repo is not None
     
     def test_create_role_success(self, role_service, mock_role):
-        """娴嬭瘯创建瑙掕壊鎴愬姛"""
-        # 妯℃嫙瑙掕壊浠ｇ爜涓嶅瓨鍦?        role_service.role_repo.exists_by_code = Mock(return_value=False)
-        # 妯℃嫙角色名称鍦ㄥ悓涓€绉熸埛涓笉瀛樺湪
+        """测试创建角色成功"""
+        # 模拟角色代码不存在
+        role_service.role_repo.exists_by_code = Mock(return_value=False)
+        # 模拟角色名称在同一租户中不存在
         role_service.role_repo.exists_by_name_in_tenant = Mock(return_value=False)
-        # 妯℃嫙创建瑙掕壊
+        # 模拟创建角色
         role_service.role_repo.create = Mock(return_value=mock_role)
         
-        # 鎵ц创建瑙掕壊
+        # 执行创建角色
         role_data = {
-            "name": "娴嬭瘯瑙掕壊",
+            "name": "测试角色",
             "code": "test_role",
             "tenant_id": "default",
-            "description": "娴嬭瘯角色描述"
+            "description": "测试角色描述"
         }
         result = role_service.create_role(role_data)
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
-        assert result.name == "娴嬭瘯瑙掕壊"
+        assert result.name == "测试角色"
         role_service.role_repo.create.assert_called_once()
     
     def test_create_role_code_exists(self, role_service):
-        """娴嬭瘯创建瑙掕壊鏃朵唬鐮佸凡瀛樺湪"""
-        # 妯℃嫙瑙掕壊浠ｇ爜宸插瓨鍦?        role_service.role_repo.exists_by_code = Mock(return_value=True)
+        """测试创建角色时代码已存在"""
+        # 模拟角色代码已存在
+        role_service.role_repo.exists_by_code = Mock(return_value=True)
         
-        # 鎵ц创建瑙掕壊骞堕獙璇佸紓甯?        role_data = {
-            "name": "娴嬭瘯瑙掕壊",
+        # 执行创建角色并验证异常
+        role_data = {
+            "name": "测试角色",
             "code": "existing_role",
             "tenant_id": "default"
         }
-        with pytest.raises(ValueError, match="角色编码宸插瓨鍦?):
+        with pytest.raises(ValueError, match="角色编码已存在"):
             role_service.create_role(role_data)
     
     def test_get_by_id_success(self, role_service, mock_role):
-        """娴嬭瘯鑾峰彇瑙掕壊鎴愬姛"""
-        # 妯℃嫙查询瑙掕壊
+        """测试获取角色成功"""
+        # 模拟查询角色
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
         
-        # 鎵ц查询
+        # 执行查询
         result = role_service.get_role("test_role_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
         role_service.role_repo.get_by_id.assert_called_once_with("test_role_id")
     
     def test_get_by_id_not_found(self, role_service):
-        """娴嬭瘯鑾峰彇瑙掕壊澶辫触"""
-        # 妯℃嫙查询瑙掕壊杩斿洖None
+        """测试获取角色失败"""
+        # 模拟查询角色返回None
         role_service.role_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц查询
+        # 执行查询
         result = role_service.get_role("nonexistent_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result is None
     
     def test_update_role_success(self, role_service, mock_role):
-        """娴嬭瘯更新瑙掕壊鎴愬姛"""
-        # 妯℃嫙查询瑙掕壊
+        """测试更新角色成功"""
+        # 模拟查询角色
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙更新瑙掕壊
+        # 模拟更新角色
         role_service.role_repo.update = Mock(return_value=mock_role)
         
-        # 鎵ц更新
-        update_data = {"description": "更新鍚庣殑描述"}
+        # 执行更新
+        update_data = {"description": "更新后的描述"}
         result = role_service.update_role("test_role_id", update_data)
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
         role_service.role_repo.update.assert_called_once()
     
     def test_delete_role_success(self, role_service):
-        """娴嬭瘯删除瑙掕壊鎴愬姛"""
-        # 妯℃嫙删除瑙掕壊
+        """测试删除角色成功"""
+        # 模拟删除角色
         role_service.role_repo.delete = Mock()
         
-        # 鎵ц删除
+        # 执行删除
         role_service.delete_role("test_role_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         role_service.role_repo.delete.assert_called_once_with("test_role_id")
     
     def test_search_roles_success(self, role_service, mock_role):
-        """娴嬭瘯鎼滅储瑙掕壊鎴愬姛"""
-        # 妯℃嫙鎼滅储瑙掕壊
+        """测试搜索角色成功"""
+        # 模拟搜索角色
         role_service.role_repo.search = Mock(return_value=[mock_role])
         
-        # 鎵ц鎼滅储
+        # 执行搜索
         result = role_service.list_roles(
             tenant_id="default",
-            keyword="娴嬭瘯"
+            keyword="测试"
         )
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert len(result) == 1
         assert result[0].id == "test_role_id"
     
     def test_assign_permission_to_role_success(self, role_service, mock_role):
-        """娴嬭瘯鍒嗛厤鏉冮檺缁欒鑹叉垚鍔?""
-        # 妯℃嫙瑙掕壊瀛樺湪
+        """测试分配权限给角色成功"""
+        # 模拟角色存在
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙鏉冮檺瀛樺湪
+        # 模拟权限存在
         role_service.perm_repo.get_by_id = Mock(return_value=Mock())
-        # 妯℃嫙更新瑙掕壊
+        # 模拟更新角色
         role_service.role_repo.update = Mock(return_value=mock_role)
         
-        # 鎵ц鍒嗛厤鏉冮檺
+        # 执行分配权限
         result = role_service.assign_permissions("test_role_id", ["test_permission_id"])
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
     
     def test_revoke_permission_from_role_success(self, role_service, mock_role):
-        """娴嬭瘯鎾ら攢瑙掕壊鏉冮檺鎴愬姛"""
-        # 妯℃嫙瑙掕壊瀛樺湪
+        """测试撤销角色权限成功"""
+        # 模拟角色存在
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙更新瑙掕壊
+        # 模拟更新角色
         role_service.role_repo.update = Mock(return_value=mock_role)
         
-        # 鎵ц鎾ら攢鏉冮檺锛堜娇鐢╝ssign_permissions锛屼紶鍏ョ┖鍒楄〃锛?        result = role_service.assign_permissions("test_role_id", [])
+        # 执行撤销权限（使用assign_permissions，传入空列表）
+        result = role_service.assign_permissions("test_role_id", [])
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
     
     def test_get_role_permissions_success(self, role_service, mock_role):
-        """娴嬭瘯鑾峰彇瑙掕壊鏉冮檺鎴愬姛"""
-        # 妯℃嫙鑾峰彇鏉冮檺
+        """测试获取角色权限成功"""
+        # 模拟获取权限
         mock_permission = Mock()
         mock_permission.id = "test_permission_id"
-        mock_permission.name = "娴嬭瘯鏉冮檺"
+        mock_permission.name = "测试权限"
         mock_permission.code = "test:permission"
         mock_role.permissions = [mock_permission]
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
         
-        # 鎵ц鑾峰彇鏉冮檺
+        # 执行获取权限
         result = role_service.get_role_permissions("test_role_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert len(result) == 1
         assert result[0].id == "test_permission_id"
     
     def test_assign_menu_to_role_success(self, role_service, mock_role):
-        """娴嬭瘯鍒嗛厤鑿滃崟缁欒鑹叉垚鍔?""
-        # 妯℃嫙瑙掕壊瀛樺湪
+        """测试分配菜单给角色成功"""
+        # 模拟角色存在
         role_service.role_repo.get_by_id = Mock(return_value=mock_role)
-        # 妯℃嫙鑿滃崟瀛樺湪
+        # 模拟菜单存在
         role_service.menu_repo.get_by_id = Mock(return_value=Mock())
-        # 妯℃嫙更新瑙掕壊
+        # 模拟更新角色
         role_service.role_repo.update = Mock(return_value=mock_role)
         
-        # 鎵ц鍒嗛厤鑿滃崟
+        # 执行分配菜单
         result = role_service.assign_menus("test_role_id", ["test_menu_id"])
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_role_id"
     
     def test_get_role_statistics(self, role_service):
-        """娴嬭瘯鑾峰彇瑙掕壊缁熻"""
-        # 妯℃嫙鑾峰彇缁熻
+        """测试获取角色统计"""
+        # 模拟获取统计
         role_service.role_repo.count_all = Mock(return_value=10)
         
-        # 鎵ц鑾峰彇缁熻
+        # 执行获取统计
         result = role_service.count_roles()
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 10

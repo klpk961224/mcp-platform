@@ -1,11 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鏃ュ織鏈嶅姟
+日志服务
 
-鍔熻兘璇存槑锛?1. 鐧诲綍鏃ュ織绠＄悊
-2. 鎿嶄綔鏃ュ織绠＄悊
-3. 鏃ュ織查询鍜岀粺璁?
-浣跨敤绀轰緥锛?    from app.services.log_service import LogService
+功能说明：
+1. 登录日志管理
+2. 操作日志管理
+3. 日志查询和统计
+
+使用示例：
+    from app.services.log_service import LogService
     
     log_service = LogService(db)
     log = log_service.create_login_log(user_id="123", username="admin")
@@ -23,20 +26,25 @@ from app.repositories.log_repository import LogRepository
 
 class LogService:
     """
-    鏃ュ織鏈嶅姟
+    日志服务
     
-    鍔熻兘锛?    - 鐧诲綍鏃ュ織绠＄悊
-    - 鎿嶄綔鏃ュ織绠＄悊
-    - 鏃ュ織查询鍜岀粺璁?    
-    浣跨敤鏂规硶锛?        log_service = LogService(db)
+    功能：
+    - 登录日志管理
+    - 操作日志管理
+    - 日志查询和统计
+    
+    使用方法：
+        log_service = LogService(db)
         log = log_service.create_login_log(user_id="123", username="admin")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栨棩蹇楁湇鍔?        
+        初始化日志服务
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.log_repo = LogRepository(db)
     
@@ -44,17 +52,19 @@ class LogService:
                          ip_address: Optional[str] = None, user_agent: Optional[str] = None,
                          login_status: str = "success", error_message: Optional[str] = None) -> LoginLog:
         """
-        创建鐧诲綍鏃ュ織
+        创建登录日志
         
         Args:
             user_id: 用户ID
             tenant_id: 租户ID
-            ip_address: IP地址锛堝彲閫夛級
-            user_agent: 鐢ㄦ埛浠ｇ悊锛堝彲閫夛級
-            login_status: 鐧诲綍状态?            error_message: 閿欒淇℃伅锛堝彲閫夛級
+            ip_address: IP地址（可选）
+            user_agent: 用户代理（可选）
+            login_status: 登录状态
+            error_message: 错误信息（可选）
         
         Returns:
-            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建的登录日志对象
+        """
         login_log = LoginLog(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -68,16 +78,17 @@ class LogService:
     def record_login_success(self, user_id: str, tenant_id: str,
                              ip_address: Optional[str] = None, user_agent: Optional[str] = None) -> LoginLog:
         """
-        璁板綍鎴愬姛鐧诲綍
+        记录成功登录
         
         Args:
             user_id: 用户ID
             tenant_id: 租户ID
-            ip_address: IP地址锛堝彲閫夛級
-            user_agent: 鐢ㄦ埛浠ｇ悊锛堝彲閫夛級
+            ip_address: IP地址（可选）
+            user_agent: 用户代理（可选）
         
         Returns:
-            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建的登录日志对象
+        """
         return self.create_login_log(
             user_id=user_id,
             tenant_id=tenant_id,
@@ -89,16 +100,17 @@ class LogService:
     def record_login_failure(self, user_id: str, tenant_id: str,
                              ip_address: Optional[str] = None, error_message: Optional[str] = None) -> LoginLog:
         """
-        璁板綍澶辫触鐧诲綍
+        记录失败登录
         
         Args:
             user_id: 用户ID
             tenant_id: 租户ID
-            ip_address: IP地址锛堝彲閫夛級
-            error_message: 閿欒淇℃伅锛堝彲閫夛級
+            ip_address: IP地址（可选）
+            error_message: 错误信息（可选）
         
         Returns:
-            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
+            LoginLog: 创建的登录日志对象
+        """
         return self.create_login_log(
             user_id=user_id,
             tenant_id=tenant_id,
@@ -109,17 +121,18 @@ class LogService:
     
     def record_logout(self, user_id: str) -> bool:
         """
-        璁板綍鐧诲嚭
+        记录登出
         
         Args:
             user_id: 用户ID
         
         Returns:
-            bool: 鏄惁鎴愬姛
+            bool: 是否成功
         """
-        logger.info(f"璁板綍鐧诲嚭: user_id={user_id}")
+        logger.info(f"记录登出: user_id={user_id}")
         
-        # 娉ㄦ剰锛氬綋鍓嶈〃缁撴瀯涓嶆敮鎸乴ogout_time瀛楁锛屾鏂规硶鏆傛椂涓嶅疄鐜?        # 濡傛灉闇€瑕佽褰曠櫥鍑猴紝闇€瑕佷慨鏀硅〃缁撴瀯娣诲姞logout_time瀛楁
+        # 注意：当前表结构不支持logout_time字段，此方法暂时不实现
+        # 如果需要记录登出，需要修改表结构添加logout_time字段
         return False
     
     def create_operation_log(self, user_id: str, tenant_id: str,
@@ -129,22 +142,23 @@ class LogService:
                               response_status: Optional[int] = None,
                               response_time: Optional[int] = None) -> OperationLog:
         """
-        创建鎿嶄綔鏃ュ織
+        创建操作日志
         
         Args:
             user_id: 用户ID
             tenant_id: 租户ID
-            module: 妯″潡名称
-            operation: 鎿嶄綔鍔ㄤ綔
-            method: 璇锋眰鏂规硶
-            path: 璇锋眰璺緞锛堝彲閫夛級
-            request_params: 璇锋眰鍙傛暟锛堝彲閫夛級
-            response_data: 鍝嶅簲鏁版嵁锛堝彲閫夛級
-            response_status: 鍝嶅簲状态侊紙鍙€夛級
-            response_time: 鍝嶅簲鏃堕棿锛堝彲閫夛級
+            module: 模块名称
+            operation: 操作动作
+            method: 请求方法
+            path: 请求路径（可选）
+            request_params: 请求参数（可选）
+            response_data: 响应数据（可选）
+            response_status: 响应状态（可选）
+            response_time: 响应时间（可选）
         
         Returns:
-            OperationLog: 创建鐨勬搷浣滄棩蹇楀璞?        """
+            OperationLog: 创建的操作日志对象
+        """
         operation_log = OperationLog(
             tenant_id=tenant_id,
             user_id=user_id,
@@ -161,52 +175,56 @@ class LogService:
     
     def get_user_login_logs(self, user_id: str, page: int = 1, page_size: int = 10) -> List[LoginLog]:
         """
-        鑾峰彇鐢ㄦ埛鐧诲綍鏃ュ織
+        获取用户登录日志
         
         Args:
             user_id: 用户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
+            List[LoginLog]: 登录日志列表
         """
         return self.log_repo.get_user_login_logs(user_id, page, page_size)
     
     def get_user_operation_logs(self, user_id: str, page: int = 1, page_size: int = 10) -> List[OperationLog]:
         """
-        鑾峰彇鐢ㄦ埛鎿嶄綔鏃ュ織
+        获取用户操作日志
         
         Args:
             user_id: 用户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
+            List[OperationLog]: 操作日志列表
         """
         return self.log_repo.get_user_operation_logs(user_id, page, page_size)
     
     def check_failed_logins(self, user_id: str, threshold: int = 5, hours: int = 24) -> bool:
         """
-        妫€鏌ョ敤鎴峰け璐ョ櫥褰曟鏁版槸鍚﹁秴杩囬槇鍊?        
+        检查用户失败登录次数是否超过阈值
+        
         Args:
             user_id: 用户ID
-            threshold: 闃堝€?            hours: 灏忔椂鏁?        
+            threshold: 阈值
+            hours: 小时数
+        
         Returns:
-            bool: 鏄惁瓒呰繃闃堝€?        """
+            bool: 是否超过阈值
+        """
         failed_count = self.log_repo.count_failed_logins_by_user(user_id, hours)
         return failed_count >= threshold
     
     def get_login_statistics(self, tenant_id: str, days: int = 7) -> Dict[str, Any]:
         """
-        鑾峰彇鐧诲綍缁熻淇℃伅
+        获取登录统计信息
         
         Args:
             tenant_id: 租户ID
-            days: 澶╂暟
+            days: 天数
         
         Returns:
-            Dict[str, Any]: 缁熻淇℃伅
+            Dict[str, Any]: 统计信息
         """
         return self.log_repo.get_login_statistics(tenant_id, days)

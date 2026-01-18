@@ -1,31 +1,37 @@
 ﻿"""
-璺ㄦ暟鎹簮浜嬪姟绠＄悊妯″潡锛圫aga妯″紡锛?
-鍔熻兘璇存槑锛?1. 鎻愪緵璺ㄦ暟鎹簮鐨勪簨鍔＄鐞?2. 浣跨敤Saga妯″紡瀹炵幇鏈€缁堜竴鑷存€?3. 鏀寔浜嬪姟姝ラ鍜岃ˉ鍋挎搷浣?4. 璁板綍浜嬪姟鎵ц鏃ュ織
+跨数据源事务管理模块（Saga模式）
 
-浣跨敤绀轰緥锛?    from common.database.transaction import SagaTransaction
+功能说明：
+1. 提供跨数据源的事务管理
+2. 使用Saga模式实现最终一致性
+3. 支持事务步骤和补偿操作
+4. 记录事务执行日志
+
+使用示例：
+    from common.database.transaction import SagaTransaction
     
-    # 创建Saga浜嬪姟
+    # 创建Saga事务
     saga = SagaTransaction()
     
-    # 娣诲姞姝ラ
+    # 添加步骤
     saga.add_step(
         action=create_user,
         compensation=delete_user,
-        name='创建鐢ㄦ埛'
+        name='创建用户'
     )
     
     saga.add_step(
         action=create_order,
         compensation=cancel_order,
-        name='创建璁㈠崟'
+        name='创建订单'
     )
     
-    # 鎵ц浜嬪姟
+    # 执行事务
     try:
         result = await saga.execute()
-        print("浜嬪姟鎵ц鎴愬姛")
+        print("事务执行成功")
     except Exception as e:
-        print("浜嬪姟鎵ц澶辫触锛屽凡鍥炴粴")
+        print("事务执行失败，已回滚")
 """
 
 from typing import Callable, List, Dict, Any, Optional
@@ -38,14 +44,15 @@ import json
 @dataclass
 class SagaStep:
     """
-    Saga姝ラ
+    Saga步骤
     
-    灞炴€э細
-        name: 姝ラ名称
-        action: 涓氬姟鎿嶄綔鍑芥暟
-        compensation: 琛ュ伩鎿嶄綔鍑芥暟
-        result: 鎿嶄綔缁撴灉
-        status: 姝ラ状态侊紙pending, success, failed, compensated锛?        error: 閿欒淇℃伅
+    属性：
+        name: 步骤名称
+        action: 业务操作函数
+        compensation: 补偿操作函数
+        result: 操作结果
+        status: 步骤状态（pending, success, failed, compensated）
+        error: 错误信息
     """
     name: str
     action: Callable
@@ -60,35 +67,43 @@ class SagaStep:
 
 class SagaTransaction:
     """
-    Saga浜嬪姟绠＄悊鍣?    
-    鍔熻兘锛?    - 绠＄悊璺ㄦ暟鎹簮鐨勪簨鍔?    - 鏀寔姝ｅ悜鎵ц鍜岃ˉ鍋垮洖婊?    - 璁板綍浜嬪姟鎵ц鏃ュ織
-    - 鏀寔浜嬪姟鎭㈠
+    Saga事务管理器
     
-    浣跨敤鏂规硶锛?        # 创建浜嬪姟
+    功能：
+    - 管理跨数据源的事务
+    - 支持正向执行和补偿回滚
+    - 记录事务执行日志
+    - 支持事务恢复
+    
+    使用方法：
+        # 创建事务
         saga = SagaTransaction(transaction_id='xxx')
         
-        # 娣诲姞姝ラ
+        # 添加步骤
         saga.add_step(
             action=lambda: create_user(user_data),
             compensation=lambda user_id: delete_user(user_id),
-            name='创建鐢ㄦ埛'
+            name='创建用户'
         )
         
-        # 鎵ц浜嬪姟
+        # 执行事务
         result = await saga.execute()
         
-        # 查询浜嬪姟状态?        status = saga.get_status()
+        # 查询事务状态
+        status = saga.get_status()
     """
     
     def __init__(self, transaction_id: Optional[str] = None):
         """
-        鍒濆鍖朣aga浜嬪姟
+        初始化Saga事务
         
         Args:
-            transaction_id: 浜嬪姟ID锛堝彲閫夛紝涓嶄紶鍒欒嚜鍔ㄧ敓鎴愶級
+            transaction_id: 事务ID（可选，不传则自动生成）
         
-        浣跨敤绀轰緥锛?            saga = SagaTransaction()
-            # 鎴?            saga = SagaTransaction(transaction_id='custom-id')
+        使用示例：
+            saga = SagaTransaction()
+            # 或
+            saga = SagaTransaction(transaction_id='custom-id')
         """
         self.transaction_id = transaction_id or self._generate_transaction_id()
         self.steps: List[SagaStep] = []
@@ -97,10 +112,10 @@ class SagaTransaction:
         self.completed_at: Optional[datetime] = None
         self.error: Optional[str] = None
         
-        logger.info(f"创建Saga浜嬪姟: {self.transaction_id}")
+        logger.info(f"创建Saga事务: {self.transaction_id}")
     
     def _generate_transaction_id(self) -> str:
-        """鐢熸垚浜嬪姟ID"""
+        """生成事务ID"""
         import uuid
         return f"saga-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:8]}"
     
@@ -112,21 +127,23 @@ class SagaTransaction:
         **kwargs
     ):
         """
-        娣诲姞浜嬪姟姝ラ
+        添加事务步骤
         
         Args:
-            action: 涓氬姟鎿嶄綔鍑芥暟锛堟棤鍙傛暟锛岃繑鍥炵粨鏋滐級
-            compensation: 琛ュ伩鎿嶄綔鍑芥暟锛堟帴鏀禷ction鐨勭粨鏋滀綔涓哄弬鏁帮級
-            name: 姝ラ名称
-            **kwargs: 棰濆鐨勬楠ゅ弬鏁?        
-        浣跨敤绀轰緥锛?            # 娣诲姞姝ラ
+            action: 业务操作函数（无参数，返回结果）
+            compensation: 补偿操作函数（接收action的结果作为参数）
+            name: 步骤名称
+            **kwargs: 额外的步骤参数
+        
+        使用示例：
+            # 添加步骤
             saga.add_step(
                 action=lambda: create_user(username='test'),
                 compensation=lambda user_id: delete_user(user_id),
-                name='创建鐢ㄦ埛'
+                name='创建用户'
             )
             
-            # 甯﹀弬鏁扮殑姝ラ
+            # 带参数的步骤
             def create_order(user_id, amount):
                 return order_service.create(user_id, amount)
             
@@ -136,7 +153,7 @@ class SagaTransaction:
             saga.add_step(
                 action=lambda: create_order(user_id='xxx', amount=100),
                 compensation=lambda order_id: cancel_order(order_id),
-                name='创建璁㈠崟'
+                name='创建订单'
             )
         """
         step = SagaStep(
@@ -145,65 +162,69 @@ class SagaTransaction:
             compensation=compensation
         )
         self.steps.append(step)
-        logger.debug(f"娣诲姞姝ラ: {name}")
+        logger.debug(f"添加步骤: {name}")
     
     async def execute(self) -> Dict[str, Any]:
         """
-        鎵цSaga浜嬪姟
+        执行Saga事务
         
         Returns:
-            Dict[str, Any]: 浜嬪姟鎵ц缁撴灉
-            - success: 鏄惁鎴愬姛
-            - transaction_id: 浜嬪姟ID
-            - steps: 姝ラ鎵ц缁撴灉
-            - error: 閿欒淇℃伅锛堝鏋滃け璐ワ級
+            Dict[str, Any]: 事务执行结果
+            - success: 是否成功
+            - transaction_id: 事务ID
+            - steps: 步骤执行结果
+            - error: 错误信息（如果失败）
         
         Raises:
-            Exception: 浜嬪姟鎵ц澶辫触鏃舵姏鍑哄紓甯?        
-        浣跨敤绀轰緥锛?            try:
+            Exception: 事务执行失败时抛出异常
+        
+        使用示例：
+            try:
                 result = await saga.execute()
                 if result['success']:
-                    print("浜嬪姟鎵ц鎴愬姛")
+                    print("事务执行成功")
                 else:
-                    print(f"浜嬪姟鎵ц澶辫触: {result['error']}")
+                    print(f"事务执行失败: {result['error']}")
             except Exception as e:
-                print(f"浜嬪姟鎵ц寮傚父: {e}")
+                print(f"事务执行异常: {e}")
         """
-        logger.info(f"寮€濮嬫墽琛孲aga浜嬪姟: {self.transaction_id}")
-        logger.info(f"鎬绘楠ゆ暟: {len(self.steps)}")
+        logger.info(f"开始执行Saga事务: {self.transaction_id}")
+        logger.info(f"总步骤数: {len(self.steps)}")
         
         self.status = 'running'
         executed_steps: List[SagaStep] = []
         
         try:
-            # 姝ｅ悜鎵ц鎵€鏈夋楠?            for i, step in enumerate(self.steps):
-                logger.info(f"鎵ц姝ラ {i + 1}/{len(self.steps)}: {step.name}")
+            # 正向执行所有步骤
+            for i, step in enumerate(self.steps):
+                logger.info(f"执行步骤 {i + 1}/{len(self.steps)}: {step.name}")
                 
                 try:
-                    # 鎵ц涓氬姟鎿嶄綔
+                    # 执行业务操作
                     step.result = await step.action()
                     step.status = 'success'
                     executed_steps.append(step)
-                    logger.success(f"姝ラ {step.name} 鎵ц鎴愬姛")
+                    logger.success(f"步骤 {step.name} 执行成功")
                     
                 except Exception as e:
                     step.status = 'failed'
                     step.error = str(e)
-                    logger.error(f"姝ラ {step.name} 鎵ц澶辫触: {e}")
+                    logger.error(f"步骤 {step.name} 执行失败: {e}")
                     
-                    # 鎵ц琛ュ伩鎿嶄綔
+                    # 执行补偿操作
                     await self._compensate(executed_steps)
                     
                     self.status = 'failed'
                     self.error = str(e)
                     self.completed_at = datetime.now()
                     
-                    raise Exception(f"浜嬪姟鎵ц澶辫触: {e}")
+                    raise Exception(f"事务执行失败: {e}")
             
-            # 鎵€鏈夋楠ゆ墽琛屾垚鍔?            self.status = 'completed'
+            # 所有步骤执行成功
+            self.status = 'completed'
             self.completed_at = datetime.now()
             
-            logger.success(f"Saga浜嬪姟 {self.transaction_id} 鎵ц鎴愬姛")
+            logger.success(f"Saga事务 {self.transaction_id} 执行成功")
             
             return {
                 'success': True,
@@ -213,50 +234,57 @@ class SagaTransaction:
             }
             
         except Exception as e:
-            logger.error(f"Saga浜嬪姟 {self.transaction_id} 鎵ц澶辫触: {e}")
+            logger.error(f"Saga事务 {self.transaction_id} 执行失败: {e}")
             raise
     
     async def _compensate(self, executed_steps: List[SagaStep]):
         """
-        鎵ц琛ュ伩鎿嶄綔
+        执行补偿操作
         
         Args:
-            executed_steps: 宸叉墽琛岀殑姝ラ鍒楄〃
+            executed_steps: 已执行的步骤列表
         
-        浣跨敤绀轰緥锛?            # 鍐呴儴鏂规硶锛岃嚜鍔ㄨ皟鐢?            await saga._compensate(executed_steps)
+        使用示例：
+            # 内部方法，自动调用
+            await saga._compensate(executed_steps)
         """
-        logger.warning(f"寮€濮嬫墽琛岃ˉ鍋挎搷浣滐紝鍏?{len(executed_steps)} 涓楠?)
+        logger.warning(f"开始执行补偿操作，共 {len(executed_steps)} 个步骤")
         
-        # 鍙嶅悜鎵ц琛ュ伩鎿嶄綔
+        # 反向执行补偿操作
         for i in range(len(executed_steps) - 1, -1, -1):
             step = executed_steps[i]
             
             if step.status != 'success':
                 continue
             
-            logger.info(f"鎵ц琛ュ伩姝ラ: {step.name}")
+            logger.info(f"执行补偿步骤: {step.name}")
             
             try:
-                # 鎵ц琛ュ伩鎿嶄綔
+                # 执行补偿操作
                 await step.compensation(step.result)
                 step.status = 'compensated'
-                logger.success(f"琛ュ伩姝ラ {step.name} 鎵ц鎴愬姛")
+                logger.success(f"补偿步骤 {step.name} 执行成功")
                 
             except Exception as e:
                 step.error = str(e)
-                logger.error(f"琛ュ伩姝ラ {step.name} 鎵ц澶辫触: {e}")
-                # 琛ュ伩澶辫触锛岃褰曚絾缁х画鎵ц鍏朵粬琛ュ伩
+                logger.error(f"补偿步骤 {step.name} 执行失败: {e}")
+                # 补偿失败，记录但继续执行其他补偿
     
     def get_status(self) -> Dict[str, Any]:
         """
-        鑾峰彇浜嬪姟状态?        
-        Returns:
-            Dict[str, Any]: 浜嬪姟状态佷俊鎭?            - transaction_id: 浜嬪姟ID
-            - status: 浜嬪姟状态?            - steps: 姝ラ状态?            - created_at: 创建时间
-            - completed_at: 瀹屾垚鏃堕棿
-            - error: 閿欒淇℃伅
+        获取事务状态
         
-        浣跨敤绀轰緥锛?            status = saga.get_status()
+        Returns:
+            Dict[str, Any]: 事务状态信息
+            - transaction_id: 事务ID
+            - status: 事务状态
+            - steps: 步骤状态
+            - created_at: 创建时间
+            - completed_at: 完成时间
+            - error: 错误信息
+        
+        使用示例：
+            status = saga.get_status()
             print(status)
             # {
             #     'transaction_id': 'saga-xxx',
@@ -278,13 +306,13 @@ class SagaTransaction:
     
     def _step_to_dict(self, step: SagaStep) -> Dict[str, Any]:
         """
-        灏嗘楠よ浆鎹负瀛楀吀
+        将步骤转换为字典
         
         Args:
-            step: Saga姝ラ瀵硅薄
+            step: Saga步骤对象
         
         Returns:
-            Dict[str, Any]: 姝ラ瀛楀吀
+            Dict[str, Any]: 步骤字典
         """
         return {
             'name': step.name,
@@ -298,36 +326,42 @@ class SagaTransaction:
 
 class SagaOrchestrator:
     """
-    Saga缂栨帓鍣紙楂樼骇鐢ㄦ硶锛?    
-    鍔熻兘锛?    - 绠＄悊澶氫釜Saga浜嬪姟
-    - 鏀寔浜嬪姟缂栨帓
-    - 鎻愪緵浜嬪姟鐩戞帶
+    Saga编排器（高级用法）
     
-    浣跨敤鏂规硶锛?        orchestrator = SagaOrchestrator()
+    功能：
+    - 管理多个Saga事务
+    - 支持事务编排
+    - 提供事务监控
+    
+    使用方法：
+        orchestrator = SagaOrchestrator()
         
-        # 创建骞舵墽琛屼簨鍔?        saga = orchestrator.create_transaction()
+        # 创建并执行事务
+        saga = orchestrator.create_transaction()
         saga.add_step(...)
         result = await orchestrator.execute(saga)
         
-        # 查询鎵€鏈変簨鍔?        transactions = orchestrator.list_transactions()
+        # 查询所有事务
+        transactions = orchestrator.list_transactions()
     """
     
     def __init__(self):
-        """鍒濆鍖朣aga缂栨帓鍣?""
+        """初始化Saga编排器"""
         self.transactions: Dict[str, SagaTransaction] = {}
-        logger.info("Saga缂栨帓鍣ㄥ垵濮嬪寲瀹屾垚")
+        logger.info("Saga编排器初始化完成")
     
     def create_transaction(self, transaction_id: Optional[str] = None) -> SagaTransaction:
         """
-        创建鏂扮殑Saga浜嬪姟
+        创建新的Saga事务
         
         Args:
-            transaction_id: 浜嬪姟ID锛堝彲閫夛級
+            transaction_id: 事务ID（可选）
         
         Returns:
-            SagaTransaction: Saga浜嬪姟瀵硅薄
+            SagaTransaction: Saga事务对象
         
-        浣跨敤绀轰緥锛?            orchestrator = SagaOrchestrator()
+        使用示例：
+            orchestrator = SagaOrchestrator()
             saga = orchestrator.create_transaction()
         """
         saga = SagaTransaction(transaction_id)
@@ -336,15 +370,16 @@ class SagaOrchestrator:
     
     async def execute(self, saga: SagaTransaction) -> Dict[str, Any]:
         """
-        鎵цSaga浜嬪姟
+        执行Saga事务
         
         Args:
-            saga: Saga浜嬪姟瀵硅薄
+            saga: Saga事务对象
         
         Returns:
-            Dict[str, Any]: 鎵ц缁撴灉
+            Dict[str, Any]: 执行结果
         
-        浣跨敤绀轰緥锛?            orchestrator = SagaOrchestrator()
+        使用示例：
+            orchestrator = SagaOrchestrator()
             saga = orchestrator.create_transaction()
             saga.add_step(...)
             result = await orchestrator.execute(saga)
@@ -353,29 +388,35 @@ class SagaOrchestrator:
     
     def get_transaction(self, transaction_id: str) -> Optional[SagaTransaction]:
         """
-        鑾峰彇鎸囧畾鐨勪簨鍔?        
+        获取指定的事务
+        
         Args:
-            transaction_id: 浜嬪姟ID
+            transaction_id: 事务ID
         
         Returns:
-            Optional[SagaTransaction]: Saga浜嬪姟瀵硅薄锛堝鏋滃瓨鍦級
+            Optional[SagaTransaction]: Saga事务对象（如果存在）
         
-        浣跨敤绀轰緥锛?            saga = orchestrator.get_transaction('saga-xxx')
+        使用示例：
+            saga = orchestrator.get_transaction('saga-xxx')
         """
         return self.transactions.get(transaction_id)
     
     def list_transactions(self, status: Optional[str] = None) -> List[SagaTransaction]:
         """
-        鍒楀嚭鎵€鏈変簨鍔?        
+        列出所有事务
+        
         Args:
-            status: 状态佽繃婊わ紙鍙€夛級
+            status: 状态过滤（可选）
         
         Returns:
-            List[SagaTransaction]: 浜嬪姟鍒楄〃
+            List[SagaTransaction]: 事务列表
         
-        浣跨敤绀轰緥锛?            # 鍒楀嚭鎵€鏈変簨鍔?            all_transactions = orchestrator.list_transactions()
+        使用示例：
+            # 列出所有事务
+            all_transactions = orchestrator.list_transactions()
             
-            # 鍒楀嚭澶辫触鐨勪簨鍔?            failed_transactions = orchestrator.list_transactions(status='failed')
+            # 列出失败的事务
+            failed_transactions = orchestrator.list_transactions(status='failed')
         """
         if status:
             return [t for t in self.transactions.values() if t.status == status]
@@ -383,12 +424,13 @@ class SagaOrchestrator:
     
     def cleanup(self, older_than_hours: int = 24):
         """
-        娓呯悊鏃х殑浜嬪姟璁板綍
+        清理旧的事务记录
         
         Args:
-            older_than_hours: 娓呯悊澶氬皯灏忔椂鍓嶇殑浜嬪姟
+            older_than_hours: 清理多少小时前的事务
         
-        浣跨敤绀轰緥锛?            orchestrator.cleanup(older_than_hours=24)
+        使用示例：
+            orchestrator.cleanup(older_than_hours=24)
         """
         from datetime import timedelta
         
@@ -401,10 +443,10 @@ class SagaOrchestrator:
         
         for transaction_id in to_remove:
             del self.transactions[transaction_id]
-            logger.info(f"娓呯悊浜嬪姟: {transaction_id}")
+            logger.info(f"清理事务: {transaction_id}")
         
-        logger.info(f"娓呯悊瀹屾垚锛屽叡娓呯悊 {len(to_remove)} 涓簨鍔?)
+        logger.info(f"清理完成，共清理 {len(to_remove)} 个事务")
 
 
-# 鍏ㄥ眬瀹炰緥
+# 全局实例
 saga_orchestrator = SagaOrchestrator()

@@ -1,15 +1,17 @@
 ﻿# -*- coding: utf-8 -*-
 """
-寰呭姙浠诲姟鏈嶅姟
+待办任务服务
 
-鍔熻兘璇存槑锛?1. 寰呭姙浠诲姟绠＄悊
-2. 姣忔棩璁″垝绠＄悊
-3. 浠诲姟鎻愰啋
+功能说明：
+1. 待办任务管理
+2. 每日计划管理
+3. 任务提醒
 
-浣跨敤绀轰緥锛?    from app.services.todo_service import TodoService
+使用示例：
+    from app.services.todo_service import TodoService
     
     todo_service = TodoService(db)
-    todo = todo_service.create_todo(title="瀹屾垚鏂囨。", description="...")
+    todo = todo_service.create_todo(title="完成文档", description="...")
 """
 
 from sqlalchemy.orm import Session
@@ -24,21 +26,25 @@ from app.services.notification_service import NotificationService
 
 class TodoService:
     """
-    寰呭姙浠诲姟鏈嶅姟
+    待办任务服务
     
-    鍔熻兘锛?    - 寰呭姙浠诲姟绠＄悊
-    - 姣忔棩璁″垝绠＄悊
-    - 浠诲姟鎻愰啋
+    功能：
+    - 待办任务管理
+    - 每日计划管理
+    - 任务提醒
     
-    浣跨敤鏂规硶锛?        todo_service = TodoService(db)
-        todo = todo_service.create_todo(title="瀹屾垚鏂囨。", description="...")
+    使用方法：
+        todo_service = TodoService(db)
+        todo = todo_service.create_todo(title="完成文档", description="...")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栧緟鍔炰换鍔℃湇鍔?        
+        初始化待办任务服务
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.todo_repo = TodoRepository(db)
         self.notification_service = NotificationService(db)
@@ -49,22 +55,24 @@ class TodoService:
                     due_time: Optional[str] = None, tags: Optional[List[str]] = None,
                     attachment: Optional[str] = None) -> TodoTask:
         """
-        创建寰呭姙浠诲姟
+        创建待办任务
         
         Args:
-            title: 浠诲姟鏍囬
+            title: 任务标题
             user_id: 用户ID
             tenant_id: 租户ID
-            description: 浠诲姟描述锛堝彲閫夛級
-            task_type: 浠诲姟类型
-            priority: 浼樺厛绾?            due_date: 鎴鏃ユ湡锛堝彲閫夛級
-            due_time: 鎴鏃堕棿锛堝彲閫夛級
-            tags: 鏍囩鍒楄〃锛堝彲閫夛級
-            attachment: 闄勪欢URL锛堝彲閫夛級
+            description: 任务描述（可选）
+            task_type: 任务类型
+            priority: 优先级
+            due_date: 截止日期（可选）
+            due_time: 截止时间（可选）
+            tags: 标签列表（可选）
+            attachment: 附件URL（可选）
         
         Returns:
-            TodoTask: 创建鐨勫緟鍔炰换鍔″璞?        """
-        logger.info(f"创建寰呭姙浠诲姟: title={title}, user_id={user_id}")
+            TodoTask: 创建的待办任务对象
+        """
+        logger.info(f"创建待办任务: title={title}, user_id={user_id}")
         
         todo = TodoTask(
             tenant_id=tenant_id,
@@ -81,34 +89,34 @@ class TodoService:
     
     def get_todo(self, todo_id: str) -> Optional[TodoTask]:
         """
-        鑾峰彇寰呭姙浠诲姟
+        获取待办任务
         
         Args:
-            todo_id: 浠诲姟ID
+            todo_id: 任务ID
         
         Returns:
-            Optional[TodoTask]: 寰呭姙浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 待办任务对象，不存在返回None
         """
         return self.todo_repo.get_todo_by_id(todo_id)
     
     def update_todo(self, todo_id: str, todo_data: Dict[str, Any]) -> Optional[TodoTask]:
         """
-        更新寰呭姙浠诲姟
+        更新待办任务
         
         Args:
-            todo_id: 浠诲姟ID
-            todo_data: 更新鏁版嵁
+            todo_id: 任务ID
+            todo_data: 更新数据
         
         Returns:
-            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新后的任务对象，不存在返回None
         """
-        logger.info(f"更新寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"更新待办任务: todo_id={todo_id}")
         
         todo = self.todo_repo.get_todo_by_id(todo_id)
         if not todo:
             return None
         
-        # 更新浠诲姟
+        # 更新任务
         for key, value in todo_data.items():
             if hasattr(todo, key):
                 setattr(todo, key, value)
@@ -118,17 +126,17 @@ class TodoService:
     def get_user_todos(self, user_id: str, status: Optional[str] = None,
                        priority: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        鑾峰彇鐢ㄦ埛寰呭姙浠诲姟
+        获取用户待办任务
         
         Args:
             user_id: 用户ID
-            status: 状态侊紙鍙€夛級
-            priority: 浼樺厛绾э紙鍙€夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            status: 状态（可选）
+            priority: 优先级（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
+            List[TodoTask]: 待办任务列表
         """
         return self.todo_repo.get_user_todos(user_id, status, priority, page, page_size)
     
@@ -136,19 +144,19 @@ class TodoService:
                    task_type: Optional[str] = None, priority: Optional[str] = None,
                    is_overdue: Optional[bool] = None, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        鑾峰彇寰呭姙浠诲姟鍒楄〃
+        获取待办任务列表
         
         Args:
             user_id: 用户ID
-            status: 状态侊紙鍙€夛級
-            task_type: 浠诲姟类型锛堝彲閫夛級
-            priority: 浼樺厛绾э紙鍙€夛級
-            is_overdue: 鏄惁閫炬湡锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            status: 状态（可选）
+            task_type: 任务类型（可选）
+            priority: 优先级（可选）
+            is_overdue: 是否逾期（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
+            List[TodoTask]: 待办任务列表
         """
         if is_overdue is not None:
             return self.todo_repo.get_overdue_todos(page, page_size)
@@ -157,15 +165,15 @@ class TodoService:
     
     def complete_todo(self, todo_id: str) -> Optional[TodoTask]:
         """
-        瀹屾垚寰呭姙浠诲姟
+        完成待办任务
         
         Args:
-            todo_id: 浠诲姟ID
+            todo_id: 任务ID
         
         Returns:
-            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新后的任务对象，不存在返回None
         """
-        logger.info(f"瀹屾垚寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"完成待办任务: todo_id={todo_id}")
         
         todo = self.todo_repo.get_todo_by_id(todo_id)
         if not todo:
@@ -176,15 +184,15 @@ class TodoService:
     
     def uncomplete_todo(self, todo_id: str) -> Optional[TodoTask]:
         """
-        鍙栨秷瀹屾垚寰呭姙浠诲姟
+        取消完成待办任务
         
         Args:
-            todo_id: 浠诲姟ID
+            todo_id: 任务ID
         
         Returns:
-            Optional[TodoTask]: 更新鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[TodoTask]: 更新后的任务对象，不存在返回None
         """
-        logger.info(f"鍙栨秷瀹屾垚寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"取消完成待办任务: todo_id={todo_id}")
         
         todo = self.todo_repo.get_todo_by_id(todo_id)
         if not todo:
@@ -195,34 +203,35 @@ class TodoService:
     
     def delete_todo(self, todo_id: str) -> bool:
         """
-        删除寰呭姙浠诲姟
+        删除待办任务
         
         Args:
-            todo_id: 浠诲姟ID
+            todo_id: 任务ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         """
-        logger.info(f"删除寰呭姙浠诲姟: todo_id={todo_id}")
+        logger.info(f"删除待办任务: todo_id={todo_id}")
         return self.todo_repo.delete_todo(todo_id)
     
     def get_overdue_todos(self, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        鑾峰彇閫炬湡浠诲姟
+        获取逾期任务
         
         Args:
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[TodoTask]: 閫炬湡浠诲姟鍒楄〃
+            List[TodoTask]: 逾期任务列表
         """
         return self.todo_repo.get_overdue_todos(page, page_size)
     
     def update_overdue_status(self):
         """
-        更新鎵€鏈変换鍔＄殑閫炬湡状态?        """
-        logger.info("更新鎵€鏈変换鍔＄殑閫炬湡状态?)
+        更新所有任务的逾期状态
+        """
+        logger.info("更新所有任务的逾期状态")
         
         todos = self.todo_repo.get_tenant_todos(tenant_id=None, page=1, page_size=10000)
         for todo in todos:
@@ -232,18 +241,19 @@ class TodoService:
     def create_daily_plan(self, user_id: str, tenant_id: str, plan_date: date,
                           tasks: List[Dict[str, Any]], notes: Optional[str] = None) -> DailyPlan:
         """
-        创建姣忔棩璁″垝
+        创建每日计划
         
         Args:
             user_id: 用户ID
             tenant_id: 租户ID
-            plan_date: 璁″垝鏃ユ湡
-            tasks: 浠诲姟鍒楄〃
-            notes: 备注锛堝彲閫夛級
+            plan_date: 计划日期
+            tasks: 任务列表
+            notes: 备注（可选）
         
         Returns:
-            DailyPlan: 创建鐨勬瘡鏃ヨ鍒掑璞?        """
-        logger.info(f"创建姣忔棩璁″垝: user_id={user_id}, plan_date={plan_date}")
+            DailyPlan: 创建的每日计划对象
+        """
+        logger.info(f"创建每日计划: user_id={user_id}, plan_date={plan_date}")
         
         daily_plan = DailyPlan(
             tenant_id=tenant_id,
@@ -256,67 +266,73 @@ class TodoService:
     
     def get_user_daily_plan(self, user_id: str, plan_date: date) -> Optional[DailyPlan]:
         """
-        鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒?        
+        获取用户指定日期的每日计划
+        
         Args:
             user_id: 用户ID
-            plan_date: 璁″垝鏃ユ湡
+            plan_date: 计划日期
         
         Returns:
-            Optional[DailyPlan]: 姣忔棩璁″垝瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[DailyPlan]: 每日计划对象，不存在返回None
         """
         return self.todo_repo.get_user_daily_plan(user_id, plan_date)
     
     def get_todo_statistics(self, user_id: str) -> Dict[str, Any]:
         """
-        鑾峰彇鐢ㄦ埛寰呭姙浠诲姟缁熻淇℃伅
+        获取用户待办任务统计信息
         
         Args:
             user_id: 用户ID
         
         Returns:
-            Dict[str, Any]: 缁熻淇℃伅
+            Dict[str, Any]: 统计信息
         """
         return self.todo_repo.get_todo_statistics(user_id)
     
     def send_overdue_reminders(self):
         """
-        鍙戦€侀€炬湡浠诲姟鎻愰啋
+        发送逾期任务提醒
         """
-        logger.info("鍙戦€侀€炬湡浠诲姟鎻愰啋")
+        logger.info("发送逾期任务提醒")
         
         overdue_todos = self.todo_repo.get_overdue_todos(page=1, page_size=1000)
         for todo in overdue_todos:
             if not todo.reminder_sent:
-                # 鍙戦€佹彁閱掗€氱煡
+                # 发送提醒通知
                 self.notification_service.send_system_notification(
-                    title="浠诲姟閫炬湡鎻愰啋",
-                    content=f"鎮ㄧ殑浠诲姟銆寋todo.title}銆嶅凡閫炬湡锛岃灏藉揩澶勭悊锛?,
+                    title="任务逾期提醒",
+                    content=f"您的任务「{todo.title}」已逾期，请尽快处理！",
                     tenant_id=todo.tenant_id,
                     target_ids=[todo.user_id],
                     priority="high"
                 )
                 
-                # 鏍囪涓哄凡鍙戦€?                todo.reminder_sent = True
+                # 标记为已发送
+                todo.reminder_sent = True
                 self.todo_repo.update_todo(todo)
     
     def send_due_date_reminders(self, hours_before: int = 24):
         """
-        鍙戦€佸嵆灏嗗埌鏈熶换鍔℃彁閱?        
+        发送即将到期任务提醒
+        
         Args:
-            hours_before: 鎻愬墠灏忔椂鏁?        """
-        logger.info(f"鍙戦€佸嵆灏嗗埌鏈熶换鍔℃彁閱掞紙鎻愬墠{hours_before}灏忔椂锛?)
+            hours_before: 提前小时数
+        """
+        logger.info(f"发送即将到期任务提醒（提前{hours_before}小时）")
         
         threshold_time = datetime.now() + timedelta(hours=hours_before)
         
-        # 鑾峰彇鎵€鏈夋湭瀹屾垚鐨勪换鍔?        all_todos = self.todo_repo.get_tenant_todos(tenant_id=None, page=1, page_size=10000)
+        # 获取所有未完成的任务
+        all_todos = self.todo_repo.get_tenant_todos(tenant_id=None, page=1, page_size=10000)
         for todo in all_todos:
             if todo.due_date and todo.status != 'completed':
-                # 妫€鏌ユ槸鍚﹀湪鎻愰啋鏃堕棿鑼冨洿鍐?                time_diff = (todo.due_date - datetime.now()).total_seconds()
+                # 检查是否在提醒时间范围内
+                time_diff = (todo.due_date - datetime.now()).total_seconds()
                 if 0 < time_diff <= hours_before * 3600:
-                    # 鍙戦€佹彁閱掗€氱煡
+                    # 发送提醒通知
                     self.notification_service.send_system_notification(
-                        title="浠诲姟鍗冲皢鍒版湡",
-                        content=f"鎮ㄧ殑浠诲姟銆寋todo.title}銆嶅皢浜巤todo.due_date.strftime('%Y-%m-%d %H:%M')}鍒版湡锛岃鍙婃椂澶勭悊锛?,
+                        title="任务即将到期",
+                        content=f"您的任务「{todo.title}」将于{todo.due_date.strftime('%Y-%m-%d %H:%M')}到期，请及时处理！",
                         tenant_id=todo.tenant_id,
                         target_ids=[todo.user_id],
                         priority="medium"
@@ -324,14 +340,14 @@ class TodoService:
     
     def count_todos(self, user_id: Optional[str] = None, status: Optional[str] = None) -> int:
         """
-        缁熻寰呭姙浠诲姟数量
+        统计待办任务数量
         
         Args:
-            user_id: 用户ID锛堝彲閫夛級
-            status: 状态侊紙鍙€夛級
+            user_id: 用户ID（可选）
+            status: 状态（可选）
         
         Returns:
-            int: 浠诲姟数量
+            int: 任务数量
         """
         if user_id:
             return self.todo_repo.count_todos_by_user(user_id, status)

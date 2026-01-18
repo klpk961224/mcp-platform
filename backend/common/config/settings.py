@@ -1,23 +1,23 @@
 ﻿"""
-应用配置妯″潡
+应用配置模块
 
-鍔熻兘璇存槑锛?
-1. 浣跨敤 Pydantic 绠＄悊閰嶇疆
-2. 鏀寔鐜鍙橀噺瑕嗙洊
-3. 鏀寔澶氱幆澧冮厤缃紙寮€鍙戙€佹祴璇曘€佺敓浜э級
-4. 鎻愪緵閰嶇疆楠岃瘉
+功能说明：
+1. 使用 Pydantic 管理配置
+2. 支持环境变量覆盖
+3. 支持多环境配置（开发、测试、生产）
+4. 提供配置验证
 
-浣跨敤绀轰緥锛?
+使用示例：
     from common.config.settings import settings
     
-    # 璁块棶閰嶇疆
+    # 访问配置
     print(settings.APP_NAME)
     print(settings.DB_HOST)
     
-    # 璁块棶数据库配置?
+    # 访问数据库配置
     print(settings.DATABASE_URL)
     
-    # 璁块棶Redis配置
+    # 访问Redis配置
     print(settings.REDIS_HOST)
 """
 
@@ -29,169 +29,169 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """
-    应用配置绫?
+    应用配置类
     
-    鍔熻兘锛?
-    - 浠庣幆澧冨彉閲忚鍙栭厤缃?
-    - 鎻愪緵閰嶇疆楠岃瘉
-    - 鏀寔默认鍊?
+    功能：
+    - 从环境变量读取配置
+    - 提供配置验证
+    - 支持默认值
     
-    浣跨敤鏂规硶锛?
+    使用方法：
         settings = Settings()
         print(settings.APP_NAME)
     """
     
     # ========== 应用配置 ==========
-    APP_NAME: str = Field(default="浼佷笟绾I缁煎悎绠＄悊骞冲彴", description="搴旂敤名称")
-    APP_ENV: str = Field(default="development", description="杩愯鐜")
-    APP_DEBUG: bool = Field(default=True, description="璋冭瘯妯″紡")
-    APP_PORT: int = Field(default=8000, description="搴旂敤绔彛")
-    APP_HOST: str = Field(default="0.0.0.0", description="搴旂敤涓绘満")
+    APP_NAME: str = Field(default="企业级AI综合管理平台", description="应用名称")
+    APP_ENV: str = Field(default="development", description="运行环境")
+    APP_DEBUG: bool = Field(default=True, description="调试模式")
+    APP_PORT: int = Field(default=8000, description="应用端口")
+    APP_HOST: str = Field(default="0.0.0.0", description="应用主机")
     
-    # ========== 数据库配置?==========
-    DB_TYPE: str = Field(default="mysql", description="鏁版嵁搴撶被鍨?)
-    DB_HOST: str = Field(default="localhost", description="鏁版嵁搴撲富鏈?)
-    DB_PORT: int = Field(default=3306, description="鏁版嵁搴撶鍙?)
-    DB_NAME: str = Field(default="mcp_platform", description="鏁版嵁搴撳悕绉?)
-    DB_USER: str = Field(default="root", description="鏁版嵁搴撶敤鎴峰悕")
-    DB_PASSWORD: str = Field(default="12345678", description="鏁版嵁搴撳瘑鐮?)
-    DB_CHARSET: str = Field(default="utf8mb4", description="鏁版嵁搴撳瓧绗﹂泦")
-    DB_POOL_SIZE: int = Field(default=10, description="杩炴帴姹犲ぇ灏?)
-    DB_MAX_OVERFLOW: int = Field(default=20, description="鏈€澶ф孩鍑鸿繛鎺ユ暟")
-    DB_ECHO: bool = Field(default=False, description="鏄惁鎵撳嵃SQL")
+    # ========== 数据库配置 ==========
+    DB_TYPE: str = Field(default="mysql", description="数据库类型")
+    DB_HOST: str = Field(default="localhost", description="数据库主机")
+    DB_PORT: int = Field(default=3306, description="数据库端口")
+    DB_NAME: str = Field(default="mcp_platform", description="数据库名称")
+    DB_USER: str = Field(default="root", description="数据库用户名")
+    DB_PASSWORD: str = Field(default="12345678", description="数据库密码")
+    DB_CHARSET: str = Field(default="utf8mb4", description="数据库字符集")
+    DB_POOL_SIZE: int = Field(default=10, description="连接池大小")
+    DB_MAX_OVERFLOW: int = Field(default=20, description="最大溢出连接数")
+    DB_ECHO: bool = Field(default=False, description="是否打印SQL")
     
-    # ========== Oracle鏁版嵁婧愰厤缃?==========
-    ORACLE_HOST: Optional[str] = Field(default="", description="Oracle涓绘満")
-    ORACLE_PORT: int = Field(default=1521, description="Oracle绔彛")
-    ORACLE_SERVICE_NAME: Optional[str] = Field(default="", description="Oracle鏈嶅姟鍚?)
-    ORACLE_USER: Optional[str] = Field(default="", description="Oracle用户名?)
-    ORACLE_PASSWORD: Optional[str] = Field(default="", description="Oracle瀵嗙爜")
+    # ========== Oracle数据源配置 ==========
+    ORACLE_HOST: Optional[str] = Field(default="", description="Oracle主机")
+    ORACLE_PORT: int = Field(default=1521, description="Oracle端口")
+    ORACLE_SERVICE_NAME: Optional[str] = Field(default="", description="Oracle服务名")
+    ORACLE_USER: Optional[str] = Field(default="", description="Oracle用户名")
+    ORACLE_PASSWORD: Optional[str] = Field(default="", description="Oracle密码")
     
-    # ========== PostgreSQL鏁版嵁婧愰厤缃?==========
-    POSTGRESQL_HOST: Optional[str] = Field(default="", description="PostgreSQL涓绘満")
-    POSTGRESQL_PORT: int = Field(default=5432, description="PostgreSQL绔彛")
-    POSTGRESQL_DATABASE: Optional[str] = Field(default="", description="PostgreSQL鏁版嵁搴撳悕")
-    POSTGRESQL_USER: Optional[str] = Field(default="", description="PostgreSQL用户名?)
-    POSTGRESQL_PASSWORD: Optional[str] = Field(default="", description="PostgreSQL瀵嗙爜")
+    # ========== PostgreSQL数据源配置 ==========
+    POSTGRESQL_HOST: Optional[str] = Field(default="", description="PostgreSQL主机")
+    POSTGRESQL_PORT: int = Field(default=5432, description="PostgreSQL端口")
+    POSTGRESQL_DATABASE: Optional[str] = Field(default="", description="PostgreSQL数据库名")
+    POSTGRESQL_USER: Optional[str] = Field(default="", description="PostgreSQL用户名")
+    POSTGRESQL_PASSWORD: Optional[str] = Field(default="", description="PostgreSQL密码")
     
     # ========== Redis配置 ==========
-    CACHE_ENABLED: bool = Field(default=True, description="鏄惁鍚敤缂撳瓨")
-    CACHE_TYPE: str = Field(default="local", description="缂撳瓨类型")
-    REDIS_HOST: str = Field(default="127.0.0.1", description="Redis涓绘満")
-    REDIS_PORT: int = Field(default=6379, description="Redis绔彛")
-    REDIS_PASSWORD: Optional[str] = Field(default="", description="Redis瀵嗙爜")
-    REDIS_DB: int = Field(default=0, description="Redis鏁版嵁搴撶紪鍙?)
-    REDIS_MAX_CONNECTIONS: int = Field(default=50, description="Redis鏈€澶ц繛鎺ユ暟")
+    CACHE_ENABLED: bool = Field(default=True, description="是否启用缓存")
+    CACHE_TYPE: str = Field(default="local", description="缓存类型")
+    REDIS_HOST: str = Field(default="127.0.0.1", description="Redis主机")
+    REDIS_PORT: int = Field(default=6379, description="Redis端口")
+    REDIS_PASSWORD: Optional[str] = Field(default="", description="Redis密码")
+    REDIS_DB: int = Field(default=0, description="Redis数据库编号")
+    REDIS_MAX_CONNECTIONS: int = Field(default=50, description="Redis最大连接数")
     
-    # ========== Nacos閰嶇疆 ==========
-    USE_NACOS: bool = Field(default=False, description="鏄惁浣跨敤Nacos")
-    NACOS_HOST: str = Field(default="127.0.0.1", description="Nacos涓绘満")
-    NACOS_PORT: int = Field(default=8848, description="Nacos绔彛")
-    NACOS_NAMESPACE: str = Field(default="mcp-platform", description="Nacos鍛藉悕绌洪棿")
-    NACOS_USERNAME: str = Field(default="nacos", description="Nacos用户名?)
-    NACOS_PASSWORD: str = Field(default="nacos", description="Nacos瀵嗙爜")
+    # ========== Nacos配置 ==========
+    USE_NACOS: bool = Field(default=False, description="是否使用Nacos")
+    NACOS_HOST: str = Field(default="127.0.0.1", description="Nacos主机")
+    NACOS_PORT: int = Field(default=8848, description="Nacos端口")
+    NACOS_NAMESPACE: str = Field(default="mcp-platform", description="Nacos命名空间")
+    NACOS_USERNAME: str = Field(default="nacos", description="Nacos用户名")
+    NACOS_PASSWORD: str = Field(default="nacos", description="Nacos密码")
     
-    # ========== RabbitMQ閰嶇疆 ==========
-    USE_RABBITMQ: bool = Field(default=False, description="鏄惁浣跨敤RabbitMQ")
-    RABBITMQ_HOST: str = Field(default="localhost", description="RabbitMQ涓绘満")
-    RABBITMQ_PORT: int = Field(default=5672, description="RabbitMQ绔彛")
-    RABBITMQ_USERNAME: str = Field(default="admin", description="RabbitMQ用户名?)
-    RABBITMQ_PASSWORD: str = Field(default="admin123", description="RabbitMQ瀵嗙爜")
-    RABBITMQ_VHOST: str = Field(default="/", description="RabbitMQ铏氭嫙涓绘満")
+    # ========== RabbitMQ配置 ==========
+    USE_RABBITMQ: bool = Field(default=False, description="是否使用RabbitMQ")
+    RABBITMQ_HOST: str = Field(default="localhost", description="RabbitMQ主机")
+    RABBITMQ_PORT: int = Field(default=5672, description="RabbitMQ端口")
+    RABBITMQ_USERNAME: str = Field(default="admin", description="RabbitMQ用户名")
+    RABBITMQ_PASSWORD: str = Field(default="admin123", description="RabbitMQ密码")
+    RABBITMQ_VHOST: str = Field(default="/", description="RabbitMQ虚拟主机")
     
     # ========== JWT配置 ==========
-    JWT_SECRET: str = Field(default="your-secret-key-change-in-production", description="JWT瀵嗛挜")
-    JWT_ALGORITHM: str = Field(default="HS256", description="JWT绠楁硶")
-    JWT_EXPIRE_MINUTES: int = Field(default=1440, description="JWT杩囨湡鏃堕棿锛堝垎閽燂級")
-    JWT_REFRESH_EXPIRE_DAYS: int = Field(default=7, description="JWT鍒锋柊杩囨湡鏃堕棿锛堝ぉ锛?)
+    JWT_SECRET: str = Field(default="your-secret-key-change-in-production", description="JWT密钥")
+    JWT_ALGORITHM: str = Field(default="HS256", description="JWT算法")
+    JWT_EXPIRE_MINUTES: int = Field(default=1440, description="JWT过期时间（分钟）")
+    JWT_REFRESH_EXPIRE_DAYS: int = Field(default=7, description="JWT刷新过期时间（天）")
     
-    # ========== API Key閰嶇疆 ==========
-    API_KEY_SECRET: str = Field(default="your-api-key-secret", description="API Key瀵嗛挜")
+    # ========== API Key配置 ==========
+    API_KEY_SECRET: str = Field(default="your-api-key-secret", description="API Key密钥")
     
     # ========== 日志配置 ==========
-    LOG_LEVEL: str = Field(default="INFO", description="鏃ュ織级别")
-    LOG_FILE_PATH: str = Field(default="logs/app.log", description="鏃ュ織鏂囦欢璺緞")
-    LOG_ROTATION: str = Field(default="100 MB", description="鏃ュ織杞浆澶у皬")
-    LOG_RETENTION: str = Field(default="30 days", description="鏃ュ織淇濈暀鏃堕棿")
+    LOG_LEVEL: str = Field(default="INFO", description="日志级别")
+    LOG_FILE_PATH: str = Field(default="logs/app.log", description="日志文件路径")
+    LOG_ROTATION: str = Field(default="100 MB", description="日志轮转大小")
+    LOG_RETENTION: str = Field(default="30 days", description="日志保留时间")
     
-    # ========== 鏂囦欢涓婁紶閰嶇疆 ==========
-    UPLOAD_PATH: str = Field(default="uploads", description="涓婁紶鏂囦欢璺緞")
-    MAX_UPLOAD_SIZE: int = Field(default=10485760, description="鏈€澶т笂浼犲ぇ灏忥紙瀛楄妭锛?)
+    # ========== 文件上传配置 ==========
+    UPLOAD_PATH: str = Field(default="uploads", description="上传文件路径")
+    MAX_UPLOAD_SIZE: int = Field(default=10485760, description="最大上传大小（字节）")
     ALLOWED_FILE_TYPES: List[str] = Field(
         default=["image/jpeg", "image/png", "application/pdf"],
-        description="鍏佽鐨勬枃浠剁被鍨?
+        description="允许的文件类型"
     )
     
-    # ========== 鐩戞帶閰嶇疆 ==========
-    USE_MONITORING: bool = Field(default=False, description="鏄惁鍚敤鐩戞帶")
-    PROMETHEUS_PORT: int = Field(default=9090, description="Prometheus绔彛")
-    USE_JAEGER: bool = Field(default=False, description="鏄惁浣跨敤Jaeger")
-    JAEGER_HOST: str = Field(default="localhost", description="Jaeger涓绘満")
-    JAEGER_PORT: int = Field(default=6831, description="Jaeger绔彛")
+    # ========== 监控配置 ==========
+    USE_MONITORING: bool = Field(default=False, description="是否启用监控")
+    PROMETHEUS_PORT: int = Field(default=9090, description="Prometheus端口")
+    USE_JAEGER: bool = Field(default=False, description="是否使用Jaeger")
+    JAEGER_HOST: str = Field(default="localhost", description="Jaeger主机")
+    JAEGER_PORT: int = Field(default=6831, description="Jaeger端口")
     
-    # ========== 闄愭祦鐔旀柇閰嶇疆 ==========
-    USE_SENTINEL: bool = Field(default=False, description="鏄惁浣跨敤Sentinel")
-    SENTINEL_HOST: str = Field(default="localhost", description="Sentinel涓绘満")
-    SENTINEL_PORT: int = Field(default=8719, description="Sentinel绔彛")
+    # ========== 限流熔断配置 ==========
+    USE_SENTINEL: bool = Field(default=False, description="是否使用Sentinel")
+    SENTINEL_HOST: str = Field(default="localhost", description="Sentinel主机")
+    SENTINEL_PORT: int = Field(default=8719, description="Sentinel端口")
     
-    # ========== API缃戝叧閰嶇疆 ==========
-    USE_APISIX: bool = Field(default=False, description="鏄惁浣跨敤APISIX")
-    APISIX_HOST: str = Field(default="localhost", description="APISIX涓绘満")
-    APISIX_PORT: int = Field(default=9080, description="APISIX绔彛")
-    APISIX_ADMIN_KEY: str = Field(default="", description="APISIX绠＄悊瀵嗛挜")
+    # ========== API网关配置 ==========
+    USE_APISIX: bool = Field(default=False, description="是否使用APISIX")
+    APISIX_HOST: str = Field(default="localhost", description="APISIX主机")
+    APISIX_PORT: int = Field(default=9080, description="APISIX端口")
+    APISIX_ADMIN_KEY: str = Field(default="", description="APISIX管理密钥")
     
-    # ========== CORS閰嶇疆 ==========
+    # ========== CORS配置 ==========
     CORS_ORIGINS: List[str] = Field(
         default=["http://localhost:3000", "http://localhost:8080"],
-        description="鍏佽鐨凜ORS鏉ユ簮"
+        description="允许的CORS来源"
     )
-    CORS_ALLOW_CREDENTIALS: bool = Field(default=True, description="鍏佽鎼哄甫鍑瘉")
+    CORS_ALLOW_CREDENTIALS: bool = Field(default=True, description="允许携带凭证")
     CORS_ALLOW_METHODS: List[str] = Field(
         default=["*"],
-        description="鍏佽鐨凥TTP鏂规硶"
+        description="允许的HTTP方法"
     )
     CORS_ALLOW_HEADERS: List[str] = Field(
         default=["*"],
-        description="鍏佽鐨凥TTP澶?
+        description="允许的HTTP头"
     )
     
-    # ========== 鍒嗛〉閰嶇疆 ==========
-    DEFAULT_PAGE_SIZE: int = Field(default=10, description="默认椤靛ぇ灏?)
-    MAX_PAGE_SIZE: int = Field(default=100, description="鏈€澶ч〉澶у皬")
+    # ========== 分页配置 ==========
+    DEFAULT_PAGE_SIZE: int = Field(default=10, description="默认页大小")
+    MAX_PAGE_SIZE: int = Field(default=100, description="最大页大小")
     PAGE_SIZE_OPTIONS: List[int] = Field(
         default=[10, 20, 50, 100],
-        description="椤靛ぇ灏忛€夐」"
+        description="页大小选项"
     )
     
     class Config:
-        """Pydantic閰嶇疆"""
+        """Pydantic配置"""
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
     
     @validator("APP_ENV")
     def validate_app_env(cls, v):
-        """楠岃瘉杩愯鐜"""
+        """验证运行环境"""
         if v not in ["development", "testing", "production"]:
-            raise ValueError(f"鏃犳晥鐨勮繍琛岀幆澧? {v}")
+            raise ValueError(f"无效的运行环境: {v}")
         return v
     
     @validator("LOG_LEVEL")
     def validate_log_level(cls, v):
-        """楠岃瘉鏃ュ織级别"""
+        """验证日志级别"""
         if v not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-            raise ValueError(f"鏃犳晥鐨勬棩蹇楃骇鍒? {v}")
+            raise ValueError(f"无效的日志级别: {v}")
         return v
     
     @property
     def DATABASE_URL(self) -> str:
         """
-        鏋勫缓鏁版嵁搴撹繛鎺RL
+        构建数据库连接URL
         
         Returns:
-            str: 鏁版嵁搴撹繛鎺RL
+            str: 数据库连接URL
         
-        浣跨敤绀轰緥锛?
+        使用示例：
             print(settings.DATABASE_URL)
             # mysql+pymysql://root:12345678@localhost:3306/mcp_platform
         """
@@ -202,21 +202,21 @@ class Settings(BaseSettings):
         elif self.DB_TYPE == "oracle":
             return f"oracle+oracledb://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         else:
-            raise ValueError(f"涓嶆敮鎸佺殑鏁版嵁搴撶被鍨? {self.DB_TYPE}")
+            raise ValueError(f"不支持的数据库类型: {self.DB_TYPE}")
     
     @property
     def IS_DEVELOPMENT(self) -> bool:
-        """鏄惁涓哄紑鍙戠幆澧?""
+        """是否为开发环境"""
         return self.APP_ENV == "development"
     
     @property
     def IS_PRODUCTION(self) -> bool:
-        """鏄惁涓虹敓浜х幆澧?""
+        """是否为生产环境"""
         return self.APP_ENV == "production"
     
     @property
     def IS_TESTING(self) -> bool:
-        """鏄惁涓烘祴璇曠幆澧?""
+        """是否为测试环境"""
         return self.APP_ENV == "testing"
     
     def __repr__(self) -> str:
@@ -226,17 +226,17 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     """
-    鑾峰彇閰嶇疆瀹炰緥锛堝崟渚嬫ā寮忥級
+    获取配置实例（单例模式）
     
     Returns:
-        Settings: 閰嶇疆瀹炰緥
+        Settings: 配置实例
     
-    浣跨敤绀轰緥锛?
+    使用示例：
         settings = get_settings()
         print(settings.APP_NAME)
     """
     return Settings()
 
 
-# 鍏ㄥ眬閰嶇疆瀹炰緥
+# 全局配置实例
 settings = get_settings()

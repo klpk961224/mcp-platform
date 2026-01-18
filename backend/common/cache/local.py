@@ -1,18 +1,18 @@
-﻿"""鏈湴缂撳瓨妯″潡"""
+﻿"""本地缓存模块"""
 from typing import Optional, Dict
 from datetime import datetime, timedelta
 from loguru import logger
 
 
 class LocalCache:
-    """鏈湴缂撳瓨绫?""
+    """本地缓存类"""
     
     def __init__(self):
         self.cache: Dict[str, tuple[str, datetime]] = {}
-        logger.info("鏈湴缂撳瓨鍒濆鍖栧畬鎴?)
+        logger.info("本地缓存初始化完成")
     
     def get(self, key: str) -> Optional[str]:
-        """鑾峰彇缂撳瓨"""
+        """获取缓存"""
         if key not in self.cache:
             return None
         
@@ -24,17 +24,17 @@ class LocalCache:
         return value
     
     def set(self, key: str, value: str, ttl: int = 3600):
-        """璁剧疆缂撳瓨"""
+        """设置缓存"""
         expire_time = datetime.now() + timedelta(seconds=ttl)
         self.cache[key] = (value, expire_time)
     
     def delete(self, key: str):
-        """删除缂撳瓨"""
+        """删除缓存"""
         if key in self.cache:
             del self.cache[key]
     
     def exists(self, key: str) -> bool:
-        """妫€鏌ョ紦瀛樻槸鍚﹀瓨鍦?""
+        """检查缓存是否存在"""
         return self.get(key) is not None
 
 

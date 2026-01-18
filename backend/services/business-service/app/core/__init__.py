@@ -1,5 +1,5 @@
 ﻿"""
-鏍稿績妯″潡
+核心模块
 """
 
 from .config import settings

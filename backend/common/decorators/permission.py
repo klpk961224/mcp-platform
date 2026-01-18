@@ -1,4 +1,4 @@
-﻿"""鏉冮檺瑁呴グ鍣?""
+﻿"""权限装饰器"""
 from functools import wraps
 from typing import List, Callable
 from fastapi import HTTPException, status, Request
@@ -6,11 +6,13 @@ from loguru import logger
 
 
 def require_permissions(permissions: List[str]):
-    """鏉冮檺楠岃瘉瑁呴グ鍣?    
-    Args:
-        permissions: 闇€瑕佺殑鏉冮檺鍒楄〃
+    """权限验证装饰器
     
-    浣跨敤绀轰緥锛?        @router.get("/admin/users")
+    Args:
+        permissions: 需要的权限列表
+    
+    使用示例：
+        @router.get("/admin/users")
         @require_permissions(["user:read", "user:list"])
         async def list_users(request: Request):
             return {"users": []}
@@ -18,14 +20,16 @@ def require_permissions(permissions: List[str]):
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            # 鑾峰彇鐢ㄦ埛鏉冮檺锛堜粠request.state锛?            user_permissions = getattr(request.state, 'permissions', [])
+            # 获取用户权限（从request.state）
+            user_permissions = getattr(request.state, 'permissions', [])
             
-            # 妫€鏌ユ潈闄?            for perm in permissions:
+            # 检查权限
+            for perm in permissions:
                 if perm not in user_permissions:
-                    logger.warning(f"鏉冮檺涓嶈冻: 闇€瑕?{perm}, 鐢ㄦ埛鏉冮檺: {user_permissions}")
+                    logger.warning(f"权限不足: 需要 {perm}, 用户权限: {user_permissions}")
                     raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
-                        detail=f"鏉冮檺涓嶈冻: {perm}"
+                        detail=f"权限不足: {perm}"
                     )
             
             return await func(request, *args, **kwargs)
@@ -34,11 +38,13 @@ def require_permissions(permissions: List[str]):
 
 
 def require_roles(roles: List[str]):
-    """瑙掕壊楠岃瘉瑁呴グ鍣?    
-    Args:
-        roles: 闇€瑕佺殑瑙掕壊鍒楄〃
+    """角色验证装饰器
     
-    浣跨敤绀轰緥锛?        @router.get("/admin/settings")
+    Args:
+        roles: 需要的角色列表
+    
+    使用示例：
+        @router.get("/admin/settings")
         @require_roles(["admin", "super_admin"])
         async def get_settings(request: Request):
             return {"settings": {}}
@@ -46,13 +52,15 @@ def require_roles(roles: List[str]):
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            # 鑾峰彇鐢ㄦ埛瑙掕壊锛堜粠request.state锛?            user_roles = getattr(request.state, 'roles', [])
+            # 获取用户角色（从request.state）
+            user_roles = getattr(request.state, 'roles', [])
             
-            # 妫€查询鑹?            if not any(role in user_roles for role in roles):
-                logger.warning(f"瑙掕壊涓嶈冻: 闇€瑕?{roles}, 鐢ㄦ埛瑙掕壊: {user_roles}")
+            # 检查角色
+            if not any(role in user_roles for role in roles):
+                logger.warning(f"角色不足: 需要 {roles}, 用户角色: {user_roles}")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"瑙掕壊涓嶈冻: {roles}"
+                    detail=f"角色不足: {roles}"
                 )
             
             return await func(request, *args, **kwargs)

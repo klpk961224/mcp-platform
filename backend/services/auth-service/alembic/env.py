@@ -1,10 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 """
-Alembic鐜閰嶇疆
+Alembic环境配置
 
-鍔熻兘璇存槑锛?1. 鏁版嵁搴撹縼绉荤幆澧冮厤缃?2. 鑷姩鐢熸垚杩佺Щ鑴氭湰
-3. 鏁版嵁搴撹繛鎺ョ鐞?
-浣跨敤绀轰緥锛?    alembic revision --autogenerate -m "创建用户表?
+功能说明：
+1. 数据库迁移环境配置
+2. 自动生成迁移脚本
+3. 数据库连接管理
+
+使用示例：
+    alembic revision --autogenerate -m "创建用户表"
     alembic upgrade head
 """
 
@@ -13,28 +17,30 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-# 瀵煎叆妯″瀷锛堢敤浜庤嚜鍔ㄧ敓鎴愯縼绉伙級
+# 导入模型（用于自动生成迁移）
 from app.models import Base
 from app.core.config import settings
 
-# 瀵煎叆鏁版嵁搴撹繛鎺?from common.database import datasource_manager
+# 导入数据库连接
+from common.database import datasource_manager
 
-# Alembic閰嶇疆瀵硅薄
+# Alembic配置对象
 config = context.config
 
-# 璁剧疆鏃ュ織
+# 设置日志
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# 娣诲姞妯″瀷鐨凪etaData
+# 添加模型的MetaData
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
     """
-    绂荤嚎妯″紡杩愯杩佺Щ
+    离线模式运行迁移
     
-    浣跨敤鏂规硶锛?        alembic upgrade head --sql
+    使用方法：
+        alembic upgrade head --sql
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -50,11 +56,13 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """
-    鍦ㄧ嚎妯″紡杩愯杩佺Щ
+    在线模式运行迁移
     
-    浣跨敤鏂规硶锛?        alembic upgrade head
+    使用方法：
+        alembic upgrade head
     """
-    # 浣跨敤鏁版嵁婧愮鐞嗗櫒鐨勫紩鎿?    engine = datasource_manager.get_engine('mysql')
+    # 使用数据源管理器的引擎
+    engine = datasource_manager.get_engine('mysql')
 
     with engine.connect() as connection:
         context.configure(

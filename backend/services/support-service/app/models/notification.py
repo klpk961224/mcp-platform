@@ -1,19 +1,19 @@
 ﻿# -*- coding: utf-8 -*-
 """
-閫氱煡妯″瀷
+通知模型
 
-鍔熻兘璇存槑锛?
-1. 绔欏唴淇＄鐞?
-2. 閫氱煡鍏憡绠＄悊
-3. 娑堟伅闃呰状态?
+功能说明：
+1. 站内信管理
+2. 通知公告管理
+3. 消息阅读状态
 
-浣跨敤绀轰緥锛?
+使用示例：
     from app.models.notification import Notification, NotificationRead
     
-    # 创建閫氱煡
+    # 创建通知
     notification = Notification(
-        title="绯荤粺閫氱煡",
-        content="绯荤粺灏嗕簬浠婃櫄缁存姢",
+        title="系统通知",
+        content="系统将于今晚维护",
         notification_type="system"
     )
 """
@@ -28,69 +28,69 @@ from common.database.base import BaseModel
 
 class Notification(BaseModel):
     """
-    閫氱煡妯″瀷
+    通知模型
     
-    鍔熻兘锛?
-    - 绔欏唴淇＄鐞?
-    - 閫氱煡鍏憡绠＄悊
+    功能：
+    - 站内信管理
+    - 通知公告管理
     
-    灞炴€ц鏄庯細
-    - id: 閫氱煡ID锛堜富閿級
+    属性说明：
+    - id: 通知ID（主键）
     - tenant_id: 租户ID
-    - sender_id: 鍙戦€佽€匢D
-    - sender_name: 鍙戦€佽€呭悕绉?
-    - title: 鏍囬
-    - content: 鍐呭
-    - notification_type: 閫氱煡类型
-    - priority: 浼樺厛绾?
-    - status: 状态?
-    - send_time: 鍙戦€佹椂闂?
-    - is_system: 鏄惁绯荤粺閫氱煡
-    - target_type: 鐩爣类型
-    - target_ids: 鐩爣ID鍒楄〃锛圝SON锛?
-    - attachment: 闄勪欢URL
-    - read_count: 宸茶数量
-    - total_count: 鎬绘暟閲?
+    - sender_id: 发送者ID
+    - sender_name: 发送者名称
+    - title: 标题
+    - content: 内容
+    - notification_type: 通知类型
+    - priority: 优先级
+    - status: 状态
+    - send_time: 发送时间
+    - is_system: 是否系统通知
+    - target_type: 目标类型
+    - target_ids: 目标ID列表（JSON）
+    - attachment: 附件URL
+    - read_count: 已读数量
+    - total_count: 总数量
     - created_at: 创建时间
     """
     
-    # 鍩烘湰淇℃伅
+    # 基本信息
     tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="租户ID")
-    sender_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, comment="鍙戦€佽€匢D")
-    sender_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, comment="鍙戦€佽€呭悕绉?)
+    sender_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, comment="发送者ID")
+    sender_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, comment="发送者名称")
     
-    # 鍐呭淇℃伅
-    title: Mapped[str] = mapped_column(String(255), nullable=False, comment="鏍囬")
-    content: Mapped[str] = mapped_column(Text, nullable=False, comment="鍐呭")
+    # 内容信息
+    title: Mapped[str] = mapped_column(String(255), nullable=False, comment="标题")
+    content: Mapped[str] = mapped_column(Text, nullable=False, comment="内容")
     
-    # 类型淇℃伅
-    notification_type: Mapped[str] = mapped_column(String(20), nullable=False, comment="閫氱煡类型")
-    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="normal", comment="浼樺厛绾?)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="sent", comment="状态?)
+    # 类型信息
+    notification_type: Mapped[str] = mapped_column(String(20), nullable=False, comment="通知类型")
+    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="normal", comment="优先级")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="sent", comment="状态")
     
-    # 鏃堕棿淇℃伅
-    send_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, comment="鍙戦€佹椂闂?)
+    # 时间信息
+    send_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, comment="发送时间")
     
-    # 鐩爣淇℃伅
-    is_system: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="鏄惁绯荤粺閫氱煡")
-    target_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, comment="鐩爣类型")
-    target_ids: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="鐩爣ID鍒楄〃锛圝SON锛?)
+    # 目标信息
+    is_system: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="是否系统通知")
+    target_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, comment="目标类型")
+    target_ids: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="目标ID列表（JSON）")
     
-    # 鎵╁睍淇℃伅
-    attachment: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="闄勪欢URL")
+    # 扩展信息
+    attachment: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="附件URL")
     
-    # 缁熻淇℃伅
-    read_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="宸茶数量")
-    total_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="鎬绘暟閲?)
+    # 统计信息
+    read_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="已读数量")
+    total_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="总数量")
     
-    # 鍏崇郴
+    # 关系
     reads = relationship("NotificationRead", back_populates="notification", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Notification(id={self.id}, title={self.title}, type={self.notification_type})>"
     
     def to_dict(self):
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": self.id,
             "tenant_id": self.tenant_id,
@@ -113,51 +113,51 @@ class Notification(BaseModel):
         }
     
     def get_read_rate(self) -> float:
-        """鑾峰彇宸茶鐜?""
+        """获取已读率"""
         if self.total_count == 0:
             return 0.0
         return round(self.read_count / self.total_count * 100, 2)
     
     def is_unread(self) -> bool:
-        """妫€鏌ユ槸鍚︽湁鏈"""
+        """检查是否有未读"""
         return self.read_count < self.total_count
 
 
 class NotificationRead(BaseModel):
     """
-    閫氱煡闃呰璁板綍妯″瀷
+    通知阅读记录模型
     
-    鍔熻兘锛?
-    - 閫氱煡闃呰状态?
-    - 闃呰鏃堕棿璁板綍
+    功能：
+    - 通知阅读状态
+    - 阅读时间记录
     
-    灞炴€ц鏄庯細
-    - id: 闃呰璁板綍ID锛堜富閿級
-    - notification_id: 閫氱煡ID锛堝閿級
+    属性说明：
+    - id: 阅读记录ID（主键）
+    - notification_id: 通知ID（外键）
     - user_id: 用户ID
-    - username: 用户名?
-    - is_read: 鏄惁宸茶
-    - read_time: 闃呰鏃堕棿
+    - username: 用户名
+    - is_read: 是否已读
+    - read_time: 阅读时间
     - created_at: 创建时间
     """
     
-    # 鍩烘湰淇℃伅
-    notification_id: Mapped[str] = mapped_column(String(64), ForeignKey("notification.id"), nullable=False, index=True, comment="閫氱煡ID")
+    # 基本信息
+    notification_id: Mapped[str] = mapped_column(String(64), ForeignKey("notification.id"), nullable=False, index=True, comment="通知ID")
     user_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="用户ID")
-    username: Mapped[str] = mapped_column(String(50), nullable=False, comment="用户名?)
+    username: Mapped[str] = mapped_column(String(50), nullable=False, comment="用户名")
     
-    # 闃呰状态?
-    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="鏄惁宸茶")
-    read_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="闃呰鏃堕棿")
+    # 阅读状态
+    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="是否已读")
+    read_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="阅读时间")
     
-    # 鍏崇郴
+    # 关系
     notification = relationship("Notification", back_populates="reads")
     
     def __repr__(self):
         return f"<NotificationRead(id={self.id}, user_id={self.user_id}, is_read={self.is_read})>"
     
     def to_dict(self):
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": self.id,
             "notification_id": self.notification_id,
@@ -169,6 +169,6 @@ class NotificationRead(BaseModel):
         }
     
     def mark_as_read(self):
-        """鏍囪涓哄凡璇?""
+        """标记为已读"""
         self.is_read = True
         self.read_time = datetime.now()

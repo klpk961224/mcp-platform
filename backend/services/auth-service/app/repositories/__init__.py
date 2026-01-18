@@ -1,11 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鏁版嵁璁块棶妯″潡
+数据访问模块
 
-鍔熻兘璇存槑锛?1. 鐢ㄦ埛鏁版嵁璁块棶
-2. Token鏁版嵁璁块棶
+功能说明：
+1. 用户数据访问
+2. Token数据访问
 
-浣跨敤绀轰緥锛?    from app.repositories.user_repository import UserRepository
+使用示例：
+    from app.repositories.user_repository import UserRepository
     from app.repositories.token_repository import TokenRepository
 """
 

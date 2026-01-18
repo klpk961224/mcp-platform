@@ -1,12 +1,16 @@
 ﻿# -*- coding: utf-8 -*-
 """
-涓氬姟鏈嶅姟涓诲簲鐢?
-鍔熻兘璇存槑锛?1. 宸ヤ綔娴佺鐞?2. 瀹℃壒娴佺▼
-3. 涓氬姟閫昏緫
+业务服务主应用
 
-浣跨敤绀轰緥锛?    from app.main import app
+功能说明：
+1. 工作流管理
+2. 审批流程
+3. 业务逻辑
+
+使用示例：
+    from app.main import app
     
-    # 鍚姩鏈嶅姟
+    # 启动服务
     uvicorn app.main:app --host 0.0.0.0 --port 28006
 """
 
@@ -19,7 +23,7 @@ import uvicorn
 import sys
 import os
 
-# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
+# 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
 from app.core.config import settings
@@ -27,42 +31,43 @@ from common.database.connection import datasource_manager
 from app.api.v1 import router as v1_router
 
 
-# 创建FastAPI搴旂敤
+# 创建FastAPI应用
 app = FastAPI(
-    title="涓氬姟鏈嶅姟API",
-    description="浼佷笟绾I缁煎悎绠＄悊骞冲彴 - 涓氬姟鏈嶅姟",
+    title="业务服务API",
+    description="企业级AI综合管理平台 - 业务服务",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
 
-# 閰嶇疆CORS
+# 配置CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 鐢熶骇鐜搴旇閰嶇疆鍏蜂綋鐨勫煙鍚?    allow_credentials=True,
+    allow_origins=["*"],  # 生产环境应该配置具体的域名
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# 娉ㄥ唽璺敱
+# 注册路由
 app.include_router(v1_router)
 
 
-# 鑷畾涔塐penAPI閰嶇疆
+# 自定义OpenAPI配置
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     
     openapi_schema = get_openapi(
-        title="涓氬姟鏈嶅姟API",
+        title="业务服务API",
         version="1.0.0",
-        description="浼佷笟绾I缁煎悎绠＄悊骞冲彴 - 涓氬姟鏈嶅姟",
+        description="企业级AI综合管理平台 - 业务服务",
         routes=app.routes,
     )
     
-    # 娣诲姞API鐗堟湰淇℃伅
+    # 添加API版本信息
     openapi_schema["info"]["x-api-version"] = "1.0.0"
     
     app.openapi_schema = openapi_schema
@@ -72,9 +77,10 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 
-# 鍋ュ悍妫€鏌ョ鐐?@app.get("/health", tags=["鍋ュ悍妫€鏌?])
+# 健康检查端点
+@app.get("/health", tags=["健康检查"])
 async def health_check():
-    """鍋ュ悍妫€鏌ョ鐐?""
+    """健康检查端点"""
     return {
         "status": "healthy",
         "service": "business-service",
@@ -82,33 +88,34 @@ async def health_check():
     }
 
 
-# 鍏ㄥ眬寮傚父澶勭悊
+# 全局异常处理
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """鍏ㄥ眬寮傚父澶勭悊鍣?""
-    logger.error(f"鍏ㄥ眬寮傚父: {str(exc)}")
+    """全局异常处理器"""
+    logger.error(f"全局异常: {str(exc)}")
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "鍐呴儴鏈嶅姟鍣ㄩ敊璇?,
+            "detail": "内部服务器错误",
             "message": str(exc)
         }
     )
 
 
-# 鍚姩浜嬩欢
+# 启动事件
 @app.on_event("startup")
 async def startup_event():
-    """搴旂敤鍚姩浜嬩欢"""
-    logger.info(f"{settings.APP_NAME} 鍚姩涓?..")
-    logger.info(f"鐜: {settings.APP_ENV}")
-    logger.info(f"绔彛: {settings.APP_PORT}")
+    """应用启动事件"""
+    logger.info(f"{settings.APP_NAME} 启动中...")
+    logger.info(f"环境: {settings.APP_ENV}")
+    logger.info(f"端口: {settings.APP_PORT}")
     
-    # 娉ㄥ唽鏁版嵁婧?    try:
-        # 瑙ｆ瀽 DATABASE_URL
+    # 注册数据源
+    try:
+        # 解析 DATABASE_URL
         db_url = settings.DATABASE_URL
         if db_url.startswith("mysql+pymysql://"):
-            # 鏍煎紡: mysql+pymysql://username:password@host:port/database
+            # 格式: mysql+pymysql://username:password@host:port/database
             url_without_prefix = db_url.replace("mysql+pymysql://", "")
             auth_part, host_port_db = url_without_prefix.split("@")
             username, password = auth_part.split(":")
@@ -127,21 +134,21 @@ async def startup_event():
                 max_overflow=20,
                 echo=False
             )
-            logger.info(f"鏁版嵁婧愭敞鍐屾垚鍔? mysql -> {host}:{port}/{database}")
+            logger.info(f"数据源注册成功: mysql -> {host}:{port}/{database}")
     except Exception as e:
-        logger.error(f"鏁版嵁婧愭敞鍐屽け璐? {e}")
+        logger.error(f"数据源注册失败: {e}")
         raise
 
 
-# 鍏抽棴浜嬩欢
+# 关闭事件
 @app.on_event("shutdown")
 async def shutdown_event():
-    """搴旂敤鍏抽棴浜嬩欢"""
-    logger.info("涓氬姟鏈嶅姟鍏抽棴")
+    """应用关闭事件"""
+    logger.info("业务服务关闭")
 
 
 if __name__ == "__main__":
-    logger.info(f"鍚姩 {settings.APP_NAME}...")
+    logger.info(f"启动 {settings.APP_NAME}...")
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",

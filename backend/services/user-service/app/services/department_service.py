@@ -1,17 +1,20 @@
 ﻿# -*- coding: utf-8 -*-
 """
-閮ㄩ棬涓氬姟閫昏緫灞?
-鍔熻兘璇存槑锛?1. 閮ㄩ棬CRUD鎿嶄綔
-2. 閮ㄩ棬鏍戝舰缁撴瀯绠＄悊
-3. 閮ㄩ棬灞傜骇鑷姩璁＄畻
-4. 部门编码鑷姩鐢熸垚
-5. 閮ㄩ棬删除楠岃瘉
+部门业务逻辑层
 
-浣跨敤绀轰緥锛?    from app.services.department_service import DepartmentService
+功能说明：
+1. 部门CRUD操作
+2. 部门树形结构管理
+3. 部门层级自动计算
+4. 部门编码自动生成
+5. 部门删除验证
+
+使用示例：
+    from app.services.department_service import DepartmentService
     
     dept_service = DepartmentService(db)
     dept = dept_service.create_department({
-        "name": "鎶€鏈儴",
+        "name": "技术部",
         "tenant_id": "tenant_001"
     })
 """
@@ -26,83 +29,98 @@ from app.repositories.department_repository import DepartmentRepository
 
 class DepartmentService:
     """
-    閮ㄩ棬涓氬姟閫昏緫灞?    
-    鍔熻兘锛?    - 閮ㄩ棬CRUD鎿嶄綔
-    - 閮ㄩ棬鏍戝舰缁撴瀯绠＄悊
-    - 閮ㄩ棬灞傜骇鑷姩璁＄畻
-    - 部门编码鑷姩鐢熸垚
-    - 閮ㄩ棬删除楠岃瘉
+    部门业务逻辑层
     
-    浣跨敤鏂规硶锛?        dept_service = DepartmentService(db)
+    功能：
+    - 部门CRUD操作
+    - 部门树形结构管理
+    - 部门层级自动计算
+    - 部门编码自动生成
+    - 部门删除验证
+    
+    使用方法：
+        dept_service = DepartmentService(db)
         dept = dept_service.create_department({
-            "name": "鎶€鏈儴",
+            "name": "技术部",
             "tenant_id": "tenant_001"
         })
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栭儴闂ㄤ笟鍔￠€昏緫灞?        
+        初始化部门业务逻辑层
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.dept_repo = DepartmentRepository(db)
     
     def create_department(self, dept_data: Dict) -> Department:
         """
-        创建閮ㄩ棬
+        创建部门
         
-        鍔熻兘锛?        - 楠岃瘉部门编码鍞竴鎬?        - 楠岃瘉部门名称鍦ㄧ鎴峰唴鍞竴鎬?        - 鑷姩璁＄畻閮ㄩ棬灞傜骇
-        - 鑷姩鐢熸垚部门编码锛堝鏋滄湭鎻愪緵锛?        
+        功能：
+        - 验证部门编码唯一性
+        - 验证部门名称在租户内唯一性
+        - 自动计算部门层级
+        - 自动生成部门编码（如果未提供）
+        
         Args:
-            dept_data: 閮ㄩ棬鏁版嵁
-                - name: 部门名称锛堝繀濉級
-                - code: 部门编码锛堝彲閫夛紝鑷姩鐢熸垚锛?                - tenant_id: 租户ID锛堝繀濉級
-                - parent_id: 鐖堕儴闂↖D锛堝彲閫夛級
-                - level: 灞傜骇锛堝彲閫夛紝鑷姩璁＄畻锛?                - sort_order: 排序锛堝彲閫夛級
-                - description: 描述锛堝彲閫夛級
-                - leader_id: 璐熻矗浜篒D锛堝彲閫夛級
-                - phone: 鑱旂郴鐢佃瘽锛堝彲閫夛級
-                - email: 鑱旂郴邮箱锛堝彲閫夛級
+            dept_data: 部门数据
+                - name: 部门名称（必填）
+                - code: 部门编码（可选，自动生成）
+                - tenant_id: 租户ID（必填）
+                - parent_id: 父部门ID（可选）
+                - level: 层级（可选，自动计算）
+                - sort_order: 排序（可选）
+                - description: 描述（可选）
+                - leader_id: 负责人ID（可选）
+                - phone: 联系电话（可选）
+                - email: 联系邮箱（可选）
         
         Returns:
-            Department: 创建鐨勯儴闂ㄥ璞?        
-        Raises:
-            ValueError: 部门编码宸插瓨鍦ㄦ垨部门名称宸插瓨鍦?        """
-        logger.info(f"创建閮ㄩ棬: name={dept_data.get('name')}, tenant_id={dept_data.get('tenant_id')}")
+            Department: 创建的部门对象
         
-        # 楠岃瘉必填瀛楁
+        Raises:
+            ValueError: 部门编码已存在或部门名称已存在
+        """
+        logger.info(f"创建部门: name={dept_data.get('name')}, tenant_id={dept_data.get('tenant_id')}")
+        
+        # 验证必填字段
         if not dept_data.get('name'):
-            raise ValueError("部门名称涓嶈兘涓虹┖")
+            raise ValueError("部门名称不能为空")
         
         if not dept_data.get('tenant_id'):
-            raise ValueError("租户ID涓嶈兘涓虹┖")
+            raise ValueError("租户ID不能为空")
         
-        # 妫€鏌ラ儴闂ㄧ紪鐮佹槸鍚﹀瓨鍦?        code = dept_data.get('code')
+        # 检查部门编码是否存在
+        code = dept_data.get('code')
         if code and self.dept_repo.exists_by_code(code):
-            raise ValueError(f"部门编码宸插瓨鍦? {code}")
+            raise ValueError(f"部门编码已存在: {code}")
         
-        # 妫€鏌ラ儴闂ㄥ悕绉板湪绉熸埛鍐呮槸鍚﹀瓨鍦?        if self.dept_repo.exists_by_name_in_tenant(dept_data['name'], dept_data['tenant_id']):
-            raise ValueError(f"部门名称宸插瓨鍦? {dept_data['name']}")
+        # 检查部门名称在租户内是否存在
+        if self.dept_repo.exists_by_name_in_tenant(dept_data['name'], dept_data['tenant_id']):
+            raise ValueError(f"部门名称已存在: {dept_data['name']}")
         
-        # 鑷姩鐢熸垚部门编码
+        # 自动生成部门编码
         if not code:
             code = self._generate_code(dept_data['tenant_id'], dept_data.get('parent_id'))
             dept_data['code'] = code
         
-        # 鑷姩璁＄畻閮ㄩ棬灞傜骇
+        # 自动计算部门层级
         parent_id = dept_data.get('parent_id')
         if parent_id:
             parent = self.dept_repo.get_by_id(parent_id)
             if not parent:
-                raise ValueError(f"鐖堕儴闂ㄤ笉瀛樺湪: {parent_id}")
+                raise ValueError(f"父部门不存在: {parent_id}")
             if parent.tenant_id != dept_data['tenant_id']:
-                raise ValueError("鐖堕儴闂ㄤ笌褰撳墠閮ㄩ棬涓嶅湪鍚屼竴绉熸埛")
+                raise ValueError("父部门与当前部门不在同一租户")
             dept_data['level'] = parent.level + 1
         else:
             dept_data['level'] = 1
         
-        # 创建閮ㄩ棬
+        # 创建部门
         department = Department(
             tenant_id=dept_data['tenant_id'],
             parent_id=dept_data.get('parent_id'),
@@ -120,65 +138,70 @@ class DepartmentService:
     
     def get_department(self, department_id: str) -> Optional[Department]:
         """
-        鑾峰彇閮ㄩ棬璇︽儏
+        获取部门详情
         
         Args:
             department_id: 部门ID
         
         Returns:
-            Optional[Department]: 閮ㄩ棬瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Department]: 部门对象，不存在返回None
         """
         return self.dept_repo.get_by_id(department_id)
     
     def update_department(self, department_id: str, dept_data: Dict) -> Department:
         """
-        更新閮ㄩ棬
+        更新部门
         
-        鍔熻兘锛?        - 楠岃瘉部门编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-        - 楠岃瘉部门名称鍦ㄧ鎴峰唴鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-        - 鑷姩璁＄畻閮ㄩ棬灞傜骇锛堝鏋滀慨鏀逛簡鐖堕儴闂級
+        功能：
+        - 验证部门编码唯一性（如果修改了编码）
+        - 验证部门名称在租户内唯一性（如果修改了名称）
+        - 自动计算部门层级（如果修改了父部门）
         
         Args:
             department_id: 部门ID
-            dept_data: 閮ㄩ棬鏁版嵁
+            dept_data: 部门数据
         
         Returns:
-            Department: 更新鍚庣殑閮ㄩ棬瀵硅薄
+            Department: 更新后的部门对象
         
         Raises:
-            ValueError: 閮ㄩ棬涓嶅瓨鍦ㄦ垨楠岃瘉澶辫触
+            ValueError: 部门不存在或验证失败
         """
-        logger.info(f"更新閮ㄩ棬: department_id={department_id}")
+        logger.info(f"更新部门: department_id={department_id}")
         
-        # 鑾峰彇閮ㄩ棬
+        # 获取部门
         department = self.dept_repo.get_by_id(department_id)
         if not department:
-            raise ValueError(f"閮ㄩ棬涓嶅瓨鍦? {department_id}")
+            raise ValueError(f"部门不存在: {department_id}")
         
         # 更新部门名称
         if dept_data.get('name') and dept_data['name'] != department.name:
-            # 妫€鏌ラ儴闂ㄥ悕绉板湪绉熸埛鍐呮槸鍚﹀瓨鍦?            if self.dept_repo.exists_by_name_in_tenant(dept_data['name'], department.tenant_id):
-                raise ValueError(f"部门名称宸插瓨鍦? {dept_data['name']}")
+            # 检查部门名称在租户内是否存在
+            if self.dept_repo.exists_by_name_in_tenant(dept_data['name'], department.tenant_id):
+                raise ValueError(f"部门名称已存在: {dept_data['name']}")
             department.name = dept_data['name']
         
         # 更新部门编码
         if dept_data.get('code') and dept_data['code'] != department.code:
-            # 妫€鏌ラ儴闂ㄧ紪鐮佹槸鍚﹀瓨鍦?            if self.dept_repo.exists_by_code(dept_data['code']):
-                raise ValueError(f"部门编码宸插瓨鍦? {dept_data['code']}")
+            # 检查部门编码是否存在
+            if self.dept_repo.exists_by_code(dept_data['code']):
+                raise ValueError(f"部门编码已存在: {dept_data['code']}")
             department.code = dept_data['code']
         
-        # 更新鐖堕儴闂?        if dept_data.get('parent_id') != department.parent_id:
+        # 更新父部门
+        if dept_data.get('parent_id') != department.parent_id:
             new_parent_id = dept_data.get('parent_id')
             
-            # 妫€鏌ユ槸鍚﹀皢閮ㄩ棬璁剧疆涓鸿嚜宸辩殑瀛愰儴闂?            if new_parent_id:
+            # 检查是否将部门设置为自己的子部门
+            if new_parent_id:
                 if self._is_descendant(department_id, new_parent_id):
-                    raise ValueError("涓嶈兘灏嗛儴闂ㄨ缃负鑷繁鐨勫瓙閮ㄩ棬")
+                    raise ValueError("不能将部门设置为自己的子部门")
                 
                 parent = self.dept_repo.get_by_id(new_parent_id)
                 if not parent:
-                    raise ValueError(f"鐖堕儴闂ㄤ笉瀛樺湪: {new_parent_id}")
+                    raise ValueError(f"父部门不存在: {new_parent_id}")
                 if parent.tenant_id != department.tenant_id:
-                    raise ValueError("鐖堕儴闂ㄤ笌褰撳墠閮ㄩ棬涓嶅湪鍚屼竴绉熸埛")
+                    raise ValueError("父部门与当前部门不在同一租户")
                 
                 department.parent_id = new_parent_id
                 department.level = parent.level + 1
@@ -186,9 +209,10 @@ class DepartmentService:
                 department.parent_id = None
                 department.level = 1
             
-            # 更新鎵€鏈夊瓙閮ㄩ棬鐨勫眰绾?            self._update_children_level(department_id)
+            # 更新所有子部门的层级
+            self._update_children_level(department_id)
         
-        # 更新鍏朵粬瀛楁
+        # 更新其他字段
         if dept_data.get('sort_order') is not None:
             department.sort_order = dept_data['sort_order']
         
@@ -208,32 +232,36 @@ class DepartmentService:
     
     def delete_department(self, department_id: str) -> bool:
         """
-        删除閮ㄩ棬
+        删除部门
         
-        鍔熻兘锛?        - 妫€鏌ラ儴闂ㄦ槸鍚﹀瓨鍦?        - 妫€鏌ユ槸鍚︽湁瀛愰儴闂?        - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
+        功能：
+        - 检查部门是否存在
+        - 检查是否有子部门
+        - 检查是否有用户
         
         Args:
             department_id: 部门ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         
         Raises:
-            ValueError: 閮ㄩ棬涓嶅瓨鍦ㄦ垨鏈夊瓙閮ㄩ棬鎴栨湁鐢ㄦ埛
+            ValueError: 部门不存在或有子部门或有用户
         """
-        logger.info(f"删除閮ㄩ棬: department_id={department_id}")
+        logger.info(f"删除部门: department_id={department_id}")
         
-        # 鑾峰彇閮ㄩ棬
+        # 获取部门
         department = self.dept_repo.get_by_id(department_id)
         if not department:
-            raise ValueError(f"閮ㄩ棬涓嶅瓨鍦? {department_id}")
+            raise ValueError(f"部门不存在: {department_id}")
         
-        # 妫€鏌ユ槸鍚︽湁瀛愰儴闂?        if department.children:
-            raise ValueError("鏃犳硶删除閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄥ瓙閮ㄩ棬")
+        # 检查是否有子部门
+        if department.children:
+            raise ValueError("无法删除部门：该部门下存在子部门")
         
-        # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
+        # 检查是否有用户
         if department.users:
-            raise ValueError("鏃犳硶删除閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄧ敤鎴?)
+            raise ValueError("无法删除部门：该部门下存在用户")
         
         return self.dept_repo.delete(department_id)
     
@@ -246,26 +274,26 @@ class DepartmentService:
         page_size: int = 10
     ) -> Dict:
         """
-        鑾峰彇閮ㄩ棬鍒楄〃
+        获取部门列表
         
         Args:
-            tenant_id: 租户ID锛堝彲閫夛級
-            parent_id: 鐖堕儴闂↖D锛堝彲閫夛級
-            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            tenant_id: 租户ID（可选）
+            parent_id: 父部门ID（可选）
+            keyword: 搜索关键词（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            Dict: 閮ㄩ棬鍒楄〃
-                - total: 鎬绘暟
-                - items: 閮ㄩ棬鍒楄〃
-                - page: 椤电爜
-                - page_size: 姣忛〉数量
+            Dict: 部门列表
+                - total: 总数
+                - items: 部门列表
+                - page: 页码
+                - page_size: 每页数量
         """
-        # 根据鏉′欢查询
+        # 根据条件查询
         if keyword:
             departments = self.dept_repo.search(keyword, tenant_id, page, page_size)
-            total = len(departments)  # TODO: 闇€瑕佷紭鍖栵紝搴旇鍗曠嫭查询鎬绘暟
+            total = len(departments)  # TODO: 需要优化，应该单独查询总数
         elif tenant_id and parent_id:
             departments = self.dept_repo.get_by_parent_id(parent_id, page, page_size)
             total = self.dept_repo.count_by_parent(parent_id)
@@ -285,57 +313,64 @@ class DepartmentService:
     
     def get_department_tree(self, tenant_id: str) -> List[Dict]:
         """
-        鑾峰彇閮ㄩ棬鏍?        
+        获取部门树
+        
         Args:
             tenant_id: 租户ID
         
         Returns:
-            List[Dict]: 閮ㄩ棬鏍?        """
+            List[Dict]: 部门树
+        """
         root_departments = self.dept_repo.get_tree(tenant_id)
         return [dept.to_tree_dict() for dept in root_departments]
     
     def _generate_code(self, tenant_id: str, parent_id: Optional[str] = None) -> str:
         """
-        鑷姩鐢熸垚部门编码
+        自动生成部门编码
         
-        瑙勫垯锛?        - 鏍归儴闂細DEPT_{租户ID}_{搴忓彿}
-        - 瀛愰儴闂細{鐖堕儴闂ㄧ紪鐮亇_{搴忓彿}
+        规则：
+        - 根部门：DEPT_{租户ID}_{序号}
+        - 子部门：{父部门编码}_{序号}
         
         Args:
             tenant_id: 租户ID
-            parent_id: 鐖堕儴闂↖D
+            parent_id: 父部门ID
         
         Returns:
             str: 部门编码
         """
         if parent_id:
-            # 瀛愰儴闂ㄧ紪鐮?            parent = self.dept_repo.get_by_id(parent_id)
+            # 子部门编码
+            parent = self.dept_repo.get_by_id(parent_id)
             if not parent:
-                raise ValueError(f"鐖堕儴闂ㄤ笉瀛樺湪: {parent_id}")
+                raise ValueError(f"父部门不存在: {parent_id}")
             
-            # 鑾峰彇鍚岀骇閮ㄩ棬数量
+            # 获取同级部门数量
             siblings_count = self.dept_repo.count_by_parent(parent_id)
             code = f"{parent.code}_{siblings_count + 1:03d}"
         else:
-            # 鏍归儴闂ㄧ紪鐮?            root_count = self.dept_repo.count_by_tenant(tenant_id)
+            # 根部门编码
+            root_count = self.dept_repo.count_by_tenant(tenant_id)
             code = f"DEPT_{tenant_id}_{root_count + 1:03d}"
         
-        # 妫€鏌ョ紪鐮佹槸鍚﹀凡瀛樺湪
+        # 检查编码是否已存在
         if self.dept_repo.exists_by_code(code):
-            # 濡傛灉宸插瓨鍦紝閫掑綊鐢熸垚鏂扮殑编码
+            # 如果已存在，递归生成新的编码
             return self._generate_code(tenant_id, parent_id)
         
         return code
     
     def _is_descendant(self, department_id: str, child_id: str) -> bool:
         """
-        妫€鏌hild_id鏄惁鏄痙epartment_id鐨勫瓙瀛欓儴闂?        
+        检查child_id是否是department_id的子孙部门
+        
         Args:
             department_id: 部门ID
-            child_id: 瀛愰儴闂↖D
+            child_id: 子部门ID
         
         Returns:
-            bool: 鏄惁鏄瓙瀛欓儴闂?        """
+            bool: 是否是子孙部门
+        """
         if department_id == child_id:
             return True
         
@@ -347,7 +382,7 @@ class DepartmentService:
     
     def _update_children_level(self, department_id: str):
         """
-        閫掑綊更新瀛愰儴闂ㄧ殑灞傜骇
+        递归更新子部门的层级
         
         Args:
             department_id: 部门ID

@@ -1,5 +1,5 @@
 ﻿"""
-鑿滃崟鐩稿叧Schema
+菜单相关Schema
 """
 
 from pydantic import BaseModel, Field
@@ -8,25 +8,25 @@ from datetime import datetime
 
 
 class MenuBase(BaseModel):
-    """鑿滃崟鍩虹妯″瀷"""
+    """菜单基础模型"""
     
-    name: str = Field(..., description="鑿滃崟名称")
-    path: Optional[str] = Field(None, description="鑿滃崟璺緞")
-    icon: Optional[str] = Field(None, description="鑿滃崟鍥炬爣")
-    parent_id: Optional[str] = Field(None, description="鐖惰彍鍗旾D")
+    name: str = Field(..., description="菜单名称")
+    path: Optional[str] = Field(None, description="菜单路径")
+    icon: Optional[str] = Field(None, description="菜单图标")
+    parent_id: Optional[str] = Field(None, description="父菜单ID")
     sort_order: int = Field(default=0, description="排序")
-    is_visible: bool = Field(default=True, description="鏄惁鍙")
-    status: str = Field(default="active", description="状态?)
+    is_visible: bool = Field(default=True, description="是否可见")
+    status: str = Field(default="active", description="状态")
 
 
 class MenuCreate(MenuBase):
-    """创建鑿滃崟"""
+    """创建菜单"""
     
     tenant_id: str = Field(..., description="租户ID")
 
 
 class MenuUpdate(BaseModel):
-    """更新鑿滃崟"""
+    """更新菜单"""
     
     name: Optional[str] = None
     path: Optional[str] = None
@@ -38,7 +38,7 @@ class MenuUpdate(BaseModel):
 
 
 class MenuResponse(MenuBase):
-    """鑿滃崟鍝嶅簲"""
+    """菜单响应"""
     
     id: str
     tenant_id: str
@@ -50,13 +50,13 @@ class MenuResponse(MenuBase):
 
 
 class MenuTreeResponse(MenuResponse):
-    """鑿滃崟鏍戝搷搴?""
+    """菜单树响应"""
     
     children: List['MenuTreeResponse'] = []
 
 
 class MenuListResponse(BaseModel):
-    """鑿滃崟鍒楄〃鍝嶅簲"""
+    """菜单列表响应"""
     
     total: int
     items: List[MenuResponse]

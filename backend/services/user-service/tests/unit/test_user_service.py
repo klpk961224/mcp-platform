@@ -1,19 +1,21 @@
 ﻿# -*- coding: utf-8 -*-
 """
-UserService鍗曞厓娴嬭瘯
+UserService单元测试
 
-娴嬭瘯鍐呭锛?1. 创建鐢ㄦ埛
-2. 鑾峰彇鐢ㄦ埛
-3. 更新鐢ㄦ埛
-4. 删除鐢ㄦ埛
-5. 鎼滅储鐢ㄦ埛
-6. 鐢ㄦ埛状态佺鐞?"""
+测试内容：
+1. 创建用户
+2. 获取用户
+3. 更新用户
+4. 删除用户
+5. 搜索用户
+6. 用户状态管理
+"""
 
 import pytest
 from unittest.mock import Mock, MagicMock
 from sqlalchemy.orm import Session
 
-# 瀵煎叆鎵€鏈夋ā鍨嬶紝纭繚SQLAlchemy姝ｇ‘閰嶇疆mapper
+# 导入所有模型，确保SQLAlchemy正确配置mapper
 from app.models import User, Department, Tenant
 from sqlalchemy.orm import configure_mappers
 configure_mappers()
@@ -23,13 +25,13 @@ from app.services.user_service import UserService
 
 @pytest.fixture
 def mock_db():
-    """妯℃嫙鏁版嵁搴撲細璇?""
+    """模拟数据库会话"""
     return Mock(spec=Session)
 
 
 @pytest.fixture
 def mock_user():
-    """妯℃嫙鐢ㄦ埛瀵硅薄"""
+    """模拟用户对象"""
     user = Mock(spec=User)
     user.id = "test_user_id"
     user.username = "testuser"
@@ -47,15 +49,15 @@ def mock_user():
 
 @pytest.fixture
 def user_service(mock_db):
-    """创建UserService瀹炰緥"""
+    """创建UserService实例"""
     return UserService(mock_db)
 
 
 class TestUserService:
-    """UserService娴嬭瘯绫?""
+    """UserService测试类"""
     
     def test_init(self, mock_db):
-        """娴嬭瘯UserService鍒濆鍖?""
+        """测试UserService初始化"""
         service = UserService(mock_db)
         assert service.db == mock_db
         assert service.user_repo is not None
@@ -63,22 +65,23 @@ class TestUserService:
         assert service.tenant_repo is not None
     
     def test_create_user_success(self, user_service, mock_user):
-        """娴嬭瘯创建鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙绉熸埛瀵硅薄
+        """测试创建用户成功"""
+        # 模拟租户对象
         mock_tenant = Mock()
         mock_tenant.status = "active"
         mock_tenant.is_expired = Mock(return_value=False)
         mock_tenant.can_add_user = Mock(return_value=True)
         
-        # 妯℃嫙用户名嶄笉瀛樺湪
+        # 模拟用户名不存在
         user_service.user_repo.exists_by_username = Mock(return_value=False)
-        # 妯℃嫙邮箱涓嶅瓨鍦?        user_service.user_repo.exists_by_email = Mock(return_value=False)
-        # 妯℃嫙绉熸埛瀛樺湪
+        # 模拟邮箱不存在
+        user_service.user_repo.exists_by_email = Mock(return_value=False)
+        # 模拟租户存在
         user_service.tenant_repo.get_by_id = Mock(return_value=mock_tenant)
-        # 妯℃嫙创建鐢ㄦ埛
+        # 模拟创建用户
         user_service.user_repo.create = Mock(return_value=mock_user)
         
-        # 鎵ц创建鐢ㄦ埛
+        # 执行创建用户
         user_data = {
             "username": "testuser",
             "email": "test@example.com",
@@ -87,136 +90,141 @@ class TestUserService:
         }
         result = user_service.create_user(user_data)
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_user_id"
         assert result.username == "testuser"
         user_service.user_repo.create.assert_called_once()
     
     def test_create_user_username_exists(self, user_service):
-        """娴嬭瘯创建鐢ㄦ埛鏃剁敤鎴峰悕宸插瓨鍦?""
-        # 妯℃嫙用户名嶅凡瀛樺湪
+        """测试创建用户时用户名已存在"""
+        # 模拟用户名已存在
         user_service.user_repo.exists_by_username = Mock(return_value=True)
         
-        # 鎵ц创建鐢ㄦ埛骞堕獙璇佸紓甯?        user_data = {
+        # 执行创建用户并验证异常
+        user_data = {
             "username": "existing_user",
             "email": "test@example.com",
             "password_hash": "hashed_password"
         }
-        with pytest.raises(ValueError, match="用户名嶅凡瀛樺湪"):
+        with pytest.raises(ValueError, match="用户名已存在"):
             user_service.create_user(user_data)
     
     def test_create_user_email_exists(self, user_service):
-        """娴嬭瘯创建鐢ㄦ埛鏃堕偖绠卞凡瀛樺湪"""
-        # 妯℃嫙用户名嶄笉瀛樺湪
+        """测试创建用户时邮箱已存在"""
+        # 模拟用户名不存在
         user_service.user_repo.exists_by_username = Mock(return_value=False)
-        # 妯℃嫙邮箱宸插瓨鍦?        user_service.user_repo.exists_by_email = Mock(return_value=True)
+        # 模拟邮箱已存在
+        user_service.user_repo.exists_by_email = Mock(return_value=True)
         
-        # 鎵ц创建鐢ㄦ埛骞堕獙璇佸紓甯?        user_data = {
+        # 执行创建用户并验证异常
+        user_data = {
             "username": "testuser",
             "email": "existing@example.com",
             "password_hash": "hashed_password"
         }
-        with pytest.raises(ValueError, match="邮箱宸插瓨鍦?):
+        with pytest.raises(ValueError, match="邮箱已存在"):
             user_service.create_user(user_data)
     
     def test_get_by_id_success(self, user_service, mock_user):
-        """娴嬭瘯鑾峰彇鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙查询鐢ㄦ埛
+        """测试获取用户成功"""
+        # 模拟查询用户
         user_service.user_repo.get_by_id = Mock(return_value=mock_user)
         
-        # 鎵ц查询
+        # 执行查询
         result = user_service.get_user("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_user_id"
         user_service.user_repo.get_by_id.assert_called_once_with("test_user_id")
     
     def test_get_by_id_not_found(self, user_service):
-        """娴嬭瘯鑾峰彇鐢ㄦ埛澶辫触"""
-        # 妯℃嫙查询鐢ㄦ埛杩斿洖None
+        """测试获取用户失败"""
+        # 模拟查询用户返回None
         user_service.user_repo.get_by_id = Mock(return_value=None)
         
-        # 鎵ц查询
+        # 执行查询
         result = user_service.get_user("nonexistent_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result is None
     
     def test_update_user_success(self, user_service, mock_user):
-        """娴嬭瘯更新鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙查询鐢ㄦ埛
+        """测试更新用户成功"""
+        # 模拟查询用户
         user_service.user_repo.get_by_id = Mock(return_value=mock_user)
-        # 妯℃嫙邮箱涓嶅瓨鍦?        user_service.user_repo.exists_by_email = Mock(return_value=False)
-        # 妯℃嫙更新鐢ㄦ埛
+        # 模拟邮箱不存在
+        user_service.user_repo.exists_by_email = Mock(return_value=False)
+        # 模拟更新用户
         user_service.user_repo.update = Mock(return_value=mock_user)
         
-        # 鎵ц更新
+        # 执行更新
         update_data = {"email": "newemail@example.com"}
         result = user_service.update_user("test_user_id", update_data)
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_user_id"
         user_service.user_repo.update.assert_called_once()
     
     def test_delete_user_success(self, user_service):
-        """娴嬭瘯删除鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙删除鐢ㄦ埛
+        """测试删除用户成功"""
+        # 模拟删除用户
         user_service.user_repo.delete = Mock()
         
-        # 鎵ц删除
+        # 执行删除
         user_service.delete_user("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         user_service.user_repo.delete.assert_called_once_with("test_user_id")
     
     def test_search_users_success(self, user_service, mock_user):
-        """娴嬭瘯鎼滅储鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙鎼滅储鐢ㄦ埛
+        """测试搜索用户成功"""
+        # 模拟搜索用户
         user_service.list_users = Mock(return_value=[mock_user])
         
-        # 鎵ц鎼滅储
+        # 执行搜索
         result = user_service.list_users(
             tenant_id="default",
             page=1,
             page_size=10
         )
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert len(result) == 1
         assert result[0].id == "test_user_id"
     
     def test_activate_user_success(self, user_service, mock_user):
-        """娴嬭瘯婵€娲荤敤鎴锋垚鍔?""
-        # 妯℃嫙查询鐢ㄦ埛
+        """测试激活用户成功"""
+        # 模拟查询用户
         user_service.user_repo.get_by_id = Mock(return_value=mock_user)
-        # 妯℃嫙更新鐢ㄦ埛
+        # 模拟更新用户
         user_service.user_repo.update = Mock(return_value=mock_user)
         
-        # 鎵ц婵€娲?        result = user_service.activate_user("test_user_id")
+        # 执行激活
+        result = user_service.activate_user("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.status == "active"
     
     def test_deactivate_user_success(self, user_service, mock_user):
-        """娴嬭瘯鍋滅敤鐢ㄦ埛鎴愬姛"""
-        # 妯℃嫙查询鐢ㄦ埛
+        """测试停用用户成功"""
+        # 模拟查询用户
         user_service.user_repo.get_by_id = Mock(return_value=mock_user)
-        # 妯℃嫙更新鐢ㄦ埛
+        # 模拟更新用户
         user_service.user_repo.update = Mock(return_value=mock_user)
         
-        # 鎵ц鍋滅敤
+        # 执行停用
         result = user_service.deactivate_user("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.status == "inactive"
     
     def test_get_user_statistics(self, user_service):
-        """娴嬭瘯鑾峰彇鐢ㄦ埛缁熻"""
-        # 妯℃嫙鑾峰彇缁熻
+        """测试获取用户统计"""
+        # 模拟获取统计
         user_service.count_users = Mock(return_value=100)
         
-        # 鎵ц鑾峰彇缁熻
+        # 执行获取统计
         result = user_service.count_users(tenant_id="default")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 100

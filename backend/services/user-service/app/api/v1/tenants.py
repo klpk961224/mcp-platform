@@ -1,5 +1,5 @@
 ﻿"""
-绉熸埛绠＄悊API璺敱
+租户管理API路由
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException
@@ -21,65 +21,72 @@ from app.schemas.tenant import (
 )
 from app.services.tenant_service import TenantService
 
-router = APIRouter(prefix="/tenants", tags=["绉熸埛绠＄悊"])
+router = APIRouter(prefix="/tenants", tags=["租户管理"])
 
 
-@router.post("", response_model=TenantResponse, summary="创建绉熸埛")
+@router.post("", response_model=TenantResponse, summary="创建租户")
 async def create_tenant(
     tenant: TenantCreate,
     db: Session = Depends(get_db)
 ):
     """
-    创建绉熸埛
+    创建租户
     
-    鍔熻兘锛?    - 楠岃瘉绉熸埛编码鍞竴鎬?    - 楠岃瘉绉熸埛名称鍞竴鎬?    - 鑷姩搴旂敤濂楅閰嶇疆锛堥粯璁asic锛?    - 鑷姩璁＄畻杩囨湡鏃堕棿锛?65澶╋級
+    功能：
+    - 验证租户编码唯一性
+    - 验证租户名称唯一性
+    - 自动应用套餐配置（默认basic）
+    - 自动计算过期时间（365天）
     
     Args:
-        tenant: 绉熸埛创建鏁版嵁
+        tenant: 租户创建数据
     
     Returns:
-        TenantResponse: 创建鐨勭鎴蜂俊鎭?    
+        TenantResponse: 创建的租户信息
+    
     Raises:
-        HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
+        HTTPException: 验证失败时抛出400错误
     """
-    logger.info(f"创建绉熸埛: name={tenant.name}, code={tenant.code}")
+    logger.info(f"创建租户: name={tenant.name}, code={tenant.code}")
     
     try:
         tenant_service = TenantService(db)
         tenant_obj = tenant_service.create_tenant(tenant.dict())
         
-        # 杞崲涓哄搷搴旀牸寮?        response_data = tenant_obj.to_dict()
+        # 转换为响应格式
+        response_data = tenant_obj.to_dict()
         return TenantResponse(**response_data)
     except ValueError as e:
-        logger.error(f"创建绉熸埛澶辫触: {str(e)}")
+        logger.error(f"创建租户失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"创建绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="创建绉熸埛澶辫触")
+        logger.error(f"创建租户异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="创建租户失败")
 
 
-@router.get("", response_model=TenantListResponse, summary="鑾峰彇绉熸埛鍒楄〃")
+@router.get("", response_model=TenantListResponse, summary="获取租户列表")
 async def get_tenants(
-    page: int = Query(1, ge=1, description="椤电爜"),
-    page_size: int = Query(10, ge=1, le=100, description="姣忛〉数量"),
-    status: Optional[str] = Query(None, description="状态佺瓫閫?),
-    keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
+    page: int = Query(1, ge=1, description="页码"),
+    page_size: int = Query(10, ge=1, le=100, description="每页数量"),
+    status: Optional[str] = Query(None, description="状态筛选"),
+    keyword: Optional[str] = Query(None, description="搜索关键词"),
     db: Session = Depends(get_db)
 ):
     """
-    鑾峰彇绉熸埛鍒楄〃
+    获取租户列表
     
-    鏀寔鎸夌姸鎬併€佸叧閿瘝绛涢€?    
+    支持按状态、关键词筛选
+    
     Args:
-        page: 椤电爜
-        page_size: 姣忛〉数量
-        status: 状态佺瓫閫夛紙鍙€夛級
-        keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+        page: 页码
+        page_size: 每页数量
+        status: 状态筛选（可选）
+        keyword: 搜索关键词（可选）
     
     Returns:
-        TenantListResponse: 绉熸埛鍒楄〃
+        TenantListResponse: 租户列表
     """
-    logger.info(f"鑾峰彇绉熸埛鍒楄〃: page={page}, page_size={page_size}, status={status}")
+    logger.info(f"获取租户列表: page={page}, page_size={page_size}, status={status}")
     
     try:
         tenant_service = TenantService(db)
@@ -91,67 +98,70 @@ async def get_tenants(
         )
         return TenantListResponse(**result)
     except Exception as e:
-        logger.error(f"鑾峰彇绉熸埛鍒楄〃寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇绉熸埛鍒楄〃澶辫触")
+        logger.error(f"获取租户列表异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取租户列表失败")
 
 
-@router.get("/{tenant_id}", response_model=TenantResponse, summary="鑾峰彇绉熸埛璇︽儏")
+@router.get("/{tenant_id}", response_model=TenantResponse, summary="获取租户详情")
 async def get_tenant(
     tenant_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    鑾峰彇绉熸埛璇︽儏
+    获取租户详情
     
     Args:
         tenant_id: 租户ID
     
     Returns:
-        TenantResponse: 绉熸埛璇︽儏
+        TenantResponse: 租户详情
     
     Raises:
-        HTTPException: 绉熸埛涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
+        HTTPException: 租户不存在时抛出404错误
     """
-    logger.info(f"鑾峰彇绉熸埛璇︽儏: tenant_id={tenant_id}")
+    logger.info(f"获取租户详情: tenant_id={tenant_id}")
     
     try:
         tenant_service = TenantService(db)
         tenant = tenant_service.get_tenant(tenant_id)
         if not tenant:
-            raise HTTPException(status_code=404, detail="绉熸埛涓嶅瓨鍦?)
+            raise HTTPException(status_code=404, detail="租户不存在")
         
         response_data = tenant.to_dict()
         return TenantResponse(**response_data)
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鑾峰彇绉熸埛璇︽儏寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇绉熸埛璇︽儏澶辫触")
+        logger.error(f"获取租户详情异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取租户详情失败")
 
 
-@router.put("/{tenant_id}", response_model=TenantResponse, summary="更新绉熸埛")
+@router.put("/{tenant_id}", response_model=TenantResponse, summary="更新租户")
 async def update_tenant(
     tenant_id: str,
     tenant: TenantUpdate,
     db: Session = Depends(get_db)
 ):
     """
-    更新绉熸埛
+    更新租户
     
-    鍔熻兘锛?    - 楠岃瘉绉熸埛编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-    - 楠岃瘉绉熸埛名称鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-    - 更新濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?    - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡状态佹垨濂楅锛?    
+    功能：
+    - 验证租户编码唯一性（如果修改了编码）
+    - 验证租户名称唯一性（如果修改了名称）
+    - 更新套餐配置（如果修改了套餐）
+    - 重新计算过期时间（如果修改了状态或套餐）
+    
     Args:
         tenant_id: 租户ID
-        tenant: 绉熸埛更新鏁版嵁
+        tenant: 租户更新数据
     
     Returns:
-        TenantResponse: 更新鍚庣殑绉熸埛淇℃伅
+        TenantResponse: 更新后的租户信息
     
     Raises:
-        HTTPException: 楠岃瘉澶辫触鎴栫鎴蜂笉瀛樺湪鏃舵姏鍑?00鎴?04閿欒
+        HTTPException: 验证失败或租户不存在时抛出400或404错误
     """
-    logger.info(f"更新绉熸埛: tenant_id={tenant_id}")
+    logger.info(f"更新租户: tenant_id={tenant_id}")
     
     try:
         tenant_service = TenantService(db)
@@ -160,126 +170,136 @@ async def update_tenant(
         response_data = tenant_obj.to_dict()
         return TenantResponse(**response_data)
     except ValueError as e:
-        logger.error(f"更新绉熸埛澶辫触: {str(e)}")
+        logger.error(f"更新租户失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"更新绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="更新绉熸埛澶辫触")
+        logger.error(f"更新租户异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="更新租户失败")
 
 
-@router.delete("/{tenant_id}", summary="删除绉熸埛")
+@router.delete("/{tenant_id}", summary="删除租户")
 async def delete_tenant(
     tenant_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    删除绉熸埛
+    删除租户
     
-    鍔熻兘锛?    - 妫€鏌ョ鎴锋槸鍚﹀瓨鍦?    - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
-    - 妫€鏌ユ槸鍚︽湁閮ㄩ棬
+    功能：
+    - 检查租户是否存在
+    - 检查是否有用户
+    - 检查是否有部门
     
     Args:
         tenant_id: 租户ID
     
     Returns:
-        dict: 删除缁撴灉
+        dict: 删除结果
     
     Raises:
-        HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
+        HTTPException: 验证失败时抛出400错误
     """
-    logger.info(f"删除绉熸埛: tenant_id={tenant_id}")
+    logger.info(f"删除租户: tenant_id={tenant_id}")
     
     try:
         tenant_service = TenantService(db)
         tenant_service.delete_tenant(tenant_id)
-        return {"message": "删除鎴愬姛"}
+        return {"message": "删除成功"}
     except ValueError as e:
-        logger.error(f"删除绉熸埛澶辫触: {str(e)}")
+        logger.error(f"删除租户失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"删除绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="删除绉熸埛澶辫触")
+        logger.error(f"删除租户异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="删除租户失败")
 
 
-@router.get("/{tenant_id}/quota/{quota_type}", summary="妫€鏌ョ鎴疯祫婧愰厤棰?)
+@router.get("/{tenant_id}/quota/{quota_type}", summary="检查租户资源配额")
 async def check_tenant_quota(
     tenant_id: str,
     quota_type: str,
     db: Session = Depends(get_db)
 ):
     """
-    妫€鏌ョ鎴疯祫婧愰厤棰?    
-    鏀寔鐨勯厤棰濈被鍨嬶細
-    - users: 鐢ㄦ埛鏁伴厤棰?    - departments: 閮ㄩ棬鏁伴厤棰?    - storage: 瀛樺偍绌洪棿閰嶉
+    检查租户资源配额
+    
+    支持的配额类型：
+    - users: 用户数配额
+    - departments: 部门数配额
+    - storage: 存储空间配额
     
     Args:
         tenant_id: 租户ID
-        quota_type: 閰嶉类型
+        quota_type: 配额类型
     
     Returns:
-        dict: 閰嶉淇℃伅
+        dict: 配额信息
     
     Raises:
-        HTTPException: 绉熸埛涓嶅瓨鍦ㄦ垨閰嶉类型涓嶆敮鎸佹椂鎶涘嚭400鎴?04閿欒
+        HTTPException: 租户不存在或配额类型不支持时抛出400或404错误
     """
-    logger.info(f"妫€鏌ョ鎴烽厤棰? tenant_id={tenant_id}, quota_type={quota_type}")
+    logger.info(f"检查租户配额: tenant_id={tenant_id}, quota_type={quota_type}")
     
     try:
         tenant_service = TenantService(db)
         quota = tenant_service.check_quota(tenant_id, quota_type)
         return quota
     except ValueError as e:
-        logger.error(f"妫€鏌ョ鎴烽厤棰濆け璐? {str(e)}")
+        logger.error(f"检查租户配额失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"妫€鏌ョ鎴烽厤棰濆紓甯? {str(e)}")
-        raise HTTPException(status_code=500, detail="妫€鏌ョ鎴烽厤棰濆け璐?)
+        logger.error(f"检查租户配额异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="检查租户配额失败")
 
 
-@router.get("/packages", summary="鑾峰彇鎵€鏈夊椁愪俊鎭?)
+@router.get("/packages", summary="获取所有套餐信息")
 async def get_all_packages(db: Session = Depends(get_db)):
     """
-    鑾峰彇鎵€鏈夊椁愪俊鎭?    
-    棰勫畾涔夊椁愶細
-    - free: 鍏嶈垂鐗堬紙10鐢ㄦ埛锛?閮ㄩ棬锛?GB瀛樺偍锛?0澶╋級
-    - basic: 鍩虹鐗堬紙50鐢ㄦ埛锛?0閮ㄩ棬锛?0GB瀛樺偍锛?65澶╋級
-    - professional: 涓撲笟鐗堬紙200鐢ㄦ埛锛?00閮ㄩ棬锛?00GB瀛樺偍锛?65澶╋級
-    - enterprise: 浼佷笟鐗堬紙1000鐢ㄦ埛锛?00閮ㄩ棬锛?TB瀛樺偍锛?65澶╋級
+    获取所有套餐信息
+    
+    预定义套餐：
+    - free: 免费版（10用户，5部门，1GB存储，30天）
+    - basic: 基础版（50用户，20部门，10GB存储，365天）
+    - professional: 专业版（200用户，100部门，100GB存储，365天）
+    - enterprise: 企业版（1000用户，500部门，1TB存储，365天）
     
     Returns:
-        dict: 鎵€鏈夊椁愪俊鎭?    """
-    logger.info("鑾峰彇鎵€鏈夊椁愪俊鎭?)
+        dict: 所有套餐信息
+    """
+    logger.info("获取所有套餐信息")
     
     try:
         tenant_service = TenantService(db)
         packages = tenant_service.get_all_packages()
         return packages
     except Exception as e:
-        logger.error(f"鑾峰彇濂楅淇℃伅寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇濂楅淇℃伅澶辫触")
+        logger.error(f"获取套餐信息异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取套餐信息失败")
 
 
-@router.post("/{tenant_id}/renew", summary="缁垂绉熸埛")
+@router.post("/{tenant_id}/renew", summary="续费租户")
 async def renew_tenant(
     tenant_id: str,
-    days: int = Query(365, ge=1, description="缁垂澶╂暟"),
+    days: int = Query(365, ge=1, description="续费天数"),
     db: Session = Depends(get_db)
 ):
     """
-    缁垂绉熸埛
+    续费租户
     
-    鍔熻兘锛?    - 濡傛灉绉熸埛宸茶繃鏈燂紝浠庡綋鍓嶆椂闂村紑濮嬭绠?    - 濡傛灉绉熸埛鏈繃鏈燂紝鍦ㄥ師鏈夎繃鏈熸椂闂村熀纭€涓婂欢闀?    
+    功能：
+    - 如果租户已过期，从当前时间开始计算
+    - 如果租户未过期，在原有过期时间基础上延长
+    
     Args:
         tenant_id: 租户ID
-        days: 缁垂澶╂暟锛堥粯璁?65澶╋級
+        days: 续费天数（默认365天）
     
     Returns:
-        dict: 缁垂缁撴灉
+        dict: 续费结果
     
     Raises:
-        HTTPException: 绉熸埛涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
+        HTTPException: 租户不存在时抛出404错误
     """
-    logger.info(f"缁垂绉熸埛: tenant_id={tenant_id}, days={days}")
+    logger.info(f"续费租户: tenant_id={tenant_id}, days={days}")
     
     try:
         tenant_service = TenantService(db)
@@ -287,12 +307,12 @@ async def renew_tenant(
         
         response_data = tenant.to_dict()
         return {
-            "message": "缁垂鎴愬姛",
+            "message": "续费成功",
             "tenant": response_data
         }
     except ValueError as e:
-        logger.error(f"缁垂绉熸埛澶辫触: {str(e)}")
+        logger.error(f"续费租户失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"缁垂绉熸埛寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="缁垂绉熸埛澶辫触")
+        logger.error(f"续费租户异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="续费租户失败")

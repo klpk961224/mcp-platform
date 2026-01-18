@@ -1,15 +1,17 @@
 ﻿# -*- coding: utf-8 -*-
 """
-MCP宸ュ叿鏈嶅姟
+MCP工具服务
 
-鍔熻兘璇存槑锛?1. MCP宸ュ叿绠＄悊
-2. MCP宸ュ叿璋冪敤
-3. MCP宸ュ叿鐩戞帶
+功能说明：
+1. MCP工具管理
+2. MCP工具调用
+3. MCP工具监控
 
-浣跨敤绀轰緥锛?    from app.services.mcp_tool_service import MCPToolService
+使用示例：
+    from app.services.mcp_tool_service import MCPToolService
     
     tool_service = MCPToolService(db)
-    tool = tool_service.create_tool(name="鏁版嵁鍒嗘瀽", code="data_analysis")
+    tool = tool_service.create_tool(name="数据分析", code="data_analysis")
 """
 
 from sqlalchemy.orm import Session
@@ -24,88 +26,93 @@ from app.repositories.mcp_tool_repository import MCPToolRepository
 
 class MCPToolService:
     """
-    MCP宸ュ叿鏈嶅姟
+    MCP工具服务
     
-    鍔熻兘锛?    - MCP宸ュ叿绠＄悊
-    - MCP宸ュ叿璋冪敤
-    - MCP宸ュ叿鐩戞帶
+    功能：
+    - MCP工具管理
+    - MCP工具调用
+    - MCP工具监控
     
-    浣跨敤鏂规硶锛?        tool_service = MCPToolService(db)
-        tool = tool_service.create_tool(name="鏁版嵁鍒嗘瀽", code="data_analysis")
+    使用方法：
+        tool_service = MCPToolService(db)
+        tool = tool_service.create_tool(name="数据分析", code="data_analysis")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖朚CP宸ュ叿鏈嶅姟
+        初始化MCP工具服务
         
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.tool_repo = MCPToolRepository(db)
     
     def create_tool(self, tool_data: Dict[str, Any]) -> MCPTool:
         """
-        创建MCP宸ュ叿
+        创建MCP工具
         
         Args:
-            tool_data: 宸ュ叿鏁版嵁
+            tool_data: 工具数据
         
         Returns:
-            MCPTool: 创建鐨勫伐鍏峰璞?        
+            MCPTool: 创建的工具对象
+        
         Raises:
-            ValueError: 宸ュ叿编码宸插瓨鍦?        """
-        logger.info(f"创建MCP宸ュ叿: name={tool_data.get('name')}, code={tool_data.get('code')}")
+            ValueError: 工具编码已存在
+        """
+        logger.info(f"创建MCP工具: name={tool_data.get('name')}, code={tool_data.get('code')}")
         
-        # 妫€鏌ュ伐鍏风紪鐮佹槸鍚﹀凡瀛樺湪
+        # 检查工具编码是否已存在
         if self.tool_repo.exists_by_code(tool_data.get("code")):
-            raise ValueError("宸ュ叿编码宸插瓨鍦?)
+            raise ValueError("工具编码已存在")
         
-        # 创建宸ュ叿
+        # 创建工具
         tool = MCPTool(**tool_data)
         return self.tool_repo.create(tool)
     
     def get_tool(self, tool_id: str) -> Optional[MCPTool]:
         """
-        鑾峰彇宸ュ叿
+        获取工具
         
         Args:
-            tool_id: 宸ュ叿ID
+            tool_id: 工具ID
         
         Returns:
-            Optional[MCPTool]: 宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[MCPTool]: 工具对象，不存在返回None
         """
         return self.tool_repo.get_by_id(tool_id)
     
     def get_tool_by_code(self, code: str) -> Optional[MCPTool]:
         """
-        根据编码鑾峰彇宸ュ叿
+        根据编码获取工具
         
         Args:
-            code: 宸ュ叿编码
+            code: 工具编码
         
         Returns:
-            Optional[MCPTool]: 宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[MCPTool]: 工具对象，不存在返回None
         """
         return self.tool_repo.get_by_code(code)
     
     def update_tool(self, tool_id: str, tool_data: Dict[str, Any]) -> Optional[MCPTool]:
         """
-        更新宸ュ叿
+        更新工具
         
         Args:
-            tool_id: 宸ュ叿ID
-            tool_data: 宸ュ叿鏁版嵁
+            tool_id: 工具ID
+            tool_data: 工具数据
         
         Returns:
-            Optional[MCPTool]: 更新鍚庣殑宸ュ叿瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[MCPTool]: 更新后的工具对象，不存在返回None
         """
-        logger.info(f"更新MCP宸ュ叿: tool_id={tool_id}")
+        logger.info(f"更新MCP工具: tool_id={tool_id}")
         
         tool = self.tool_repo.get_by_id(tool_id)
         if not tool:
             return None
         
-        # 更新宸ュ叿
+        # 更新工具
         for key, value in tool_data.items():
             if hasattr(tool, key):
                 setattr(tool, key, value)
@@ -114,33 +121,33 @@ class MCPToolService:
     
     def delete_tool(self, tool_id: str) -> bool:
         """
-        删除宸ュ叿
+        删除工具
         
         Args:
-            tool_id: 宸ュ叿ID
+            tool_id: 工具ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         """
-        logger.info(f"删除MCP宸ュ叿: tool_id={tool_id}")
+        logger.info(f"删除MCP工具: tool_id={tool_id}")
         return self.tool_repo.delete(tool_id)
     
     def list_tools(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None,
                    status: Optional[str] = None, is_public: Optional[bool] = None,
                    page: int = 1, page_size: int = 10) -> List[MCPTool]:
         """
-        鑾峰彇宸ュ叿鍒楄〃
+        获取工具列表
         
         Args:
-            tenant_id: 租户ID锛堝彲閫夛級
-            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
-            status: 状态侊紙鍙€夛級
-            is_public: 鏄惁鍏紑锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            tenant_id: 租户ID（可选）
+            keyword: 搜索关键词（可选）
+            status: 状态（可选）
+            is_public: 是否公开（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[MCPTool]: 宸ュ叿鍒楄〃
+            List[MCPTool]: 工具列表
         """
         if keyword:
             return self.tool_repo.search(keyword, tenant_id, page, page_size)
@@ -151,33 +158,34 @@ class MCPToolService:
     
     async def execute_tool(self, tool_id: str, params: Dict[str, Any], user_id: str) -> Dict[str, Any]:
         """
-        鎵цMCP宸ュ叿
+        执行MCP工具
         
         Args:
-            tool_id: 宸ュ叿ID
-            params: 鍙傛暟
+            tool_id: 工具ID
+            params: 参数
             user_id: 用户ID
         
         Returns:
-            Dict[str, Any]: 鎵ц缁撴灉
+            Dict[str, Any]: 执行结果
         
         Raises:
-            ValueError: 宸ュ叿涓嶅瓨鍦ㄦ垨涓嶅彲鐢?            ValueError: 鍙傛暟楠岃瘉澶辫触
+            ValueError: 工具不存在或不可用
+            ValueError: 参数验证失败
         """
-        logger.info(f"鎵цMCP宸ュ叿: tool_id={tool_id}, user_id={user_id}")
+        logger.info(f"执行MCP工具: tool_id={tool_id}, user_id={user_id}")
         
-        # 鑾峰彇宸ュ叿
+        # 获取工具
         tool = self.tool_repo.get_by_id(tool_id)
         if not tool:
-            raise ValueError("宸ュ叿涓嶅瓨鍦?)
+            raise ValueError("工具不存在")
         
         if not tool.is_available():
-            raise ValueError("宸ュ叿涓嶅彲鐢?)
+            raise ValueError("工具不可用")
         
-        # 鎵ц宸ュ叿
+        # 执行工具
         result = await self._execute_http_request(tool, params)
         
-        # 更新缁熻淇℃伅
+        # 更新统计信息
         tool.increment_call_count(success=True)
         self.tool_repo.update(tool)
         
@@ -185,14 +193,14 @@ class MCPToolService:
     
     async def _execute_http_request(self, tool: MCPTool, params: Dict[str, Any]) -> Dict[str, Any]:
         """
-        鎵цHTTP璇锋眰
+        执行HTTP请求
         
         Args:
-            tool: 宸ュ叿瀵硅薄
-            params: 鍙傛暟
+            tool: 工具对象
+            params: 参数
         
         Returns:
-            Dict[str, Any]: 鎵ц缁撴灉
+            Dict[str, Any]: 执行结果
         """
         timeout = tool.api_timeout
         
@@ -207,24 +215,24 @@ class MCPToolService:
                 elif tool.api_method.upper() == "DELETE":
                     response = await client.delete(tool.api_endpoint, json=params)
                 else:
-                    raise ValueError(f"涓嶆敮鎸佺殑HTTP鏂规硶: {tool.api_method}")
+                    raise ValueError(f"不支持的HTTP方法: {tool.api_method}")
                 
                 response.raise_for_status()
                 return response.json()
                 
             except httpx.HTTPError as e:
-                logger.error(f"HTTP璇锋眰澶辫触: {e}")
-                raise ValueError(f"HTTP璇锋眰澶辫触: {str(e)}")
+                logger.error(f"HTTP请求失败: {e}")
+                raise ValueError(f"HTTP请求失败: {str(e)}")
     
     def get_tool_statistics(self, tool_id: str) -> Dict[str, Any]:
         """
-        鑾峰彇宸ュ叿缁熻淇℃伅
+        获取工具统计信息
         
         Args:
-            tool_id: 宸ュ叿ID
+            tool_id: 工具ID
         
         Returns:
-            Dict[str, Any]: 缁熻淇℃伅
+            Dict[str, Any]: 统计信息
         """
         tool = self.tool_repo.get_by_id(tool_id)
         if not tool:
@@ -242,13 +250,13 @@ class MCPToolService:
     
     def count_tools(self, tenant_id: Optional[str] = None) -> int:
         """
-        缁熻宸ュ叿数量
+        统计工具数量
         
         Args:
-            tenant_id: 租户ID锛堝彲閫夛級
+            tenant_id: 租户ID（可选）
         
         Returns:
-            int: 宸ュ叿数量
+            int: 工具数量
         """
         if tenant_id:
             return self.tool_repo.count_by_tenant(tenant_id)

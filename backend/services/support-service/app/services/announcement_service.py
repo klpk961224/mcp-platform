@@ -1,7 +1,8 @@
 ﻿"""
-閫氱煡鍏憡Service
+通知公告Service
 
-鎻愪緵閫氱煡鍏憡涓氬姟閫昏緫灞?"""
+提供通知公告业务逻辑层
+"""
 
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -12,20 +13,22 @@ from app.repositories.announcement_repository import AnnouncementRepository
 
 
 class AnnouncementService:
-    """閫氱煡鍏憡Service"""
+    """通知公告Service"""
 
-    # 閫氱煡鍏憡类型甯搁噺
-    TYPE_SYSTEM = "system"  # 绯荤粺鍏憡
-    TYPE_ACTIVITY = "activity"  # 娲诲姩閫氱煡
-    TYPE_MAINTENANCE = "maintenance"  # 缁存姢閫氱煡
-    TYPE_UPDATE = "update"  # 更新閫氱煡
-    TYPE_OTHER = "other"  # 鍏朵粬
+    # 通知公告类型常量
+    TYPE_SYSTEM = "system"  # 系统公告
+    TYPE_ACTIVITY = "activity"  # 活动通知
+    TYPE_MAINTENANCE = "maintenance"  # 维护通知
+    TYPE_UPDATE = "update"  # 更新通知
+    TYPE_OTHER = "other"  # 其他
 
-    # 状态佸父閲?    STATUS_DRAFT = "draft"
+    # 状态常量
+    STATUS_DRAFT = "draft"
     STATUS_PUBLISHED = "published"
     STATUS_ARCHIVED = "archived"
 
-    # 浼樺厛绾у父閲?    PRIORITY_LOW = 0
+    # 优先级常量
+    PRIORITY_LOW = 0
     PRIORITY_NORMAL = 1
     PRIORITY_HIGH = 2
     PRIORITY_URGENT = 3
@@ -35,14 +38,14 @@ class AnnouncementService:
         self.repository = AnnouncementRepository(db)
 
     def get_announcement_by_id(self, announcement_id: str) -> Optional[Dict[str, Any]]:
-        """根据ID鑾峰彇閫氱煡鍏憡"""
+        """根据ID获取通知公告"""
         announcement = self.repository.get_by_id(announcement_id)
         if not announcement:
             return None
         return self._to_dict(announcement)
 
     def get_all_announcements(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鑾峰彇鎵€鏈夐€氱煡鍏憡"""
+        """获取所有通知公告"""
         announcements = self.repository.get_all(skip=skip, limit=limit)
         total = self.repository.count()
         return {
@@ -51,7 +54,7 @@ class AnnouncementService:
         }
 
     def get_published_announcements(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鑾峰彇宸插彂甯冪殑閫氱煡鍏憡"""
+        """获取已发布的通知公告"""
         announcements = self.repository.get_published(skip=skip, limit=limit)
         total = self.repository.count_published()
         return {
@@ -60,7 +63,7 @@ class AnnouncementService:
         }
 
     def get_announcements_by_publisher(self, publisher_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """根据鍙戝竷鑰呰幏鍙栭€氱煡鍏憡"""
+        """根据发布者获取通知公告"""
         announcements = self.repository.get_by_publisher(publisher_id, skip=skip, limit=limit)
         total = self.repository.count_by_publisher(publisher_id)
         return {
@@ -74,7 +77,7 @@ class AnnouncementService:
         skip: int = 0,
         limit: int = 100
     ) -> Dict[str, Any]:
-        """鎼滅储閫氱煡鍏憡"""
+        """搜索通知公告"""
         announcements, total = self.repository.search(query_params, skip=skip, limit=limit)
         return {
             "items": [self._to_dict(a) for a in announcements],
@@ -94,8 +97,8 @@ class AnnouncementService:
         expire_at: Optional[datetime] = None,
         is_top: int = 0
     ) -> Dict[str, Any]:
-        """创建閫氱煡鍏憡"""
-        # 创建閫氱煡鍏憡
+        """创建通知公告"""
+        # 创建通知公告
         announcement = Announcement(
             tenant_id=tenant_id,
             type=type,
@@ -123,12 +126,12 @@ class AnnouncementService:
         expire_at: Optional[datetime] = None,
         is_top: Optional[int] = None
     ) -> Optional[Dict[str, Any]]:
-        """更新閫氱煡鍏憡"""
+        """更新通知公告"""
         announcement = self.repository.get_by_id(announcement_id)
         if not announcement:
             return None
 
-        # 更新瀛楁
+        # 更新字段
         if title is not None:
             announcement.title = title
         if content is not None:
@@ -137,7 +140,7 @@ class AnnouncementService:
             announcement.priority = priority
         if status is not None:
             announcement.status = status
-            # 濡傛灉状态佹敼涓哄凡鍙戝竷锛屼笖娌℃湁鍙戝竷鏃堕棿锛屽垯璁剧疆鍙戝竷鏃堕棿
+            # 如果状态改为已发布，且没有发布时间，则设置发布时间
             if status == self.STATUS_PUBLISHED and not announcement.publish_at:
                 announcement.publish_at = datetime.now()
         if publish_at is not None:
@@ -151,11 +154,11 @@ class AnnouncementService:
         return self._to_dict(announcement)
 
     def delete_announcement(self, announcement_id: str) -> bool:
-        """删除閫氱煡鍏憡"""
+        """删除通知公告"""
         return self.repository.delete(announcement_id)
 
     def publish_announcement(self, announcement_id: str) -> Optional[Dict[str, Any]]:
-        """鍙戝竷閫氱煡鍏憡"""
+        """发布通知公告"""
         return self.update_announcement(
             announcement_id=announcement_id,
             status=self.STATUS_PUBLISHED,
@@ -163,29 +166,30 @@ class AnnouncementService:
         )
 
     def archive_announcement(self, announcement_id: str) -> Optional[Dict[str, Any]]:
-        """褰掓。閫氱煡鍏憡"""
+        """归档通知公告"""
         return self.update_announcement(
             announcement_id=announcement_id,
             status=self.STATUS_ARCHIVED
         )
 
     def mark_as_read(self, announcement_id: str, user_id: str) -> bool:
-        """鏍囪閫氱煡鍏憡涓哄凡璇?""
-        # 妫€鏌ユ槸鍚﹀凡缁忚杩?        existing = self.repository.get_read_record(announcement_id, user_id)
+        """标记通知公告为已读"""
+        # 检查是否已经读过
+        existing = self.repository.get_read_record(announcement_id, user_id)
         if existing:
             return True
 
-        # 创建闃呰璁板綍
+        # 创建阅读记录
         self.repository.create_read_record(announcement_id, user_id)
         return True
 
     def get_read_count(self, announcement_id: str) -> int:
-        """鑾峰彇闃呰数量"""
+        """获取阅读数量"""
         return self.repository.count_reads(announcement_id)
 
     def get_user_unread_count(self, user_id: str) -> int:
-        """鑾峰彇鐢ㄦ埛鏈閫氱煡鍏憡数量"""
-        # 鑾峰彇鎵€鏈夊凡鍙戝竷鐨勯€氱煡鍏憡
+        """获取用户未读通知公告数量"""
+        # 获取所有已发布的通知公告
         published = self.repository.get_published(skip=0, limit=999999)
         unread_count = 0
 
@@ -197,7 +201,7 @@ class AnnouncementService:
         return unread_count
 
     def _to_dict(self, announcement: Announcement) -> Dict[str, Any]:
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": announcement.id,
             "tenant_id": announcement.tenant_id,

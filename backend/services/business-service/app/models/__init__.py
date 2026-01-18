@@ -1,8 +1,16 @@
 ﻿# -*- coding: utf-8 -*-
 """
-涓氬姟鏈嶅姟妯″瀷
+业务服务模型
 
-鍖呭惈锛?- Workflow: 宸ヤ綔娴佹ā鍨?- WorkflowDefinition: 宸ヤ綔娴佸畾涔夋ā鍨?- WorkflowInstance: 宸ヤ綔娴佸疄渚嬫ā鍨?- WorkflowNode: 宸ヤ綔娴佽妭鐐规ā鍨?- WorkflowTask: 宸ヤ綔娴佷换鍔℃ā鍨?- WorkflowLog: 宸ヤ綔娴佹棩蹇楁ā鍨?- WorkflowTemplate: 宸ヤ綔娴佹ā鏉挎ā鍨?"""
+包含：
+- Workflow: 工作流模型
+- WorkflowDefinition: 工作流定义模型
+- WorkflowInstance: 工作流实例模型
+- WorkflowNode: 工作流节点模型
+- WorkflowTask: 工作流任务模型
+- WorkflowLog: 工作流日志模型
+- WorkflowTemplate: 工作流模板模型
+"""
 
 from common.database.models.workflow import (
     WorkflowDefinition,

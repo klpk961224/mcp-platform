@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鏃ュ織瀹¤API璺敱
+日志审计API路由
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
@@ -16,10 +16,10 @@ from app.core.config import settings
 from app.core.deps import get_db
 from app.services.log_service import LogService
 
-router = APIRouter(prefix="/logs", tags=["鏃ュ織瀹¤"])
+router = APIRouter(prefix="/logs", tags=["日志审计"])
 
 
-@router.get("/login", summary="鑾峰彇鐧诲綍鏃ュ織鍒楄〃")
+@router.get("/login", summary="获取登录日志列表")
 async def get_login_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
@@ -27,8 +27,8 @@ async def get_login_logs(
     tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇鐧诲綍鏃ュ織鍒楄〃"""
-    logger.info(f"鑾峰彇鐧诲綍鏃ュ織鍒楄〃: page={page}")
+    """获取登录日志列表"""
+    logger.info(f"获取登录日志列表: page={page}")
     
     try:
         log_service = LogService(db)
@@ -54,18 +54,18 @@ async def get_login_logs(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"鑾峰彇鐧诲綍鏃ュ織鍒楄〃寮傚父: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鐧诲綍鏃ュ織鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"获取登录日志列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取登录日志列表失败，请稍后重试")
 
 
-@router.get("/login/statistics", summary="鑾峰彇鐧诲綍缁熻淇℃伅")
+@router.get("/login/statistics", summary="获取登录统计信息")
 async def get_login_statistics(
     tenant_id: str = Query(..., description="租户ID"),
-    days: int = Query(7, ge=1, le=30, description="缁熻澶╂暟"),
+    days: int = Query(7, ge=1, le=30, description="统计天数"),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇鐧诲綍缁熻淇℃伅"""
-    logger.info(f"鑾峰彇鐧诲綍缁熻淇℃伅: tenant_id={tenant_id}, days={days}")
+    """获取登录统计信息"""
+    logger.info(f"获取登录统计信息: tenant_id={tenant_id}, days={days}")
     
     try:
         log_service = LogService(db)
@@ -73,11 +73,11 @@ async def get_login_statistics(
         
         return statistics
     except Exception as e:
-        logger.error(f"鑾峰彇鐧诲綍缁熻淇℃伅寮傚父: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鐧诲綍缁熻淇℃伅澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"获取登录统计信息异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取登录统计信息失败，请稍后重试")
 
 
-@router.get("/operation", summary="鑾峰彇鎿嶄綔鏃ュ織鍒楄〃")
+@router.get("/operation", summary="获取操作日志列表")
 async def get_operation_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
@@ -85,8 +85,8 @@ async def get_operation_logs(
     tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇鎿嶄綔鏃ュ織鍒楄〃"""
-    logger.info(f"鑾峰彇鎿嶄綔鏃ュ織鍒楄〃: page={page}")
+    """获取操作日志列表"""
+    logger.info(f"获取操作日志列表: page={page}")
     
     try:
         log_service = LogService(db)
@@ -111,19 +111,19 @@ async def get_operation_logs(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"鑾峰彇鎿嶄綔鏃ュ織鍒楄〃寮傚父: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鎿嶄綔鏃ュ織鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"获取操作日志列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取操作日志列表失败，请稍后重试")
 
 
-@router.get("/operation/slow", summary="鑾峰彇鎱㈡煡璇㈡棩蹇?)
+@router.get("/operation/slow", summary="获取慢查询日志")
 async def get_slow_queries(
-    threshold: int = Query(1000, ge=100, description="闃堝€硷紙姣锛?),
+    threshold: int = Query(1000, ge=100, description="阈值（毫秒）"),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇鎱㈡煡璇㈡棩蹇?""
-    logger.info(f"鑾峰彇鎱㈡煡璇㈡棩蹇? threshold={threshold}")
+    """获取慢查询日志"""
+    logger.info(f"获取慢查询日志: threshold={threshold}")
     
     try:
         log_service = LogService(db)
@@ -139,6 +139,5 @@ async def get_slow_queries(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"鑾峰彇鎱㈡煡璇㈡棩蹇楀紓甯? error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鎱㈡煡璇㈡棩蹇楀け璐ワ紝璇风◢鍚庨噸璇?)
-
+        logger.error(f"获取慢查询日志异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取慢查询日志失败，请稍后重试")

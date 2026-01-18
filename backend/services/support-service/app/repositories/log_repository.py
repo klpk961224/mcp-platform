@@ -1,10 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鏃ュ織鏁版嵁璁块棶灞?
-鍔熻兘璇存槑锛?1. 鐧诲綍鏃ュ織CRUD鎿嶄綔
-2. 鎿嶄綔鏃ュ織CRUD鎿嶄綔
-3. 鏃ュ織查询鍜岀粺璁?
-浣跨敤绀轰緥锛?    from app.repositories.log_repository import LogRepository
+日志数据访问层
+
+功能说明：
+1. 登录日志CRUD操作
+2. 操作日志CRUD操作
+3. 日志查询和统计
+
+使用示例：
+    from app.repositories.log_repository import LogRepository
     
     log_repo = LogRepository(db)
     logs = log_repo.get_user_login_logs(user_id="123")
@@ -21,33 +25,39 @@ from common.database.models.system import LoginLog, OperationLog
 
 class LogRepository:
     """
-    鏃ュ織鏁版嵁璁块棶灞?    
-    鍔熻兘锛?    - 鐧诲綍鏃ュ織CRUD鎿嶄綔
-    - 鎿嶄綔鏃ュ織CRUD鎿嶄綔
-    - 鏃ュ織查询鍜岀粺璁?    
-    浣跨敤鏂规硶锛?        log_repo = LogRepository(db)
+    日志数据访问层
+    
+    功能：
+    - 登录日志CRUD操作
+    - 操作日志CRUD操作
+    - 日志查询和统计
+    
+    使用方法：
+        log_repo = LogRepository(db)
         logs = log_repo.get_user_login_logs(user_id="123")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栨棩蹇楁暟鎹闂眰
+        初始化日志数据访问层
         
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
     
-    # 鐧诲綍鏃ュ織鐩稿叧鏂规硶
+    # 登录日志相关方法
     def create_login_log(self, login_log: LoginLog) -> LoginLog:
         """
-        创建鐧诲綍鏃ュ織
+        创建登录日志
         
         Args:
-            login_log: 鐧诲綍鏃ュ織瀵硅薄
+            login_log: 登录日志对象
         
         Returns:
-            LoginLog: 创建鐨勭櫥褰曟棩蹇楀璞?        """
-        logger.info(f"创建鐧诲綍鏃ュ織: user_id={login_log.user_id}, login_status={login_log.login_status}")
+            LoginLog: 创建的登录日志对象
+        """
+        logger.info(f"创建登录日志: user_id={login_log.user_id}, login_status={login_log.login_status}")
         self.db.add(login_log)
         self.db.commit()
         self.db.refresh(login_log)
@@ -55,27 +65,27 @@ class LogRepository:
     
     def get_login_log_by_id(self, log_id: str) -> Optional[LoginLog]:
         """
-        根据ID鑾峰彇鐧诲綍鏃ュ織
+        根据ID获取登录日志
         
         Args:
-            log_id: 鏃ュ織ID
+            log_id: 日志ID
         
         Returns:
-            Optional[LoginLog]: 鐧诲綍鏃ュ織瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[LoginLog]: 登录日志对象，不存在返回None
         """
         return self.db.query(LoginLog).filter(LoginLog.id == log_id).first()
     
     def get_user_login_logs(self, user_id: str, page: int = 1, page_size: int = 10) -> List[LoginLog]:
         """
-        鑾峰彇鐢ㄦ埛鐧诲綍鏃ュ織
+        获取用户登录日志
         
         Args:
             user_id: 用户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
+            List[LoginLog]: 登录日志列表
         """
         offset = (page - 1) * page_size
         return self.db.query(LoginLog).filter(
@@ -85,17 +95,17 @@ class LogRepository:
     def get_tenant_login_logs(self, tenant_id: str, start_date: Optional[datetime] = None,
                                end_date: Optional[datetime] = None, page: int = 1, page_size: int = 10) -> List[LoginLog]:
         """
-        鑾峰彇绉熸埛鐧诲綍鏃ュ織
+        获取租户登录日志
         
         Args:
             tenant_id: 租户ID
-            start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
-            end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            start_date: 开始日期（可选）
+            end_date: 结束日期（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
+            List[LoginLog]: 登录日志列表
         """
         offset = (page - 1) * page_size
         query = self.db.query(LoginLog).filter(LoginLog.tenant_id == tenant_id)
@@ -110,15 +120,17 @@ class LogRepository:
     def get_failed_login_logs(self, start_date: Optional[datetime] = None, 
                               end_date: Optional[datetime] = None, page: int = 1, page_size: int = 10) -> List[LoginLog]:
         """
-        鑾峰彇澶辫触鐨勭櫥褰曟棩蹇?        
+        获取失败的登录日志
+        
         Args:
-            start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
-            end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            start_date: 开始日期（可选）
+            end_date: 结束日期（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[LoginLog]: 澶辫触鐨勭櫥褰曟棩蹇楀垪琛?        """
+            List[LoginLog]: 失败的登录日志列表
+        """
         offset = (page - 1) * page_size
         query = self.db.query(LoginLog).filter(LoginLog.login_status == "failed")
         
@@ -132,15 +144,16 @@ class LogRepository:
     def search_login_logs(self, keyword: str, tenant_id: Optional[str] = None,
                           page: int = 1, page_size: int = 10) -> List[LoginLog]:
         """
-        鎼滅储鐧诲綍鏃ュ織
+        搜索登录日志
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            keyword: 关键词
+            tenant_id: 租户ID（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[LoginLog]: 鐧诲綍鏃ュ織鍒楄〃
+            List[LoginLog]: 登录日志列表
         """
         offset = (page - 1) * page_size
         query = self.db.query(LoginLog).filter(
@@ -158,30 +171,31 @@ class LogRepository:
     
     def update_login_log(self, login_log: LoginLog) -> LoginLog:
         """
-        更新鐧诲綍鏃ュ織
+        更新登录日志
         
         Args:
-            login_log: 鐧诲綍鏃ュ織瀵硅薄
+            login_log: 登录日志对象
         
         Returns:
-            LoginLog: 更新鍚庣殑鐧诲綍鏃ュ織瀵硅薄
+            LoginLog: 更新后的登录日志对象
         """
-        logger.info(f"更新鐧诲綍鏃ュ織: log_id={login_log.id}")
+        logger.info(f"更新登录日志: log_id={login_log.id}")
         self.db.commit()
         self.db.refresh(login_log)
         return login_log
     
-    # 鎿嶄綔鏃ュ織鐩稿叧鏂规硶
+    # 操作日志相关方法
     def create_operation_log(self, operation_log: OperationLog) -> OperationLog:
         """
-        创建鎿嶄綔鏃ュ織
+        创建操作日志
         
         Args:
-            operation_log: 鎿嶄綔鏃ュ織瀵硅薄
+            operation_log: 操作日志对象
         
         Returns:
-            OperationLog: 创建鐨勬搷浣滄棩蹇楀璞?        """
-        logger.info(f"创建鎿嶄綔鏃ュ織: user_id={operation_log.user_id}, operation={operation_log.operation}")
+            OperationLog: 创建的操作日志对象
+        """
+        logger.info(f"创建操作日志: user_id={operation_log.user_id}, operation={operation_log.operation}")
         self.db.add(operation_log)
         self.db.commit()
         self.db.refresh(operation_log)
@@ -189,27 +203,27 @@ class LogRepository:
     
     def get_operation_log_by_id(self, log_id: str) -> Optional[OperationLog]:
         """
-        根据ID鑾峰彇鎿嶄綔鏃ュ織
+        根据ID获取操作日志
         
         Args:
-            log_id: 鏃ュ織ID
+            log_id: 日志ID
         
         Returns:
-            Optional[OperationLog]: 鎿嶄綔鏃ュ織瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[OperationLog]: 操作日志对象，不存在返回None
         """
         return self.db.query(OperationLog).filter(OperationLog.id == log_id).first()
     
     def get_user_operation_logs(self, user_id: str, page: int = 1, page_size: int = 10) -> List[OperationLog]:
         """
-        鑾峰彇鐢ㄦ埛鎿嶄綔鏃ュ織
+        获取用户操作日志
         
         Args:
             user_id: 用户ID
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
+            List[OperationLog]: 操作日志列表
         """
         offset = (page - 1) * page_size
         return self.db.query(OperationLog).filter(
@@ -219,17 +233,17 @@ class LogRepository:
     def get_tenant_operation_logs(self, tenant_id: str, start_date: Optional[datetime] = None,
                                    end_date: Optional[datetime] = None, page: int = 1, page_size: int = 10) -> List[OperationLog]:
         """
-        鑾峰彇绉熸埛鎿嶄綔鏃ュ織
+        获取租户操作日志
         
         Args:
             tenant_id: 租户ID
-            start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
-            end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            start_date: 开始日期（可选）
+            end_date: 结束日期（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
+            List[OperationLog]: 操作日志列表
         """
         offset = (page - 1) * page_size
         query = self.db.query(OperationLog).filter(OperationLog.tenant_id == tenant_id)
@@ -244,15 +258,16 @@ class LogRepository:
     def search_operation_logs(self, keyword: str, tenant_id: Optional[str] = None,
                               page: int = 1, page_size: int = 10) -> List[OperationLog]:
         """
-        鎼滅储鎿嶄綔鏃ュ織
+        搜索操作日志
         
         Args:
-            keyword: 鍏抽敭璇?            tenant_id: 租户ID锛堝彲閫夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            keyword: 关键词
+            tenant_id: 租户ID（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[OperationLog]: 鎿嶄綔鏃ュ織鍒楄〃
+            List[OperationLog]: 操作日志列表
         """
         offset = (page - 1) * page_size
         query = self.db.query(OperationLog).filter(
@@ -271,27 +286,31 @@ class LogRepository:
     
     def get_slow_queries(self, threshold: int = 1000, page: int = 1, page_size: int = 10) -> List[OperationLog]:
         """
-        鑾峰彇鎱㈡煡璇㈡棩蹇?        
+        获取慢查询日志
+        
         Args:
-            threshold: 闃堝€硷紙姣锛?            page: 椤电爜
-            page_size: 姣忛〉数量
+            threshold: 阈值（毫秒）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[OperationLog]: 鎱㈡煡璇㈡棩蹇楀垪琛?        """
+            List[OperationLog]: 慢查询日志列表
+        """
         offset = (page - 1) * page_size
         return self.db.query(OperationLog).filter(
             OperationLog.response_time > threshold
         ).order_by(OperationLog.response_time.desc()).offset(offset).limit(page_size).all()
     
-    # 缁熻鏂规硶
+    # 统计方法
     def count_login_logs_by_date(self, date: datetime) -> int:
         """
-        缁熻鎸囧畾鏃ユ湡鐨勭櫥褰曟棩蹇楁暟閲?        
+        统计指定日期的登录日志数量
+        
         Args:
-            date: 鏃ユ湡
+            date: 日期
         
         Returns:
-            int: 鐧诲綍鏃ュ織数量
+            int: 登录日志数量
         """
         start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=1)
@@ -304,12 +323,14 @@ class LogRepository:
     
     def count_failed_logins_by_user(self, user_id: str, hours: int = 24) -> int:
         """
-        缁熻鐢ㄦ埛鍦ㄦ寚瀹氬皬鏃跺唴鐨勫け璐ョ櫥褰曟鏁?        
+        统计用户在指定小时内的失败登录次数
+        
         Args:
             user_id: 用户ID
-            hours: 灏忔椂鏁?        
+            hours: 小时数
+        
         Returns:
-            int: 澶辫触鐧诲綍娆℃暟
+            int: 失败登录次数
         """
         start_time = datetime.now() - timedelta(hours=hours)
         return self.db.query(LoginLog).filter(
@@ -322,12 +343,13 @@ class LogRepository:
     
     def count_operation_logs_by_date(self, date: datetime) -> int:
         """
-        缁熻鎸囧畾鏃ユ湡鐨勬搷浣滄棩蹇楁暟閲?        
+        统计指定日期的操作日志数量
+        
         Args:
-            date: 鏃ユ湡
+            date: 日期
         
         Returns:
-            int: 鎿嶄綔鏃ュ織数量
+            int: 操作日志数量
         """
         start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=1)
@@ -340,25 +362,26 @@ class LogRepository:
     
     def get_login_statistics(self, tenant_id: str, days: int = 7) -> Dict[str, Any]:
         """
-        鑾峰彇鐧诲綍缁熻淇℃伅
+        获取登录统计信息
         
         Args:
             tenant_id: 租户ID
-            days: 澶╂暟
+            days: 天数
         
         Returns:
-            Dict[str, Any]: 缁熻淇℃伅
+            Dict[str, Any]: 统计信息
         """
         start_date = datetime.now() - timedelta(days=days)
         
-        # 鎬荤櫥褰曟鏁?        total_logins = self.db.query(LoginLog).filter(
+        # 总登录次数
+        total_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
                 LoginLog.created_at >= start_date
             )
         ).count()
         
-        # 鎴愬姛鐧诲綍娆℃暟
+        # 成功登录次数
         success_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
@@ -367,7 +390,7 @@ class LogRepository:
             )
         ).count()
         
-        # 澶辫触鐧诲綍娆℃暟
+        # 失败登录次数
         failed_logins = self.db.query(LoginLog).filter(
             and_(
                 LoginLog.tenant_id == tenant_id,
@@ -376,7 +399,7 @@ class LogRepository:
             )
         ).count()
         
-        # 姣忔棩鐧诲綍缁熻
+        # 每日登录统计
         daily_stats = self.db.query(
             func.date(LoginLog.created_at).label('date'),
             func.count(LoginLog.id).label('count')

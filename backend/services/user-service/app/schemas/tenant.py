@@ -1,5 +1,5 @@
 ﻿"""
-绉熸埛鐩稿叧Schema
+租户相关Schema
 """
 
 from pydantic import BaseModel, Field
@@ -8,22 +8,22 @@ from datetime import datetime
 
 
 class TenantBase(BaseModel):
-    """绉熸埛鍩虹妯″瀷"""
+    """租户基础模型"""
     
-    name: str = Field(..., description="绉熸埛名称")
-    code: str = Field(..., description="绉熸埛编码")
-    status: str = Field(default="active", description="状态?)
+    name: str = Field(..., description="租户名称")
+    code: str = Field(..., description="租户编码")
+    status: str = Field(default="active", description="状态")
     description: Optional[str] = Field(None, description="描述")
 
 
 class TenantCreate(TenantBase):
-    """创建绉熸埛"""
+    """创建租户"""
     
     pass
 
 
 class TenantUpdate(BaseModel):
-    """更新绉熸埛"""
+    """更新租户"""
     
     name: Optional[str] = None
     status: Optional[str] = None
@@ -31,7 +31,7 @@ class TenantUpdate(BaseModel):
 
 
 class TenantResponse(TenantBase):
-    """绉熸埛鍝嶅簲"""
+    """租户响应"""
     
     id: str
     created_at: datetime
@@ -42,7 +42,7 @@ class TenantResponse(TenantBase):
 
 
 class TenantListResponse(BaseModel):
-    """绉熸埛鍒楄〃鍝嶅簲"""
+    """租户列表响应"""
     
     total: int
     items: List[TenantResponse]

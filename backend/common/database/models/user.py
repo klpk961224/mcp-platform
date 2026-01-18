@@ -1,7 +1,7 @@
-"""
-用户关系模型
+﻿"""
+用户相关模型
 
-包括：
+包含：
 - User: 用户表
 - Department: 部门表
 - Role: 角色表
@@ -58,20 +58,19 @@ class Department(BaseModel, FullModelMixin):
     
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False, comment='租户ID')
     name = Column(String(100), nullable=False, comment='部门名称')
-    code = Column(String(50), comment='部门编码')
-    parent_id = Column(String(50), ForeignKey('departments.id', ondelete='SET NULL'), comment='上级部门ID')
-    leader_id = Column(String(50), ForeignKey('users.id', ondelete='SET NULL'), comment='部门负责人ID')
-    sort_order = Column(Integer, default=0, comment='排序')
+    code = Column(String(100), nullable=False, comment='部门编码')
+    parent_id = Column(String(50), ForeignKey('departments.id', ondelete='SET NULL'), comment='父部门ID')
+    level = Column(Integer, nullable=False, default=1, comment='层级')
+    sort_order = Column(Integer, nullable=False, default=0, comment='排序')
     status = Column(String(20), nullable=False, default='active', comment='状态')
     
     # 关系
     tenant = relationship('Tenant', back_populates='departments')
     parent = relationship('Department', remote_side='Department.id', backref='children')
-    leader = relationship('User', foreign_keys=[leader_id])
     users = relationship('User', back_populates='department')
     
     def __repr__(self):
-        return f"<Department(id={self.id}, name={self.name})>"
+        return f"<Department(id={self.id}, name={self.name}, code={self.code})>"
 
 
 class Role(BaseModel, FullModelMixin):
@@ -80,9 +79,10 @@ class Role(BaseModel, FullModelMixin):
     __tablename__ = 'roles'
     
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False, comment='租户ID')
-    name = Column(String(50), nullable=False, comment='角色名称')
-    code = Column(String(50), comment='角色编码')
-    description = Column(Text, comment='角色描述')
+    name = Column(String(100), nullable=False, comment='角色名称')
+    code = Column(String(50), nullable=False, comment='角色编码')
+    description = Column(Text, comment='描述')
+    is_system = Column(Boolean, nullable=False, default=False, comment='是否系统角色')
     status = Column(String(20), nullable=False, default='active', comment='状态')
     
     # 关系
@@ -90,4 +90,4 @@ class Role(BaseModel, FullModelMixin):
     users = relationship('User', secondary=user_roles, back_populates='roles')
     
     def __repr__(self):
-        return f"<Role(id={self.id}, name={self.name})>"
+        return f"<Role(id={self.id}, name={self.name}, code={self.code})>"

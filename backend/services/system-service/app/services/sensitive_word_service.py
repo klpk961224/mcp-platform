@@ -1,7 +1,8 @@
 ﻿"""
-鏁忔劅璇峉ervice
+敏感词Service
 
-鎻愪緵鏁忔劅璇嶄笟鍔￠€昏緫灞?"""
+提供敏感词业务逻辑层
+"""
 
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
@@ -11,19 +12,23 @@ from app.repositories.sensitive_word_repository import SensitiveWordRepository
 
 
 class SensitiveWordService:
-    """鏁忔劅璇峉ervice"""
+    """敏感词Service"""
 
-    # 鏁忔劅级别甯搁噺
-    LEVEL_LOW = 1  # 浣?    LEVEL_MEDIUM = 2  # 涓?    LEVEL_HIGH = 3  # 楂?    LEVEL_CRITICAL = 4  # 涓ラ噸
+    # 敏感级别常量
+    LEVEL_LOW = 1  # 低
+    LEVEL_MEDIUM = 2  # 中
+    LEVEL_HIGH = 3  # 高
+    LEVEL_CRITICAL = 4  # 严重
 
-    # 鍒嗙被甯搁噺
-    CATEGORY_POLITICAL = "political"  # 鏀挎不
-    CATEGORY_PORN = "porn"  # 鑹叉儏
-    CATEGORY_VIOLENCE = "violence"  # 鏆村姏
-    CATEGORY_AD = "ad"  # 骞垮憡
-    CATEGORY_OTHER = "other"  # 鍏朵粬
+    # 分类常量
+    CATEGORY_POLITICAL = "political"  # 政治
+    CATEGORY_PORN = "porn"  # 色情
+    CATEGORY_VIOLENCE = "violence"  # 暴力
+    CATEGORY_AD = "ad"  # 广告
+    CATEGORY_OTHER = "other"  # 其他
 
-    # 状态佸父閲?    STATUS_ACTIVE = "active"
+    # 状态常量
+    STATUS_ACTIVE = "active"
     STATUS_INACTIVE = "inactive"
 
     def __init__(self, db: Session):
@@ -31,21 +36,21 @@ class SensitiveWordService:
         self.repository = SensitiveWordRepository(db)
 
     def get_sensitive_word_by_id(self, sensitive_word_id: str) -> Optional[Dict[str, Any]]:
-        """根据ID鑾峰彇鏁忔劅璇?""
+        """根据ID获取敏感词"""
         sensitive_word = self.repository.get_by_id(sensitive_word_id)
         if not sensitive_word:
             return None
         return self._to_dict(sensitive_word)
 
     def get_sensitive_word_by_word(self, word: str) -> Optional[Dict[str, Any]]:
-        """根据鏁忔劅璇嶈幏鍙?""
+        """根据敏感词获取"""
         sensitive_word = self.repository.get_by_word(word)
         if not sensitive_word:
             return None
         return self._to_dict(sensitive_word)
 
     def get_all_sensitive_words(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """鑾峰彇鎵€鏈夋晱鎰熻瘝"""
+        """获取所有敏感词"""
         sensitive_words = self.repository.get_all(skip=skip, limit=limit)
         total = self.repository.count()
         return {
@@ -54,7 +59,7 @@ class SensitiveWordService:
         }
 
     def get_sensitive_words_by_category(self, category: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """根据鍒嗙被鑾峰彇鏁忔劅璇?""
+        """根据分类获取敏感词"""
         sensitive_words = self.repository.get_by_category(category, skip=skip, limit=limit)
         total = self.repository.count_by_category(category)
         return {
@@ -63,7 +68,7 @@ class SensitiveWordService:
         }
 
     def get_sensitive_words_by_level(self, level: int, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """根据鏁忔劅级别鑾峰彇鏁忔劅璇?""
+        """根据敏感级别获取敏感词"""
         sensitive_words = self.repository.get_by_level(level, skip=skip, limit=limit)
         total = self.repository.count_by_level(level)
         return {
@@ -77,7 +82,7 @@ class SensitiveWordService:
         skip: int = 0,
         limit: int = 100
     ) -> Dict[str, Any]:
-        """鎼滅储鏁忔劅璇?""
+        """搜索敏感词"""
         sensitive_words, total = self.repository.search(query_params, skip=skip, limit=limit)
         return {
             "items": [self._to_dict(sw) for sw in sensitive_words],
@@ -92,12 +97,14 @@ class SensitiveWordService:
         replacement: Optional[str] = None,
         description: Optional[str] = None
     ) -> Dict[str, Any]:
-        """创建鏁忔劅璇?""
-        # 妫€鏌ユ晱鎰熻瘝鏄惁宸插瓨鍦?        existing = self.repository.get_by_word(word)
+        """创建敏感词"""
+        # 检查敏感词是否已存在
+        existing = self.repository.get_by_word(word)
         if existing:
-            raise ValueError(f"鏁忔劅璇?{word} 宸插瓨鍦?)
+            raise ValueError(f"敏感词 {word} 已存在")
 
-        # 创建鏁忔劅璇?        sensitive_word = SensitiveWord(
+        # 创建敏感词
+        sensitive_word = SensitiveWord(
             word=word,
             category=category,
             level=level,
@@ -119,12 +126,12 @@ class SensitiveWordService:
         description: Optional[str] = None,
         status: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """更新鏁忔劅璇?""
+        """更新敏感词"""
         sensitive_word = self.repository.get_by_id(sensitive_word_id)
         if not sensitive_word:
             return None
 
-        # 更新瀛楁
+        # 更新字段
         if word is not None:
             sensitive_word.word = word
         if category is not None:
@@ -142,22 +149,23 @@ class SensitiveWordService:
         return self._to_dict(sensitive_word)
 
     def delete_sensitive_word(self, sensitive_word_id: str) -> bool:
-        """删除鏁忔劅璇?""
+        """删除敏感词"""
         return self.repository.delete(sensitive_word_id)
 
     def get_all_active_words(self) -> List[str]:
-        """鑾峰彇鎵€鏈夋縺娲荤殑鏁忔劅璇?""
+        """获取所有激活的敏感词"""
         return self.repository.get_all_active_words()
 
     def check_text(self, text: str) -> Dict[str, Any]:
         """
-        妫€鏌ユ枃鏈槸鍚﹀寘鍚晱鎰熻瘝
+        检查文本是否包含敏感词
 
         Args:
-            text: 寰呮鏌ョ殑鏂囨湰
+            text: 待检查的文本
 
         Returns:
-            Dict: 鍖呭惈妫€鏌ョ粨鏋滃拰鏁忔劅璇嶅垪琛?        """
+            Dict: 包含检查结果和敏感词列表
+        """
         active_words = self.get_all_active_words()
         found_words = []
 
@@ -173,12 +181,13 @@ class SensitiveWordService:
 
     def filter_text(self, text: str) -> str:
         """
-        杩囨护鏂囨湰涓殑鏁忔劅璇?
+        过滤文本中的敏感词
+
         Args:
-            text: 寰呰繃婊ょ殑鏂囨湰
+            text: 待过滤的文本
 
         Returns:
-            str: 杩囨护鍚庣殑鏂囨湰
+            str: 过滤后的文本
         """
         active_words = self.get_all_active_words()
         filtered_text = text
@@ -186,26 +195,30 @@ class SensitiveWordService:
         for word in active_words:
             sensitive_word = self.repository.get_by_word(word)
             if sensitive_word and sensitive_word.replacement:
-                # 浣跨敤鏇挎崲璇?                filtered_text = filtered_text.replace(word, sensitive_word.replacement)
+                # 使用替换词
+                filtered_text = filtered_text.replace(word, sensitive_word.replacement)
             else:
-                # 浣跨敤鏄熷彿鏇挎崲
+                # 使用星号替换
                 filtered_text = filtered_text.replace(word, "*" * len(word))
 
         return filtered_text
 
     def get_statistics(self) -> Dict[str, Any]:
-        """鑾峰彇鏁忔劅璇嶇粺璁′俊鎭?""
+        """获取敏感词统计信息"""
         total = self.repository.count()
 
-        # 鎸夊垎绫荤粺璁?        category_stats = {}
+        # 按分类统计
+        category_stats = {}
         for category in [self.CATEGORY_POLITICAL, self.CATEGORY_PORN, self.CATEGORY_VIOLENCE, self.CATEGORY_AD, self.CATEGORY_OTHER]:
             category_stats[category] = self.repository.count_by_category(category)
 
-        # 鎸夌骇鍒粺璁?        level_stats = {}
+        # 按级别统计
+        level_stats = {}
         for level in [self.LEVEL_LOW, self.LEVEL_MEDIUM, self.LEVEL_HIGH, self.LEVEL_CRITICAL]:
             level_stats[level] = self.repository.count_by_level(level)
 
-        # 鎸夌姸鎬佺粺璁?        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
+        # 按状态统计
+        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
         inactive_count = self.repository.search({"status": self.STATUS_INACTIVE}, skip=0, limit=999999)[1]
 
         return {
@@ -219,7 +232,7 @@ class SensitiveWordService:
         }
 
     def _to_dict(self, sensitive_word: SensitiveWord) -> Dict[str, Any]:
-        """杞崲涓哄瓧鍏?""
+        """转换为字典"""
         return {
             "id": sensitive_word.id,
             "word": sensitive_word.word,

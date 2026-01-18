@@ -1,15 +1,20 @@
 ﻿# -*- coding: utf-8 -*-
 """
-绉熸埛涓氬姟閫昏緫灞?
-鍔熻兘璇存槑锛?1. 绉熸埛CRUD鎿嶄綔
-2. 绉熸埛濂楅绠＄悊
-3. 绉熸埛资源閰嶉绠＄悊
-4. 绉熸埛状态佺鐞?5. 绉熸埛杩囨湡妫€鏌?
-浣跨敤绀轰緥锛?    from app.services.tenant_service import TenantService
+租户业务逻辑层
+
+功能说明：
+1. 租户CRUD操作
+2. 租户套餐管理
+3. 租户资源配额管理
+4. 租户状态管理
+5. 租户过期检查
+
+使用示例：
+    from app.services.tenant_service import TenantService
     
     tenant_service = TenantService(db)
     tenant = tenant_service.create_tenant({
-        "name": "绀轰緥鍏徃",
+        "name": "示例公司",
         "code": "example"
     })
 """
@@ -25,42 +30,48 @@ from app.repositories.tenant_repository import TenantRepository
 
 class TenantService:
     """
-    绉熸埛涓氬姟閫昏緫灞?    
-    鍔熻兘锛?    - 绉熸埛CRUD鎿嶄綔
-    - 绉熸埛濂楅绠＄悊
-    - 绉熸埛资源閰嶉绠＄悊
-    - 绉熸埛状态佺鐞?    - 绉熸埛杩囨湡妫€鏌?    
-    浣跨敤鏂规硶锛?        tenant_service = TenantService(db)
+    租户业务逻辑层
+    
+    功能：
+    - 租户CRUD操作
+    - 租户套餐管理
+    - 租户资源配额管理
+    - 租户状态管理
+    - 租户过期检查
+    
+    使用方法：
+        tenant_service = TenantService(db)
         tenant = tenant_service.create_tenant({
-            "name": "绀轰緥鍏徃",
+            "name": "示例公司",
             "code": "example"
         })
     """
     
-    # 棰勫畾涔夊椁愰厤缃?    PACKAGES = {
+    # 预定义套餐配置
+    PACKAGES = {
         "free": {
-            "name": "鍏嶈垂鐗?,
+            "name": "免费版",
             "max_users": 10,
             "max_departments": 5,
             "max_storage": 1024,  # 1GB
             "duration_days": 30
         },
         "basic": {
-            "name": "鍩虹鐗?,
+            "name": "基础版",
             "max_users": 50,
             "max_departments": 20,
             "max_storage": 10240,  # 10GB
             "duration_days": 365
         },
         "professional": {
-            "name": "涓撲笟鐗?,
+            "name": "专业版",
             "max_users": 200,
             "max_departments": 100,
             "max_storage": 102400,  # 100GB
             "duration_days": 365
         },
         "enterprise": {
-            "name": "浼佷笟鐗?,
+            "name": "企业版",
             "max_users": 1000,
             "max_departments": 500,
             "max_storage": 1024000,  # 1TB
@@ -70,55 +81,66 @@ class TenantService:
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栫鎴蜂笟鍔￠€昏緫灞?        
+        初始化租户业务逻辑层
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.tenant_repo = TenantRepository(db)
     
     def create_tenant(self, tenant_data: Dict) -> Tenant:
         """
-        创建绉熸埛
+        创建租户
         
-        鍔熻兘锛?        - 楠岃瘉绉熸埛编码鍞竴鎬?        - 楠岃瘉绉熸埛名称鍞竴鎬?        - 鑷姩搴旂敤濂楅閰嶇疆
-        - 鑷姩璁＄畻杩囨湡鏃堕棿
+        功能：
+        - 验证租户编码唯一性
+        - 验证租户名称唯一性
+        - 自动应用套餐配置
+        - 自动计算过期时间
         
         Args:
-            tenant_data: 绉熸埛鏁版嵁
-                - name: 绉熸埛名称锛堝繀濉級
-                - code: 绉熸埛编码锛堝繀濉級
-                - description: 描述锛堝彲閫夛級
-                - package_id: 濂楅ID锛堝彲閫夛紝默认basic锛?                - status: 状态侊紙鍙€夛紝默认active锛?        
-        Returns:
-            Tenant: 创建鐨勭鎴峰璞?        
-        Raises:
-            ValueError: 绉熸埛编码宸插瓨鍦ㄦ垨绉熸埛名称宸插瓨鍦?        """
-        logger.info(f"创建绉熸埛: name={tenant_data.get('name')}, code={tenant_data.get('code')}")
+            tenant_data: 租户数据
+                - name: 租户名称（必填）
+                - code: 租户编码（必填）
+                - description: 描述（可选）
+                - package_id: 套餐ID（可选，默认basic）
+                - status: 状态（可选，默认active）
         
-        # 楠岃瘉必填瀛楁
+        Returns:
+            Tenant: 创建的租户对象
+        
+        Raises:
+            ValueError: 租户编码已存在或租户名称已存在
+        """
+        logger.info(f"创建租户: name={tenant_data.get('name')}, code={tenant_data.get('code')}")
+        
+        # 验证必填字段
         if not tenant_data.get('name'):
-            raise ValueError("绉熸埛名称涓嶈兘涓虹┖")
+            raise ValueError("租户名称不能为空")
         
         if not tenant_data.get('code'):
-            raise ValueError("绉熸埛编码涓嶈兘涓虹┖")
+            raise ValueError("租户编码不能为空")
         
-        # 妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?        if self.tenant_repo.exists_by_code(tenant_data['code']):
-            raise ValueError(f"绉熸埛编码宸插瓨鍦? {tenant_data['code']}")
+        # 检查租户编码是否存在
+        if self.tenant_repo.exists_by_code(tenant_data['code']):
+            raise ValueError(f"租户编码已存在: {tenant_data['code']}")
         
-        # 妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?        if self.tenant_repo.exists_by_name(tenant_data['name']):
-            raise ValueError(f"绉熸埛名称宸插瓨鍦? {tenant_data['name']}")
+        # 检查租户名称是否存在
+        if self.tenant_repo.exists_by_name(tenant_data['name']):
+            raise ValueError(f"租户名称已存在: {tenant_data['name']}")
         
-        # 鑾峰彇濂楅閰嶇疆
+        # 获取套餐配置
         package_id = tenant_data.get('package_id', 'basic')
         package_config = self.PACKAGES.get(package_id, self.PACKAGES['basic'])
         
-        # 璁＄畻杩囨湡鏃堕棿
+        # 计算过期时间
         expires_at = None
         if tenant_data.get('status') == 'active':
             duration_days = package_config['duration_days']
             expires_at = datetime.now() + timedelta(days=duration_days)
         
-        # 创建绉熸埛
+        # 创建租户
         tenant = Tenant(
             name=tenant_data['name'],
             code=tenant_data['code'],
@@ -135,66 +157,72 @@ class TenantService:
     
     def get_tenant(self, tenant_id: str) -> Optional[Tenant]:
         """
-        鑾峰彇绉熸埛璇︽儏
+        获取租户详情
         
         Args:
             tenant_id: 租户ID
         
         Returns:
-            Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Tenant]: 租户对象，不存在返回None
         """
         return self.tenant_repo.get_by_id(tenant_id)
     
     def update_tenant(self, tenant_id: str, tenant_data: Dict) -> Tenant:
         """
-        更新绉熸埛
+        更新租户
         
-        鍔熻兘锛?        - 楠岃瘉绉熸埛编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-        - 楠岃瘉绉熸埛名称鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-        - 更新濂楅閰嶇疆锛堝鏋滀慨鏀逛簡濂楅锛?        - 閲嶆柊璁＄畻杩囨湡鏃堕棿锛堝鏋滀慨鏀逛簡状态佹垨濂楅锛?        
+        功能：
+        - 验证租户编码唯一性（如果修改了编码）
+        - 验证租户名称唯一性（如果修改了名称）
+        - 更新套餐配置（如果修改了套餐）
+        - 重新计算过期时间（如果修改了状态或套餐）
+        
         Args:
             tenant_id: 租户ID
-            tenant_data: 绉熸埛鏁版嵁
+            tenant_data: 租户数据
         
         Returns:
-            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新后的租户对象
         
         Raises:
-            ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨楠岃瘉澶辫触
+            ValueError: 租户不存在或验证失败
         """
-        logger.info(f"更新绉熸埛: tenant_id={tenant_id}")
+        logger.info(f"更新租户: tenant_id={tenant_id}")
         
-        # 鑾峰彇绉熸埛
+        # 获取租户
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
-            raise ValueError(f"绉熸埛涓嶅瓨鍦? {tenant_id}")
+            raise ValueError(f"租户不存在: {tenant_id}")
         
-        # 更新绉熸埛名称
+        # 更新租户名称
         if tenant_data.get('name') and tenant_data['name'] != tenant.name:
-            # 妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?            if self.tenant_repo.exists_by_name(tenant_data['name']):
-                raise ValueError(f"绉熸埛名称宸插瓨鍦? {tenant_data['name']}")
+            # 检查租户名称是否存在
+            if self.tenant_repo.exists_by_name(tenant_data['name']):
+                raise ValueError(f"租户名称已存在: {tenant_data['name']}")
             tenant.name = tenant_data['name']
         
-        # 更新绉熸埛编码
+        # 更新租户编码
         if tenant_data.get('code') and tenant_data['code'] != tenant.code:
-            # 妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?            if self.tenant_repo.exists_by_code(tenant_data['code']):
-                raise ValueError(f"绉熸埛编码宸插瓨鍦? {tenant_data['code']}")
+            # 检查租户编码是否存在
+            if self.tenant_repo.exists_by_code(tenant_data['code']):
+                raise ValueError(f"租户编码已存在: {tenant_data['code']}")
             tenant.code = tenant_data['code']
         
         # 更新描述
         if tenant_data.get('description') is not None:
             tenant.description = tenant_data['description']
         
-        # 更新状态?        if tenant_data.get('status') and tenant_data['status'] != tenant.status:
+        # 更新状态
+        if tenant_data.get('status') and tenant_data['status'] != tenant.status:
             tenant.status = tenant_data['status']
-            # 閲嶆柊璁＄畻杩囨湡鏃堕棿
+            # 重新计算过期时间
             if tenant.status == 'active':
                 package_config = self.PACKAGES.get(tenant.package_id, self.PACKAGES['basic'])
                 if not tenant.expires_at or tenant.expires_at < datetime.now():
                     duration_days = package_config['duration_days']
                     tenant.expires_at = datetime.now() + timedelta(days=duration_days)
         
-        # 更新濂楅
+        # 更新套餐
         if tenant_data.get('package_id') and tenant_data['package_id'] != tenant.package_id:
             package_id = tenant_data['package_id']
             package_config = self.PACKAGES.get(package_id, self.PACKAGES['basic'])
@@ -202,7 +230,7 @@ class TenantService:
             tenant.max_users = package_config['max_users']
             tenant.max_departments = package_config['max_departments']
             tenant.max_storage = package_config['max_storage']
-            # 閲嶆柊璁＄畻杩囨湡鏃堕棿
+            # 重新计算过期时间
             if tenant.status == 'active':
                 duration_days = package_config['duration_days']
                 tenant.expires_at = datetime.now() + timedelta(days=duration_days)
@@ -211,33 +239,36 @@ class TenantService:
     
     def delete_tenant(self, tenant_id: str) -> bool:
         """
-        删除绉熸埛
+        删除租户
         
-        鍔熻兘锛?        - 妫€鏌ョ鎴锋槸鍚﹀瓨鍦?        - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
-        - 妫€鏌ユ槸鍚︽湁閮ㄩ棬
+        功能：
+        - 检查租户是否存在
+        - 检查是否有用户
+        - 检查是否有部门
         
         Args:
             tenant_id: 租户ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         
         Raises:
-            ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨鏈夌敤鎴锋垨鏈夐儴闂?        """
-        logger.info(f"删除绉熸埛: tenant_id={tenant_id}")
+            ValueError: 租户不存在或有用户或有部门
+        """
+        logger.info(f"删除租户: tenant_id={tenant_id}")
         
-        # 鑾峰彇绉熸埛
+        # 获取租户
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
-            raise ValueError(f"绉熸埛涓嶅瓨鍦? {tenant_id}")
+            raise ValueError(f"租户不存在: {tenant_id}")
         
-        # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
+        # 检查是否有用户
         if tenant.users:
-            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
+            raise ValueError("无法删除租户：该租户下存在用户")
         
-        # 妫€鏌ユ槸鍚︽湁閮ㄩ棬
+        # 检查是否有部门
         if tenant.departments:
-            raise ValueError("鏃犳硶删除绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
+            raise ValueError("无法删除租户：该租户下存在部门")
         
         return self.tenant_repo.delete(tenant_id)
     
@@ -249,25 +280,25 @@ class TenantService:
         page_size: int = 10
     ) -> Dict:
         """
-        鑾峰彇绉熸埛鍒楄〃
+        获取租户列表
         
         Args:
-            status: 状态侊紙鍙€夛級
-            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            status: 状态（可选）
+            keyword: 搜索关键词（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            Dict: 绉熸埛鍒楄〃
-                - total: 鎬绘暟
-                - items: 绉熸埛鍒楄〃
-                - page: 椤电爜
-                - page_size: 姣忛〉数量
+            Dict: 租户列表
+                - total: 总数
+                - items: 租户列表
+                - page: 页码
+                - page_size: 每页数量
         """
-        # 根据鏉′欢查询
+        # 根据条件查询
         if keyword:
             tenants = self.tenant_repo.search(keyword, page, page_size)
-            total = len(tenants)  # TODO: 闇€瑕佷紭鍖栵紝搴旇鍗曠嫭查询鎬绘暟
+            total = len(tenants)  # TODO: 需要优化，应该单独查询总数
         elif status == 'active':
             tenants = self.tenant_repo.get_active_tenants(page, page_size)
             total = self.tenant_repo.count_active()
@@ -287,17 +318,22 @@ class TenantService:
     
     def check_quota(self, tenant_id: str, quota_type: str) -> Dict:
         """
-        妫€鏌ョ鎴疯祫婧愰厤棰?        
+        检查租户资源配额
+        
         Args:
             tenant_id: 租户ID
-            quota_type: 閰嶉类型锛坲sers/departments/storage锛?        
+            quota_type: 配额类型（users/departments/storage）
+        
         Returns:
-            Dict: 閰嶉淇℃伅
-                - used: 宸蹭娇鐢ㄩ噺
-                - max: 鏈€澶ч厤棰?                - available: 鍙敤閲?                - percentage: 浣跨敤鐧惧垎姣?        """
+            Dict: 配额信息
+                - used: 已使用量
+                - max: 最大配额
+                - available: 可用量
+                - percentage: 使用百分比
+        """
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
-            raise ValueError(f"绉熸埛涓嶅瓨鍦? {tenant_id}")
+            raise ValueError(f"租户不存在: {tenant_id}")
         
         if quota_type == 'users':
             used = tenant.get_user_count()
@@ -306,11 +342,11 @@ class TenantService:
             used = tenant.get_department_count()
             max_quota = tenant.max_departments
         elif quota_type == 'storage':
-            # TODO: 瀹炵幇瀛樺偍绌洪棿缁熻
+            # TODO: 实现存储空间统计
             used = 0
             max_quota = tenant.max_storage
         else:
-            raise ValueError(f"涓嶆敮鎸佺殑閰嶉类型: {quota_type}")
+            raise ValueError(f"不支持的配额类型: {quota_type}")
         
         available = max_quota - used
         percentage = (used / max_quota * 100) if max_quota > 0 else 0
@@ -324,50 +360,56 @@ class TenantService:
     
     def get_package_info(self, package_id: str) -> Optional[Dict]:
         """
-        鑾峰彇濂楅淇℃伅
+        获取套餐信息
         
         Args:
-            package_id: 濂楅ID
+            package_id: 套餐ID
         
         Returns:
-            Optional[Dict]: 濂楅淇℃伅锛屼笉瀛樺湪杩斿洖None
+            Optional[Dict]: 套餐信息，不存在返回None
         """
         return self.PACKAGES.get(package_id)
     
     def get_all_packages(self) -> Dict:
         """
-        鑾峰彇鎵€鏈夊椁愪俊鎭?        
+        获取所有套餐信息
+        
         Returns:
-            Dict: 鎵€鏈夊椁愪俊鎭?        """
+            Dict: 所有套餐信息
+        """
         return self.PACKAGES
     
     def update_package(self, tenant_id: str, package_id: str) -> Tenant:
         """
-        更新绉熸埛濂楅
+        更新租户套餐
         
         Args:
             tenant_id: 租户ID
-            package_id: 濂楅ID
+            package_id: 套餐ID
         
         Returns:
-            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新后的租户对象
         
         Raises:
-            ValueError: 绉熸埛涓嶅瓨鍦ㄦ垨濂楅涓嶅瓨鍦?        """
-        # 妫€鏌ュ椁愭槸鍚﹀瓨鍦?        if package_id not in self.PACKAGES:
-            raise ValueError(f"濂楅涓嶅瓨鍦? {package_id}")
+            ValueError: 租户不存在或套餐不存在
+        """
+        # 检查套餐是否存在
+        if package_id not in self.PACKAGES:
+            raise ValueError(f"套餐不存在: {package_id}")
         
-        # 更新绉熸埛濂楅
+        # 更新租户套餐
         return self.update_tenant(tenant_id, {"package_id": package_id})
     
     def check_expiration(self, tenant_id: str) -> bool:
         """
-        妫€鏌ョ鎴锋槸鍚﹁繃鏈?        
+        检查租户是否过期
+        
         Args:
             tenant_id: 租户ID
         
         Returns:
-            bool: 鏄惁宸茶繃鏈?        """
+            bool: 是否已过期
+        """
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
             return False
@@ -376,25 +418,28 @@ class TenantService:
     
     def renew_tenant(self, tenant_id: str, days: int = 365) -> Tenant:
         """
-        缁垂绉熸埛
+        续费租户
         
         Args:
             tenant_id: 租户ID
-            days: 缁垂澶╂暟
+            days: 续费天数
         
         Returns:
-            Tenant: 更新鍚庣殑绉熸埛瀵硅薄
+            Tenant: 更新后的租户对象
         
         Raises:
-            ValueError: 绉熸埛涓嶅瓨鍦?        """
+            ValueError: 租户不存在
+        """
         tenant = self.tenant_repo.get_by_id(tenant_id)
         if not tenant:
-            raise ValueError(f"绉熸埛涓嶅瓨鍦? {tenant_id}")
+            raise ValueError(f"租户不存在: {tenant_id}")
         
-        # 濡傛灉绉熸埛宸茶繃鏈燂紝浠庡綋鍓嶆椂闂村紑濮嬭绠?        if tenant.is_expired():
+        # 如果租户已过期，从当前时间开始计算
+        if tenant.is_expired():
             tenant.expires_at = datetime.now() + timedelta(days=days)
         else:
-            # 濡傛灉绉熸埛鏈繃鏈燂紝鍦ㄥ師鏈夎繃鏈熸椂闂村熀纭€涓婂欢闀?            tenant.expires_at = tenant.expires_at + timedelta(days=days)
+            # 如果租户未过期，在原有过期时间基础上延长
+            tenant.expires_at = tenant.expires_at + timedelta(days=days)
         
         tenant.status = 'active'
         return self.tenant_repo.update(tenant)

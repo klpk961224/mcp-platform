@@ -1,11 +1,12 @@
 ﻿# -*- coding: utf-8 -*-
 """
-TokenService鍗曞厓娴嬭瘯
+TokenService单元测试
 
-娴嬭瘯鍐呭锛?1. 创建Token
-2. 鍚婇攢Token
-3. 鍚婇攢鐢ㄦ埛鎵€鏈塗oken
-4. 娓呯悊杩囨湡Token
+测试内容：
+1. 创建Token
+2. 吊销Token
+3. 吊销用户所有Token
+4. 清理过期Token
 """
 
 import pytest
@@ -18,13 +19,13 @@ from app.services.token_service import TokenService
 
 @pytest.fixture
 def mock_db():
-    """妯℃嫙鏁版嵁搴撲細璇?""
+    """模拟数据库会话"""
     return Mock(spec=Session)
 
 
 @pytest.fixture
 def mock_token():
-    """妯℃嫙Token瀵硅薄"""
+    """模拟Token对象"""
     token = Mock()
     token.id = "test_token_id"
     token.user_id = "test_user_id"
@@ -38,107 +39,109 @@ def mock_token():
 
 @pytest.fixture
 def token_service(mock_db):
-    """创建TokenService瀹炰緥"""
+    """创建TokenService实例"""
     return TokenService(mock_db)
 
 
 class TestTokenService:
-    """TokenService娴嬭瘯绫?""
+    """TokenService测试类"""
     
     def test_init(self, mock_db):
-        """娴嬭瘯TokenService鍒濆鍖?""
+        """测试TokenService初始化"""
         service = TokenService(mock_db)
         assert service.db == mock_db
         assert service.token_repo is not None
     
     def test_create_token_success(self, token_service, mock_token):
-        """娴嬭瘯创建Token鎴愬姛"""
-        # 妯℃嫙创建Token
+        """测试创建Token成功"""
+        # 模拟创建Token
         token_service.token_repo.create_token = Mock(return_value=mock_token)
         
-        # 鎵ц创建Token
+        # 执行创建Token
         result = token_service.create_token(
             user_id="test_user_id",
             token_type="access",
             token_hash="hashed_token"
         )
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result.id == "test_token_id"
         assert result.user_id == "test_user_id"
         token_service.token_repo.create_token.assert_called_once()
     
     def test_revoke_token_success(self, token_service, mock_token):
-        """娴嬭瘯鍚婇攢Token鎴愬姛"""
-        # 妯℃嫙查询Token
+        """测试吊销Token成功"""
+        # 模拟查询Token
         token_service.token_repo.get_by_token_hash = Mock(return_value=mock_token)
-        # 妯℃嫙更新Token
+        # 模拟更新Token
         token_service.token_repo.update = Mock()
         
-        # 鎵ц鍚婇攢Token
+        # 执行吊销Token
         result = token_service.revoke_token("hashed_token")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result is True
         mock_token.revoke.assert_called_once()
         token_service.token_repo.update.assert_called_once()
     
     def test_revoke_token_not_found(self, token_service):
-        """娴嬭瘯鍚婇攢Token澶辫触锛圱oken涓嶅瓨鍦級"""
-        # 妯℃嫙查询Token杩斿洖None
+        """测试吊销Token失败（Token不存在）"""
+        # 模拟查询Token返回None
         token_service.token_repo.get_by_token_hash = Mock(return_value=None)
         
-        # 鎵ц鍚婇攢Token
+        # 执行吊销Token
         result = token_service.revoke_token("nonexistent_token")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result is False
     
     def test_revoke_all_tokens_success(self, token_service, mock_token):
-        """娴嬭瘯鍚婇攢鐢ㄦ埛鎵€鏈塗oken鎴愬姛"""
-        # 妯℃嫙查询鐢ㄦ埛Token
+        """测试吊销用户所有Token成功"""
+        # 模拟查询用户Token
         token_service.token_repo.get_by_user_id = Mock(return_value=[mock_token])
-        # 妯℃嫙更新Token
+        # 模拟更新Token
         token_service.token_repo.update = Mock()
         
-        # 鎵ц鍚婇攢鎵€鏈塗oken
+        # 执行吊销所有Token
         result = token_service.revoke_all_tokens("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 1
         mock_token.revoke.assert_called_once()
         token_service.token_repo.update.assert_called_once()
     
     def test_revoke_all_tokens_empty(self, token_service):
-        """娴嬭瘯鍚婇攢鐢ㄦ埛鎵€鏈塗oken锛堟棤Token锛?""
-        # 妯℃嫙查询鐢ㄦ埛Token杩斿洖绌哄垪琛?        token_service.token_repo.get_by_user_id = Mock(return_value=[])
+        """测试吊销用户所有Token（无Token）"""
+        # 模拟查询用户Token返回空列表
+        token_service.token_repo.get_by_user_id = Mock(return_value=[])
         
-        # 鎵ц鍚婇攢鎵€鏈塗oken
+        # 执行吊销所有Token
         result = token_service.revoke_all_tokens("test_user_id")
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 0
     
     def test_clean_expired_tokens_success(self, token_service, mock_token):
-        """娴嬭瘯娓呯悊杩囨湡Token鎴愬姛"""
-        # 妯℃嫙查询杩囨湡Token
+        """测试清理过期Token成功"""
+        # 模拟查询过期Token
         token_service.token_repo.get_expired_tokens = Mock(return_value=[mock_token])
-        # 妯℃嫙删除Token
+        # 模拟删除Token
         token_service.token_repo.delete = Mock()
         
-        # 鎵ц娓呯悊杩囨湡Token
+        # 执行清理过期Token
         result = token_service.clean_expired_tokens()
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 1
         token_service.token_repo.delete.assert_called_once_with("test_token_id")
     
     def test_clean_expired_tokens_empty(self, token_service):
-        """娴嬭瘯娓呯悊杩囨湡Token锛堟棤杩囨湡Token锛?""
-        # 妯℃嫙查询杩囨湡Token杩斿洖绌哄垪琛?        token_service.token_repo.get_expired_tokens = Mock(return_value=[])
+        """测试清理过期Token（无过期Token）"""
+        # 模拟查询过期Token返回空列表
+        token_service.token_repo.get_expired_tokens = Mock(return_value=[])
         
-        # 鎵ц娓呯悊杩囨湡Token
+        # 执行清理过期Token
         result = token_service.clean_expired_tokens()
         
-        # 楠岃瘉缁撴灉
+        # 验证结果
         assert result == 0

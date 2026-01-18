@@ -45,27 +45,6 @@ redis-cli ping
 CREATE DATABASE mcp_platform CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-## Dockerfile构建配置
-
-**基础镜像**：`python:3.13-slim`
-
-**构建步骤**：
-1. 安装系统依赖（gcc, libmysqlclient-dev）
-2. 安装Python依赖（requirements.txt）
-3. 复制应用代码
-4. 创建日志目录
-5. 启动服务（uvicorn）
-
-**端口配置**：
-- 使用环境变量`APP_PORT`配置端口
-- 默认端口：auth-service(28001), user-service(28002), permission-service(28003), system-service(28004), support-service(28005), business-service(28006)
-- 生产环境通过环境变量覆盖为28001-28006
-
-**注意点**：
-- ✅ 使用`--no-cache-dir`减小镜像体积
-- ✅ 清理apt缓存减小镜像体积
-- ✅ 使用环境变量`APP_PORT`配置端口，支持灵活配置
-
 ## 快速部署
 
 ### 启动所有服务
@@ -145,7 +124,6 @@ http://localhost:28006/docs
 ### 认证服务
 ```bash
 APP_ENV=production
-APP_PORT=28001
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -154,7 +132,6 @@ REDIS_PORT=6379
 ### 用户服务
 ```bash
 APP_ENV=production
-APP_PORT=28002
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -164,7 +141,6 @@ AUTH_SERVICE_URL=http://localhost:28001/api/v1
 ### 权限服务
 ```bash
 APP_ENV=production
-APP_PORT=28003
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -174,7 +150,6 @@ AUTH_SERVICE_URL=http://localhost:28001/api/v1
 ### 系统服务
 ```bash
 APP_ENV=production
-APP_PORT=28004
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -184,7 +159,6 @@ AUTH_SERVICE_URL=http://localhost:28001/api/v1
 ### 支撑服务
 ```bash
 APP_ENV=production
-APP_PORT=28005
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -194,7 +168,6 @@ AUTH_SERVICE_URL=http://localhost:28001/api/v1
 ### 业务服务
 ```bash
 APP_ENV=production
-APP_PORT=28006
 DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
 REDIS_HOST=localhost
 REDIS_PORT=6379

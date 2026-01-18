@@ -1,10 +1,12 @@
 ﻿"""
-璁よ瘉鐩稿叧Schema
+认证相关Schema
 
-鍔熻兘璇存槑锛?1. 瀹氫箟璇锋眰鍜屽搷搴旂殑鏁版嵁妯″瀷
-2. 鏁版嵁楠岃瘉
+功能说明：
+1. 定义请求和响应的数据模型
+2. 数据验证
 
-浣跨敤绀轰緥锛?    from app.schemas.auth import LoginRequest, LoginResponse
+使用示例：
+    from app.schemas.auth import LoginRequest, LoginResponse
     
     @router.post("/login", response_model=LoginResponse)
     async def login(request: LoginRequest):
@@ -16,11 +18,11 @@ from typing import Optional
 
 
 class LoginRequest(BaseModel):
-    """鐧诲綍璇锋眰"""
+    """登录请求"""
     
-    username: str = Field(..., description="用户名?, min_length=4, max_length=50)
-    password: str = Field(..., description="瀵嗙爜", min_length=6)
-    tenant_code: Optional[str] = Field(None, description="绉熸埛编码")
+    username: str = Field(..., description="用户名", min_length=4, max_length=50)
+    password: str = Field(..., description="密码", min_length=6)
+    tenant_code: Optional[str] = Field(None, description="租户编码")
     
     class Config:
         json_schema_extra = {
@@ -33,13 +35,13 @@ class LoginRequest(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    """鐧诲綍鍝嶅簲"""
+    """登录响应"""
     
-    access_token: str = Field(..., description="璁块棶Token")
-    refresh_token: str = Field(..., description="鍒锋柊Token")
+    access_token: str = Field(..., description="访问Token")
+    refresh_token: str = Field(..., description="刷新Token")
     token_type: str = Field(default="bearer", description="Token类型")
-    expires_in: int = Field(..., description="杩囨湡鏃堕棿锛堢锛?)
-    user_info: dict = Field(..., description="鐢ㄦ埛淇℃伅")
+    expires_in: int = Field(..., description="过期时间（秒）")
+    user_info: dict = Field(..., description="用户信息")
     
     class Config:
         json_schema_extra = {
@@ -58,9 +60,9 @@ class LoginResponse(BaseModel):
 
 
 class RefreshTokenRequest(BaseModel):
-    """鍒锋柊Token璇锋眰"""
+    """刷新Token请求"""
     
-    refresh_token: str = Field(..., description="鍒锋柊Token")
+    refresh_token: str = Field(..., description="刷新Token")
     
     class Config:
         json_schema_extra = {
@@ -71,11 +73,11 @@ class RefreshTokenRequest(BaseModel):
 
 
 class RefreshTokenResponse(BaseModel):
-    """鍒锋柊Token鍝嶅簲"""
+    """刷新Token响应"""
     
-    access_token: str = Field(..., description="鏂扮殑璁块棶Token")
+    access_token: str = Field(..., description="新的访问Token")
     token_type: str = Field(default="bearer", description="Token类型")
-    expires_in: int = Field(..., description="杩囨湡鏃堕棿锛堢锛?)
+    expires_in: int = Field(..., description="过期时间（秒）")
     
     class Config:
         json_schema_extra = {
@@ -88,26 +90,26 @@ class RefreshTokenResponse(BaseModel):
 
 
 class LogoutResponse(BaseModel):
-    """鐧诲嚭鍝嶅簲"""
+    """登出响应"""
     
-    message: str = Field(default="鐧诲嚭鎴愬姛", description="娑堟伅")
+    message: str = Field(default="登出成功", description="消息")
     
     class Config:
         json_schema_extra = {
             "example": {
-                "message": "鐧诲嚭鎴愬姛"
+                "message": "登出成功"
             }
         }
 
 
 class RegisterRequest(BaseModel):
-    """娉ㄥ唽璇锋眰"""
+    """注册请求"""
     
-    username: str = Field(..., description="用户名?, min_length=4, max_length=50)
-    password: str = Field(..., description="瀵嗙爜", min_length=6)
-    email: EmailStr = Field(..., description="邮箱")
-    phone: Optional[str] = Field(None, description="手机号)
-    tenant_code: Optional[str] = Field(None, description="绉熸埛编码")
+    username: str = Field(..., description="用户名", min_length=4, max_length=50)
+    password: str = Field(..., description="密码", min_length=6)
+    email: EmailStr = Field(..., description="邮箱")
+    phone: Optional[str] = Field(None, description="手机号")
+    tenant_code: Optional[str] = Field(None, description="租户编码")
     
     class Config:
         json_schema_extra = {
@@ -115,24 +117,24 @@ class RegisterRequest(BaseModel):
                 "username": "newuser",
                 "password": "123456",
                 "email": "newuser@example.com",
-                "phone": "132800138000",
+                "phone": "13800138000",
                 "tenant_code": "default"
             }
         }
 
 
 class RegisterResponse(BaseModel):
-    """娉ㄥ唽鍝嶅簲"""
+    """注册响应"""
     
-    message: str = Field(default="娉ㄥ唽鎴愬姛", description="娑堟伅")
+    message: str = Field(default="注册成功", description="消息")
     user_id: str = Field(..., description="用户ID")
-    username: str = Field(..., description="用户名?)
-    email: str = Field(..., description="邮箱")
+    username: str = Field(..., description="用户名")
+    email: str = Field(..., description="邮箱")
     
     class Config:
         json_schema_extra = {
             "example": {
-                "message": "娉ㄥ唽鎴愬姛",
+                "message": "注册成功",
                 "user_id": "123",
                 "username": "newuser",
                 "email": "newuser@example.com"

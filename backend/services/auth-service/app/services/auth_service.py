@@ -257,4 +257,3 @@ class AuthService:
             "token_type": "bearer",
             "expires_in": 86400
         }
-

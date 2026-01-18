@@ -1,5 +1,5 @@
 ﻿"""
-瀛楀吀绠＄悊API璺敱
+字典管理API路由
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
@@ -15,19 +15,19 @@ from app.core.config import settings
 from app.core.deps import get_db
 from app.services.dict_service import DictService
 
-router = APIRouter(prefix="/dictionaries", tags=["瀛楀吀绠＄悊"])
+router = APIRouter(prefix="/dictionaries", tags=["字典管理"])
 
 
-@router.post("", summary="创建瀛楀吀")
+@router.post("", summary="创建字典")
 async def create_dict(
-    type: str = Query(..., description="瀛楀吀类型"),
-    name: str = Query(..., description="瀛楀吀名称"),
+    type: str = Query(..., description="字典类型"),
+    name: str = Query(..., description="字典名称"),
     tenant_id: str = Query(..., description="租户ID"),
     description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
 ):
-    """创建瀛楀吀"""
-    logger.info(f"创建瀛楀吀: type={type}, name={name}")
+    """创建字典"""
+    logger.info(f"创建字典: type={type}, name={name}")
     
     try:
         dict_service = DictService(db)
@@ -41,7 +41,7 @@ async def create_dict(
         
         new_dict = dict_service.create_dict(dict_data)
         
-        logger.info(f"创建瀛楀吀鎴愬姛: type={type}, dict_id={new_dict.id}")
+        logger.info(f"创建字典成功: type={type}, dict_id={new_dict.id}")
         
         return {
             "id": new_dict.id,
@@ -54,23 +54,23 @@ async def create_dict(
             "updated_at": new_dict.updated_at.isoformat() if new_dict.updated_at else None,
         }
     except ValueError as e:
-        logger.warning(f"创建瀛楀吀澶辫触: type={type}, error={str(e)}")
+        logger.warning(f"创建字典失败: type={type}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"创建瀛楀吀寮傚父: type={type}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"创建字典异常: type={type}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建字典失败，请稍后重试")
 
 
-@router.get("", summary="鑾峰彇瀛楀吀鍒楄〃")
+@router.get("", summary="获取字典列表")
 async def get_dictionaries(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     tenant_id: Optional[str] = Query(None, description="租户ID"),
-    keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
+    keyword: Optional[str] = Query(None, description="搜索关键词"),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇瀛楀吀鍒楄〃"""
-    logger.info(f"鑾峰彇瀛楀吀鍒楄〃: page={page}")
+    """获取字典列表"""
+    logger.info(f"获取字典列表: page={page}")
     
     try:
         dict_service = DictService(db)
@@ -104,24 +104,24 @@ async def get_dictionaries(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"鑾峰彇瀛楀吀鍒楄〃寮傚父: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瀛楀吀鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"获取字典列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典列表失败，请稍后重试")
 
 
-@router.get("/{dict_id}", summary="鑾峰彇瀛楀吀璇︽儏")
+@router.get("/{dict_id}", summary="获取字典详情")
 async def get_dictionary(
     dict_id: str,
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇瀛楀吀璇︽儏"""
-    logger.info(f"鑾峰彇瀛楀吀璇︽儏: dict_id={dict_id}")
+    """获取字典详情"""
+    logger.info(f"获取字典详情: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
         dict_obj = dict_service.get_dict(dict_id)
         
         if not dict_obj:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瀛楀吀涓嶅瓨鍦?)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
         
         return {
             "id": dict_obj.id,
@@ -136,27 +136,27 @@ async def get_dictionary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鑾峰彇瀛楀吀璇︽儏寮傚父: dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瀛楀吀璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"获取字典详情异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典详情失败，请稍后重试")
 
 
-@router.put("/{dict_id}", summary="更新瀛楀吀")
+@router.put("/{dict_id}", summary="更新字典")
 async def update_dictionary(
     dict_id: str,
-    name: Optional[str] = Query(None, description="瀛楀吀名称"),
+    name: Optional[str] = Query(None, description="字典名称"),
     description: Optional[str] = Query(None, description="描述"),
-    status: Optional[str] = Query(None, description="状态?),
+    status: Optional[str] = Query(None, description="状态"),
     db: Session = Depends(get_db)
 ):
-    """更新瀛楀吀"""
-    logger.info(f"更新瀛楀吀: dict_id={dict_id}")
+    """更新字典"""
+    logger.info(f"更新字典: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
         
         existing_dict = dict_service.get_dict(dict_id)
         if not existing_dict:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瀛楀吀涓嶅瓨鍦?)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
         
         update_data = {}
         if name is not None:
@@ -168,7 +168,7 @@ async def update_dictionary(
         
         updated_dict = dict_service.update_dict(dict_id, update_data)
         
-        logger.info(f"更新瀛楀吀鎴愬姛: dict_id={dict_id}")
+        logger.info(f"更新字典成功: dict_id={dict_id}")
         
         return {
             "id": updated_dict.id,
@@ -183,48 +183,48 @@ async def update_dictionary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"更新瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"更新字典异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新字典失败，请稍后重试")
 
 
-@router.delete("/{dict_id}", summary="删除瀛楀吀")
+@router.delete("/{dict_id}", summary="删除字典")
 async def delete_dictionary(
     dict_id: str,
     db: Session = Depends(get_db)
 ):
-    """删除瀛楀吀"""
-    logger.info(f"删除瀛楀吀: dict_id={dict_id}")
+    """删除字典"""
+    logger.info(f"删除字典: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
         
         existing_dict = dict_service.get_dict(dict_id)
         if not existing_dict:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瀛楀吀涓嶅瓨鍦?)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="字典不存在")
         
         dict_service.delete_dict(dict_id)
         
-        logger.info(f"删除瀛楀吀鎴愬姛: dict_id={dict_id}")
+        logger.info(f"删除字典成功: dict_id={dict_id}")
         
-        return {"message": "删除鎴愬姛"}
+        return {"message": "删除成功"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"删除瀛楀吀寮傚父: dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除瀛楀吀澶辫触锛岃绋嶅悗閲嶈瘯")
+        logger.error(f"删除字典异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除字典失败，请稍后重试")
 
 
-@router.post("/{dict_id}/items", summary="创建瀛楀吀椤?)
+@router.post("/{dict_id}/items", summary="创建字典项")
 async def create_dict_item(
     dict_id: str,
-    label: str = Query(..., description="瀛楀吀椤规爣绛?),
-    value: str = Query(..., description="瀛楀吀椤瑰€?),
+    label: str = Query(..., description="字典项标签"),
+    value: str = Query(..., description="字典项值"),
     sort_order: int = Query(0, description="排序"),
     description: Optional[str] = Query(None, description="描述"),
     db: Session = Depends(get_db)
 ):
-    """创建瀛楀吀椤?""
-    logger.info(f"创建瀛楀吀椤? dict_id={dict_id}, label={label}")
+    """创建字典项"""
+    logger.info(f"创建字典项: dict_id={dict_id}, label={label}")
     
     try:
         dict_service = DictService(db)
@@ -238,7 +238,7 @@ async def create_dict_item(
         
         new_dict_item = dict_service.create_dict_item(dict_id, dict_item_data)
         
-        logger.info(f"创建瀛楀吀椤规垚鍔? dict_id={dict_id}, dict_item_id={new_dict_item.id}")
+        logger.info(f"创建字典项成功: dict_id={dict_id}, dict_item_id={new_dict_item.id}")
         
         return {
             "id": new_dict_item.id,
@@ -252,22 +252,22 @@ async def create_dict_item(
             "updated_at": new_dict_item.updated_at.isoformat() if new_dict_item.updated_at else None,
         }
     except ValueError as e:
-        logger.warning(f"创建瀛楀吀椤瑰け璐? dict_id={dict_id}, error={str(e)}")
+        logger.warning(f"创建字典项失败: dict_id={dict_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"创建瀛楀吀椤瑰紓甯? dict_id={dict_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建瀛楀吀椤瑰け璐ワ紝璇风◢鍚庨噸璇?)
+        logger.error(f"创建字典项异常: dict_id={dict_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建字典项失败，请稍后重试")
 
 
-@router.get("/{dict_id}/items", summary="鑾峰彇瀛楀吀椤瑰垪琛?)
+@router.get("/{dict_id}/items", summary="获取字典项列表")
 async def get_dict_items(
     dict_id: str,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    """鑾峰彇瀛楀吀椤瑰垪琛?""
-    logger.info(f"鑾峰彇瀛楀吀椤瑰垪琛? dict_id={dict_id}")
+    """获取字典项列表"""
+    logger.info(f"获取字典项列表: dict_id={dict_id}")
     
     try:
         dict_service = DictService(db)
@@ -297,5 +297,5 @@ async def get_dict_items(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"鑾峰彇瀛楀吀椤瑰垪琛ㄥ紓甯? error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瀛楀吀椤瑰垪琛ㄥけ璐ワ紝璇风◢鍚庨噸璇?)
+        logger.error(f"获取字典项列表异常: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取字典项列表失败，请稍后重试")

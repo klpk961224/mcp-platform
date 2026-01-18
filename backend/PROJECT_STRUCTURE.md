@@ -57,12 +57,12 @@ backend/
 │   └── utils/                       # 工具模块
 │
 ├── services/                        # 微服务目录
-│   ├── auth-service/                # 认证域服务（8001）
-│   ├── user-service/                # 用户域服务（8002）
-│   ├── permission-service/          # 权限域服务（8003）
-│   ├── system-service/              # 系统域服务（8004）
-│   ├── support-service/             # 支撑域服务（8005）
-│   └── business-service/            # 业务域服务（8006）
+│   ├── auth-service/                # 认证域服务（28001）
+│   ├── user-service/                # 用户域服务（28002）
+│   ├── permission-service/          # 权限域服务（28003）
+│   ├── system-service/              # 系统域服务（28004）
+│   ├── support-service/             # 支撑域服务（28005）
+│   └── business-service/            # 业务域服务（28006）
 │
 ├── tests/                           # 集成测试
 ├── scripts/                         # 工具脚本
@@ -730,12 +730,12 @@ async def health_check():
 
 | 服务名称 | 端口 | 职责 | 主要功能 |
 |---------|------|------|---------|
-| **auth-service** | 8001 | 认证域服务 | JWT认证、API Key认证、权限校验、Token管理 |
-| **user-service** | 8002 | 用户域服务 | 用户CRUD、部门管理、租户管理、用户与部门/角色关联 |
-| **permission-service** | 8003 | 权限域服务 | 角色管理、权限分配、菜单管理、动态菜单加载 |
-| **system-service** | 8004 | 系统域服务 | MCP工具注册/调用、多数据源管理、字典管理、系统配置 |
-| **support-service** | 8005 | 支撑域服务 | 登录日志、操作日志、站内信、通知公告、待办任务管理 |
-| **business-service** | 8006 | 业务域服务 | 工作流管理（审批流程、可视化设计器、审批任务管理） |
+| **auth-service** | 28001 | 认证域服务 | JWT认证、API Key认证、权限校验、Token管理 |
+| **user-service** | 28002 | 用户域服务 | 用户CRUD、部门管理、租户管理、用户与部门/角色关联 |
+| **permission-service** | 28003 | 权限域服务 | 角色管理、权限分配、菜单管理、动态菜单加载 |
+| **system-service** | 28004 | 系统域服务 | MCP工具注册/调用、多数据源管理、字典管理、系统配置 |
+| **support-service** | 28005 | 支撑域服务 | 登录日志、操作日志、站内信、通知公告、待办任务管理 |
+| **business-service** | 28006 | 业务域服务 | 工作流管理（审批流程、可视化设计器、审批任务管理） |
 
 ---
 
@@ -899,10 +899,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 暴露端口
-EXPOSE 8001
+EXPOSE 28001
 
 # 启动命令
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "28001"]
 ```
 
 **docker-compose.yml**：
@@ -928,7 +928,7 @@ services:
   auth-service:
     build: ./services/auth-service
     ports:
-      - "8001:8001"
+      - "28001:28001"
     depends_on:
       - mysql
       - redis

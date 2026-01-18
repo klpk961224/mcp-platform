@@ -1,5 +1,5 @@
 ﻿"""
-閮ㄩ棬绠＄悊API璺敱
+部门管理API路由
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException
@@ -22,65 +22,71 @@ from app.schemas.department import (
 )
 from app.services.department_service import DepartmentService
 
-router = APIRouter(prefix="/departments", tags=["閮ㄩ棬绠＄悊"])
+router = APIRouter(prefix="/departments", tags=["部门管理"])
 
 
-@router.post("", response_model=DepartmentResponse, summary="创建閮ㄩ棬")
+@router.post("", response_model=DepartmentResponse, summary="创建部门")
 async def create_department(
     dept: DepartmentCreate,
     db: Session = Depends(get_db)
 ):
     """
-    创建閮ㄩ棬
+    创建部门
     
-    鍔熻兘锛?    - 楠岃瘉部门编码鍞竴鎬?    - 楠岃瘉部门名称鍦ㄧ鎴峰唴鍞竴鎬?    - 鑷姩璁＄畻閮ㄩ棬灞傜骇
-    - 鑷姩鐢熸垚部门编码锛堝鏋滄湭鎻愪緵锛?    
+    功能：
+    - 验证部门编码唯一性
+    - 验证部门名称在租户内唯一性
+    - 自动计算部门层级
+    - 自动生成部门编码（如果未提供）
+    
     Args:
-        dept: 閮ㄩ棬创建鏁版嵁
+        dept: 部门创建数据
     
     Returns:
-        DepartmentResponse: 创建鐨勯儴闂ㄤ俊鎭?    
+        DepartmentResponse: 创建的部门信息
+    
     Raises:
-        HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
+        HTTPException: 验证失败时抛出400错误
     """
-    logger.info(f"创建閮ㄩ棬: name={dept.name}, tenant_id={dept.tenant_id}")
+    logger.info(f"创建部门: name={dept.name}, tenant_id={dept.tenant_id}")
     
     try:
         dept_service = DepartmentService(db)
         department = dept_service.create_department(dept.dict())
         return DepartmentResponse(**department.to_dict())
     except ValueError as e:
-        logger.error(f"创建閮ㄩ棬澶辫触: {str(e)}")
+        logger.error(f"创建部门失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"创建閮ㄩ棬寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="创建閮ㄩ棬澶辫触")
+        logger.error(f"创建部门异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="创建部门失败")
 
 
-@router.get("", response_model=DepartmentListResponse, summary="鑾峰彇閮ㄩ棬鍒楄〃")
+@router.get("", response_model=DepartmentListResponse, summary="获取部门列表")
 async def get_departments(
-    page: int = Query(1, ge=1, description="椤电爜"),
-    page_size: int = Query(10, ge=1, le=100, description="姣忛〉数量"),
+    page: int = Query(1, ge=1, description="页码"),
+    page_size: int = Query(10, ge=1, le=100, description="每页数量"),
     tenant_id: Optional[str] = Query(None, description="租户ID"),
-    parent_id: Optional[str] = Query(None, description="鐖堕儴闂↖D"),
-    keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
+    parent_id: Optional[str] = Query(None, description="父部门ID"),
+    keyword: Optional[str] = Query(None, description="搜索关键词"),
     db: Session = Depends(get_db)
 ):
     """
-    鑾峰彇閮ㄩ棬鍒楄〃
+    获取部门列表
     
-    鏀寔鎸夌鎴枫€佺埗閮ㄩ棬銆佸叧閿瘝绛涢€?    
+    支持按租户、父部门、关键词筛选
+    
     Args:
-        page: 椤电爜
-        page_size: 姣忛〉数量
-        tenant_id: 租户ID锛堝彲閫夛級
-        parent_id: 鐖堕儴闂↖D锛堝彲閫夛級
-        keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+        page: 页码
+        page_size: 每页数量
+        tenant_id: 租户ID（可选）
+        parent_id: 父部门ID（可选）
+        keyword: 搜索关键词（可选）
     
     Returns:
-        DepartmentListResponse: 閮ㄩ棬鍒楄〃
+        DepartmentListResponse: 部门列表
     """
-    logger.info(f"鑾峰彇閮ㄩ棬鍒楄〃: page={page}, page_size={page_size}, tenant_id={tenant_id}")
+    logger.info(f"获取部门列表: page={page}, page_size={page_size}, tenant_id={tenant_id}")
     
     try:
         dept_service = DepartmentService(db)
@@ -93,138 +99,145 @@ async def get_departments(
         )
         return DepartmentListResponse(**result)
     except Exception as e:
-        logger.error(f"鑾峰彇閮ㄩ棬鍒楄〃寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇閮ㄩ棬鍒楄〃澶辫触")
+        logger.error(f"获取部门列表异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取部门列表失败")
 
 
-@router.get("/tree", response_model=list[DepartmentTreeResponse], summary="鑾峰彇閮ㄩ棬鏍?)
+@router.get("/tree", response_model=list[DepartmentTreeResponse], summary="获取部门树")
 async def get_department_tree(
     tenant_id: Optional[str] = Query(None, description="租户ID"),
     db: Session = Depends(get_db)
 ):
     """
-    鑾峰彇閮ㄩ棬鏍?    
-    杩斿洖瀹屾暣鐨勯儴闂ㄦ爲褰㈢粨鏋勶紝鍖呭惈鎵€鏈夊眰绾?    
+    获取部门树
+    
+    返回完整的部门树形结构，包含所有层级
+    
     Args:
-        tenant_id: 租户ID锛堝繀濉級
+        tenant_id: 租户ID（必填）
     
     Returns:
-        list[DepartmentTreeResponse]: 閮ㄩ棬鏍?    
+        list[DepartmentTreeResponse]: 部门树
+    
     Raises:
-        HTTPException: 租户ID涓虹┖鏃舵姏鍑?00閿欒
+        HTTPException: 租户ID为空时抛出400错误
     """
-    logger.info(f"鑾峰彇閮ㄩ棬鏍? tenant_id={tenant_id}")
+    logger.info(f"获取部门树: tenant_id={tenant_id}")
     
     if not tenant_id:
-        raise HTTPException(status_code=400, detail="租户ID涓嶈兘涓虹┖")
+        raise HTTPException(status_code=400, detail="租户ID不能为空")
     
     try:
         dept_service = DepartmentService(db)
         tree = dept_service.get_department_tree(tenant_id)
         return tree
     except Exception as e:
-        logger.error(f"鑾峰彇閮ㄩ棬鏍戝紓甯? {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇閮ㄩ棬鏍戝け璐?)
+        logger.error(f"获取部门树异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取部门树失败")
 
 
-@router.get("/{dept_id}", response_model=DepartmentResponse, summary="鑾峰彇閮ㄩ棬璇︽儏")
+@router.get("/{dept_id}", response_model=DepartmentResponse, summary="获取部门详情")
 async def get_department(
     dept_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    鑾峰彇閮ㄩ棬璇︽儏
+    获取部门详情
     
     Args:
         dept_id: 部门ID
     
     Returns:
-        DepartmentResponse: 閮ㄩ棬璇︽儏
+        DepartmentResponse: 部门详情
     
     Raises:
-        HTTPException: 閮ㄩ棬涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
+        HTTPException: 部门不存在时抛出404错误
     """
-    logger.info(f"鑾峰彇閮ㄩ棬璇︽儏: dept_id={dept_id}")
+    logger.info(f"获取部门详情: dept_id={dept_id}")
     
     try:
         dept_service = DepartmentService(db)
         department = dept_service.get_department(dept_id)
         if not department:
-            raise HTTPException(status_code=404, detail="閮ㄩ棬涓嶅瓨鍦?)
+            raise HTTPException(status_code=404, detail="部门不存在")
         return DepartmentResponse(**department.to_dict())
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鑾峰彇閮ㄩ棬璇︽儏寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="鑾峰彇閮ㄩ棬璇︽儏澶辫触")
+        logger.error(f"获取部门详情异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取部门详情失败")
 
 
-@router.put("/{dept_id}", response_model=DepartmentResponse, summary="更新閮ㄩ棬")
+@router.put("/{dept_id}", response_model=DepartmentResponse, summary="更新部门")
 async def update_department(
     dept_id: str,
     dept: DepartmentUpdate,
     db: Session = Depends(get_db)
 ):
     """
-    更新閮ㄩ棬
+    更新部门
     
-    鍔熻兘锛?    - 楠岃瘉部门编码鍞竴鎬э紙濡傛灉淇敼浜嗙紪鐮侊級
-    - 楠岃瘉部门名称鍦ㄧ鎴峰唴鍞竴鎬э紙濡傛灉淇敼浜嗗悕绉帮級
-    - 鑷姩璁＄畻閮ㄩ棬灞傜骇锛堝鏋滀慨鏀逛簡鐖堕儴闂級
-    - 鑷姩更新瀛愰儴闂ㄧ殑灞傜骇
+    功能：
+    - 验证部门编码唯一性（如果修改了编码）
+    - 验证部门名称在租户内唯一性（如果修改了名称）
+    - 自动计算部门层级（如果修改了父部门）
+    - 自动更新子部门的层级
     
     Args:
         dept_id: 部门ID
-        dept: 閮ㄩ棬更新鏁版嵁
+        dept: 部门更新数据
     
     Returns:
-        DepartmentResponse: 更新鍚庣殑閮ㄩ棬淇℃伅
+        DepartmentResponse: 更新后的部门信息
     
     Raises:
-        HTTPException: 楠岃瘉澶辫触鎴栭儴闂ㄤ笉瀛樺湪鏃舵姏鍑?00鎴?04閿欒
+        HTTPException: 验证失败或部门不存在时抛出400或404错误
     """
-    logger.info(f"更新閮ㄩ棬: dept_id={dept_id}")
+    logger.info(f"更新部门: dept_id={dept_id}")
     
     try:
         dept_service = DepartmentService(db)
         department = dept_service.update_department(dept_id, dept.dict(exclude_unset=True))
         return DepartmentResponse(**department.to_dict())
     except ValueError as e:
-        logger.error(f"更新閮ㄩ棬澶辫触: {str(e)}")
+        logger.error(f"更新部门失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"更新閮ㄩ棬寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="更新閮ㄩ棬澶辫触")
+        logger.error(f"更新部门异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="更新部门失败")
 
 
-@router.delete("/{dept_id}", summary="删除閮ㄩ棬")
+@router.delete("/{dept_id}", summary="删除部门")
 async def delete_department(
     dept_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    删除閮ㄩ棬
+    删除部门
     
-    鍔熻兘锛?    - 妫€鏌ラ儴闂ㄦ槸鍚﹀瓨鍦?    - 妫€鏌ユ槸鍚︽湁瀛愰儴闂?    - 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
+    功能：
+    - 检查部门是否存在
+    - 检查是否有子部门
+    - 检查是否有用户
     
     Args:
         dept_id: 部门ID
     
     Returns:
-        dict: 删除缁撴灉
+        dict: 删除结果
     
     Raises:
-        HTTPException: 楠岃瘉澶辫触鏃舵姏鍑?00閿欒
+        HTTPException: 验证失败时抛出400错误
     """
-    logger.info(f"删除閮ㄩ棬: dept_id={dept_id}")
+    logger.info(f"删除部门: dept_id={dept_id}")
     
     try:
         dept_service = DepartmentService(db)
         dept_service.delete_department(dept_id)
-        return {"message": "删除鎴愬姛"}
+        return {"message": "删除成功"}
     except ValueError as e:
-        logger.error(f"删除閮ㄩ棬澶辫触: {str(e)}")
+        logger.error(f"删除部门失败: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"删除閮ㄩ棬寮傚父: {str(e)}")
-        raise HTTPException(status_code=500, detail="删除閮ㄩ棬澶辫触")
+        logger.error(f"删除部门异常: {str(e)}")
+        raise HTTPException(status_code=500, detail="删除部门失败")

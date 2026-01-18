@@ -1,5 +1,5 @@
 ﻿"""
-用户域服务?- FastAPI搴旂敤鍏ュ彛
+用户域服务 - FastAPI应用入口
 """
 
 from fastapi import FastAPI
@@ -16,7 +16,7 @@ from common.database.connection import datasource_manager
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="用户域服务?- 鐢ㄦ埛绠＄悊銆侀儴闂ㄧ鐞嗐€佺鎴风鐞嗐€佸矖浣嶇鐞?,
+    description="用户域服务 - 用户管理、部门管理、租户管理、岗位管理",
     version="1.0.0",
     debug=settings.APP_DEBUG
 )
@@ -54,15 +54,16 @@ async def health():
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info(f"{settings.APP_NAME} 鍚姩涓?..")
-    logger.info(f"鐜: {settings.APP_ENV}")
-    logger.info(f"绔彛: {settings.APP_PORT}")
+    logger.info(f"{settings.APP_NAME} 启动中...")
+    logger.info(f"环境: {settings.APP_ENV}")
+    logger.info(f"端口: {settings.APP_PORT}")
     
-    # 娉ㄥ唽鏁版嵁婧?    try:
-        # 瑙ｆ瀽 DATABASE_URL
+    # 注册数据源
+    try:
+        # 解析 DATABASE_URL
         db_url = settings.DATABASE_URL
         if db_url.startswith("mysql+pymysql://"):
-            # 鏍煎紡: mysql+pymysql://username:password@host:port/database
+            # 格式: mysql+pymysql://username:password@host:port/database
             url_without_prefix = db_url.replace("mysql+pymysql://", "")
             auth_part, host_port_db = url_without_prefix.split("@")
             username, password = auth_part.split(":")
@@ -81,23 +82,23 @@ async def startup_event():
                 max_overflow=20,
                 echo=False
             )
-            logger.info(f"鏁版嵁婧愭敞鍐屾垚鍔? mysql -> {host}:{port}/{database}")
+            logger.info(f"数据源注册成功: mysql -> {host}:{port}/{database}")
     except Exception as e:
-        logger.error(f"鏁版嵁婧愭敞鍐屽け璐? {e}")
+        logger.error(f"数据源注册失败: {e}")
         raise
     
-    logger.info(f"{settings.APP_NAME} 鍚姩瀹屾垚")
+    logger.info(f"{settings.APP_NAME} 启动完成")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    logger.info(f"{settings.APP_NAME} 鍏抽棴涓?..")
+    logger.info(f"{settings.APP_NAME} 关闭中...")
 
 
 if __name__ == "__main__":
     import uvicorn
     
-    logger.info(f"鍚姩 {settings.APP_NAME}...")
+    logger.info(f"启动 {settings.APP_NAME}...")
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",

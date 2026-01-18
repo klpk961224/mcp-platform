@@ -1,11 +1,13 @@
 ﻿"""
-宸ヤ綔娴佺浉鍏虫ā鍨?
-鍖呭惈锛?- WorkflowDefinition: 宸ヤ綔娴佸畾涔夎〃
-- WorkflowInstance: 宸ヤ綔娴佸疄渚嬭〃
-- WorkflowNode: 宸ヤ綔娴佽妭鐐硅〃
-- WorkflowTask: 宸ヤ綔娴佷换鍔¤〃
-- WorkflowLog: 宸ヤ綔娴佹棩蹇楄〃
-- WorkflowTemplate: 宸ヤ綔娴佹ā鏉胯〃
+工作流相关模型
+
+包含：
+- WorkflowDefinition: 工作流定义表
+- WorkflowInstance: 工作流实例表
+- WorkflowNode: 工作流节点表
+- WorkflowTask: 工作流任务表
+- WorkflowLog: 工作流日志表
+- WorkflowTemplate: 工作流模板表
 """
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, JSON, DateTime, Boolean
@@ -15,7 +17,7 @@ from ..base import BaseModel, FullModelMixin, TimestampMixin, CreatedAtMixin
 
 
 class WorkflowDefinition(BaseModel, FullModelMixin):
-    """宸ヤ綔娴佸畾涔夎〃"""
+    """工作流定义表"""
 
     __tablename__ = 'workflow_definitions'
 
@@ -30,7 +32,7 @@ class WorkflowDefinition(BaseModel, FullModelMixin):
 
 
 class WorkflowInstance(BaseModel, FullModelMixin):
-    """宸ヤ綔娴佸疄渚嬭〃"""
+    """工作流实例表"""
 
     __tablename__ = 'workflow_instances'
 
@@ -52,7 +54,7 @@ class WorkflowInstance(BaseModel, FullModelMixin):
 
 
 class WorkflowNode(BaseModel, TimestampMixin):
-    """宸ヤ綔娴佽妭鐐硅〃"""
+    """工作流节点表"""
 
     __tablename__ = 'workflow_nodes'
 
@@ -67,7 +69,7 @@ class WorkflowNode(BaseModel, TimestampMixin):
 
 
 class WorkflowTask(BaseModel, TimestampMixin):
-    """宸ヤ綔娴佷换鍔¤〃"""
+    """工作流任务表"""
 
     __tablename__ = 'workflow_tasks'
 
@@ -86,7 +88,7 @@ class WorkflowTask(BaseModel, TimestampMixin):
 
 
 class WorkflowLog(BaseModel, CreatedAtMixin):
-    """宸ヤ綔娴佹棩蹇楄〃"""
+    """工作流日志表"""
 
     __tablename__ = 'workflow_logs'
 
@@ -99,10 +101,25 @@ class WorkflowLog(BaseModel, CreatedAtMixin):
 
 
 class WorkflowTemplate(BaseModel, FullModelMixin):
-    """宸ヤ綔娴佹ā鏉胯〃"""
+    """工作流模板表"""
 
     __tablename__ = 'workflow_templates'
 
+    tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    template_type = Column(String(50), nullable=False)
+    definition_json = Column(JSON, nullable=False)
+    is_system = Column(Boolean, nullable=False, default=False)
+    status = Column(String(20), nullable=False, default='active')
+    log_data = Column(JSON)
+
+
+class WorkflowTemplate(BaseModel):
+    """工作流模板表"""
+    
+    __tablename__ = 'workflow_templates'
+    
     tenant_id = Column(String(50), ForeignKey('tenants.id', ondelete='CASCADE'), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text)

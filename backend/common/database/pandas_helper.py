@@ -1,27 +1,31 @@
 ﻿"""
-Pandas 鏁版嵁鍒嗘瀽鍔╂墜妯″潡
+Pandas 数据分析助手模块
 
-鍔熻兘璇存槑锛?1. 灏佽 pandas 鐨勬暟鎹簱鎿嶄綔鏂规硶
-2. 鎻愪緵鏇寸畝娲佹槗鐢ㄧ殑鎺ュ彛
-3. 鏀寔澶ф暟鎹泦鍒嗘壒璇诲彇
-4. 鏀寔灏?DataFrame 鍐欏叆鏁版嵁搴?5. 鑷姩璁板綍查询鏃ュ織锛圫QL璇彞鍜屽弬鏁帮級
+功能说明：
+1. 封装 pandas 的数据库操作方法
+2. 提供更简洁易用的接口
+3. 支持大数据集分批读取
+4. 支持将 DataFrame 写入数据库
+5. 自动记录查询日志（SQL语句和参数）
 
-浣跨敤绀轰緥锛?    # 鍩烘湰浣跨敤
+使用示例：
+    # 基本使用
     from common.database.pandas_helper import PandasDataHelper
     
-    # 创建鍔╂墜瀹炰緥
+    # 创建助手实例
     mysql_helper = PandasDataHelper('mysql')
     oracle_helper = PandasDataHelper('oracle')
     
-    # 璇诲彇鏁版嵁
+    # 读取数据
     df = mysql_helper.read_sql("SELECT * FROM users WHERE status = %s", params={'status': 'active'})
     
-    # 璇诲彇鏁翠釜琛?    df = mysql_helper.read_sql_table('users')
+    # 读取整个表
+    df = mysql_helper.read_sql_table('users')
     
-    # 鎵归噺璇诲彇澶ф暟鎹泦
+    # 批量读取大数据集
     df = mysql_helper.batch_read("SELECT * FROM big_table", batch_size=10000)
     
-    # 鍐欏叆鏁版嵁
+    # 写入数据
     df.to_sql('new_table', mysql_helper.get_engine(), if_exists='replace')
 """
 
@@ -34,53 +38,58 @@ from .connection import datasource_manager
 
 class PandasDataHelper:
     """
-    Pandas 鏁版嵁鍒嗘瀽鍔╂墜
+    Pandas 数据分析助手
     
-    鍔熻兘锛?    - 灏佽 pandas 鐨勬暟鎹簱鎿嶄綔鏂规硶
-    - 鎻愪緵鏇寸畝娲佹槗鐢ㄧ殑鎺ュ彛
-    - 鏀寔澶ф暟鎹泦鍒嗘壒璇诲彇
-    - 鏀寔灏?DataFrame 鍐欏叆鏁版嵁搴?    - 鑷姩璁板綍查询鏃ュ織
+    功能：
+    - 封装 pandas 的数据库操作方法
+    - 提供更简洁易用的接口
+    - 支持大数据集分批读取
+    - 支持将 DataFrame 写入数据库
+    - 自动记录查询日志
     
-    浣跨敤鏂规硶锛?        # 创建鍔╂墜瀹炰緥
+    使用方法：
+        # 创建助手实例
         helper = PandasDataHelper('mysql')
         
-        # 璇诲彇鏁版嵁
+        # 读取数据
         df = helper.read_sql("SELECT * FROM users")
         
-        # 鎵归噺璇诲彇
+        # 批量读取
         df = helper.batch_read("SELECT * FROM big_table", batch_size=10000)
         
-        # 鍐欏叆鏁版嵁
+        # 写入数据
         df.to_sql('new_table', helper.get_engine(), if_exists='replace')
     """
     
     def __init__(self, datasource_name: str):
         """
-        鍒濆鍖?Pandas 鏁版嵁鍔╂墜
+        初始化 Pandas 数据助手
         
         Args:
-            datasource_name: 鏁版嵁婧愬悕绉帮紙濡?'mysql', 'oracle', 'postgresql'锛?                           - 蹇呴』鏄凡娉ㄥ唽鐨勬暟鎹簮
-                           - 浣跨敤 datasource_manager.register_datasource() 娉ㄥ唽
+            datasource_name: 数据源名称（如 'mysql', 'oracle', 'postgresql'）
+                           - 必须是已注册的数据源
+                           - 使用 datasource_manager.register_datasource() 注册
         
-        浣跨敤绀轰緥锛?            # 创建 MySQL 鍔╂墜
+        使用示例：
+            # 创建 MySQL 助手
             mysql_helper = PandasDataHelper('mysql')
             
-            # 创建 Oracle 鍔╂墜
+            # 创建 Oracle 助手
             oracle_helper = PandasDataHelper('oracle')
             
-            # 创建 PostgreSQL 鍔╂墜
+            # 创建 PostgreSQL 助手
             postgresql_helper = PandasDataHelper('postgresql')
         """
         self.datasource_name = datasource_name
         
-        # 楠岃瘉鏁版嵁婧愭槸鍚﹀凡娉ㄥ唽
+        # 验证数据源是否已注册
         if not datasource_manager.has_datasource(datasource_name):
             raise ValueError(
-                f"鏁版嵁婧?[{datasource_name}] 鏈敞鍐岋紝"
-                f"璇峰厛浣跨敤 datasource_manager.register_datasource() 娉ㄥ唽"
+                f"数据源 [{datasource_name}] 未注册，"
+                f"请先使用 datasource_manager.register_datasource() 注册"
             )
         
-        logger.info(f"创建 Pandas 鏁版嵁鍔╂墜: {datasource_name}")
+        logger.info(f"创建 Pandas 数据助手: {datasource_name}")
     
     def read_sql(
         self,
@@ -90,51 +99,60 @@ class PandasDataHelper:
         **kwargs
     ) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
         """
-        璇诲彇 SQL 查询缁撴灉锛堥€氱敤鏂规硶锛?        
+        读取 SQL 查询结果（通用方法）
+        
         Args:
-            sql: SQL 查询璇彞锛堝彲浠ユ槸 SELECT 查询鎴栬〃鍚嶏級
-                 - 绀轰緥1锛歋ELECT * FROM users WHERE status = %s
-                 - 绀轰緥2锛歋ELECT * FROM orders WHERE order_date > :start_date
-            params: SQL 鍙傛暟锛堥槻姝?SQL 娉ㄥ叆锛?                    - 绀轰緥1锛歿'status': 'active'}
-                    - 绀轰緥2锛歿'start_date': '2024-01-01'}
-            chunksize: 鍒嗗潡璇诲彇澶у皬锛堢敤浜庡ぇ鏁版嵁闆嗭級
-                      - 濡傛灉鎸囧畾锛岃繑鍥炶凯浠ｅ櫒
-                      - 绀轰緥锛?0000锛堟瘡娆¤鍙?10000 鏉★級
-            **kwargs: 浼犻€掔粰 pd.read_sql 鐨勫叾浠栧弬鏁?                    - index_col: 鎸囧畾绱㈠紩鍒?                    - parse_dates: 瑙ｆ瀽鏃ユ湡鍒?                    - columns: 鎸囧畾璇诲彇鐨勫垪
+            sql: SQL 查询语句（可以是 SELECT 查询或表名）
+                 - 示例1：SELECT * FROM users WHERE status = %s
+                 - 示例2：SELECT * FROM orders WHERE order_date > :start_date
+            params: SQL 参数（防止 SQL 注入）
+                    - 示例1：{'status': 'active'}
+                    - 示例2：{'start_date': '2024-01-01'}
+            chunksize: 分块读取大小（用于大数据集）
+                      - 如果指定，返回迭代器
+                      - 示例：10000（每次读取 10000 条）
+            **kwargs: 传递给 pd.read_sql 的其他参数
+                    - index_col: 指定索引列
+                    - parse_dates: 解析日期列
+                    - columns: 指定读取的列
         
         Returns:
-            pd.DataFrame 鎴?Iterator[pd.DataFrame]: 查询缁撴灉
-            - 濡傛灉涓嶆寚瀹?chunksize锛岃繑鍥?DataFrame
-            - 濡傛灉鎸囧畾 chunksize锛岃繑鍥炶凯浠ｅ櫒
+            pd.DataFrame 或 Iterator[pd.DataFrame]: 查询结果
+            - 如果不指定 chunksize，返回 DataFrame
+            - 如果指定 chunksize，返回迭代器
         
-        浣跨敤绀轰緥锛?            # 鍩烘湰查询
+        使用示例：
+            # 基本查询
             df = helper.read_sql("SELECT * FROM users")
             
-            # 甯﹀弬鏁扮殑查询锛堟帹鑽愶紝闃叉 SQL 娉ㄥ叆锛?            df = helper.read_sql(
+            # 带参数的查询（推荐，防止 SQL 注入）
+            df = helper.read_sql(
                 "SELECT * FROM users WHERE status = %s AND age > %s",
                 params={'status': 'active', 'age': 18}
             )
             
-            # 浣跨敤鍛藉悕鍙傛暟
+            # 使用命名参数
             df = helper.read_sql(
                 "SELECT * FROM orders WHERE order_date > :start_date AND order_date < :end_date",
                 params={'start_date': '2024-01-01', 'end_date': '2024-12-31'}
             )
             
-            # 瑙ｆ瀽鏃ユ湡鍒?            df = helper.read_sql(
+            # 解析日期列
+            df = helper.read_sql(
                 "SELECT * FROM orders",
                 parse_dates=['order_date', 'created_at']
             )
             
-            # 鍒嗗潡璇诲彇澶ф暟鎹泦锛堣繑鍥炶凯浠ｅ櫒锛?            for chunk in helper.read_sql("SELECT * FROM big_table", chunksize=10000):
+            # 分块读取大数据集（返回迭代器）
+            for chunk in helper.read_sql("SELECT * FROM big_table", chunksize=10000):
                 process_chunk(chunk)
         """
-        logger.info(f"[{self.datasource_name}] 鎵ц SQL 查询")
-        logger.info(f"SQL 璇彞: {sql}")
+        logger.info(f"[{self.datasource_name}] 执行 SQL 查询")
+        logger.info(f"SQL 语句: {sql}")
         if params:
-            logger.info(f"查询鍙傛暟: {params}")
+            logger.info(f"查询参数: {params}")
         if chunksize:
-            logger.info(f"鍒嗗潡璇诲彇锛屾瘡鍧楀ぇ灏? {chunksize}")
+            logger.info(f"分块读取，每块大小: {chunksize}")
         
         result = datasource_manager.read_sql(
             sql, 
@@ -145,9 +163,9 @@ class PandasDataHelper:
         )
         
         if not chunksize:
-            logger.success(f"查询鎴愬姛锛岃繑鍥?{len(result)} 鏉¤褰?)
+            logger.success(f"查询成功，返回 {len(result)} 条记录")
         else:
-            logger.success(f"查询鎴愬姛锛岃繑鍥炲垎鍧楄凯浠ｅ櫒")
+            logger.success(f"查询成功，返回分块迭代器")
         
         return result
     
@@ -158,19 +176,27 @@ class PandasDataHelper:
         **kwargs
     ) -> pd.DataFrame:
         """
-        璇诲彇 SQL 查询缁撴灉锛堜粎查询璇彞锛?        
-        涓?read_sql 鐨勫尯鍒細
-        - read_sql_query: 鍙兘鎵ц SELECT 查询
-        - read_sql: 鍙互鎵ц SELECT 查询鎴栬鍙栬〃鍚?        
-        Args:
-            query: SQL 查询璇彞锛堝繀椤绘槸 SELECT 璇彞锛?                   - 绀轰緥锛歋ELECT id, username, email FROM users WHERE status = %s
-            params: SQL 鍙傛暟锛堥槻姝?SQL 娉ㄥ叆锛?            **kwargs: 浼犻€掔粰 pd.read_sql_query 鐨勫叾浠栧弬鏁?        
-        Returns:
-            pd.DataFrame: 查询缁撴灉
+        读取 SQL 查询结果（仅查询语句）
         
-        浣跨敤绀轰緥锛?            # 绠€鍗曟煡璇?            df = helper.read_sql_query("SELECT id, username FROM users")
+        与 read_sql 的区别：
+        - read_sql_query: 只能执行 SELECT 查询
+        - read_sql: 可以执行 SELECT 查询或读取表名
+        
+        Args:
+            query: SQL 查询语句（必须是 SELECT 语句）
+                   - 示例：SELECT id, username, email FROM users WHERE status = %s
+            params: SQL 参数（防止 SQL 注入）
+            **kwargs: 传递给 pd.read_sql_query 的其他参数
+        
+        Returns:
+            pd.DataFrame: 查询结果
+        
+        使用示例：
+            # 简单查询
+            df = helper.read_sql_query("SELECT id, username FROM users")
             
-            # 澶嶆潅查询锛圝OIN锛?            df = helper.read_sql_query(
+            # 复杂查询（JOIN）
+            df = helper.read_sql_query(
                 \"\"\"
                 SELECT u.id, u.username, o.order_id, o.amount
                 FROM users u
@@ -180,7 +206,7 @@ class PandasDataHelper:
                 params={'status': 'active'}
             )
             
-            # 鑱氬悎查询
+            # 聚合查询
             df = helper.read_sql_query(
                 \"\"\"
                 SELECT user_id, COUNT(*) as order_count, SUM(amount) as total_amount
@@ -191,10 +217,10 @@ class PandasDataHelper:
                 params={'start_date': '2024-01-01'}
             )
         """
-        logger.info(f"[{self.datasource_name}] 鎵ц SQL 查询锛堜粎查询锛?)
-        logger.info(f"SQL 璇彞: {query}")
+        logger.info(f"[{self.datasource_name}] 执行 SQL 查询（仅查询）")
+        logger.info(f"SQL 语句: {query}")
         if params:
-            logger.info(f"查询鍙傛暟: {params}")
+            logger.info(f"查询参数: {params}")
         
         result = datasource_manager.read_sql_query(
             query, 
@@ -203,7 +229,7 @@ class PandasDataHelper:
             **kwargs
         )
         
-        logger.success(f"查询鎴愬姛锛岃繑鍥?{len(result)} 鏉¤褰?)
+        logger.success(f"查询成功，返回 {len(result)} 条记录")
         return result
     
     def read_sql_table(
@@ -213,32 +239,39 @@ class PandasDataHelper:
         **kwargs
     ) -> pd.DataFrame:
         """
-        璇诲彇鏁翠釜琛?        
+        读取整个表
+        
         Args:
-            table_name: 琛ㄥ悕
-                       - 绀轰緥锛?users', 'orders', 'products'
-            columns: 鎸囧畾璇诲彇鐨勫垪锛堝彲閫夛級
-                     - 绀轰緥锛歔'id', 'username', 'email']
-                     - 濡傛灉涓嶆寚瀹氾紝鍒欒鍙栨墍鏈夊垪
-            **kwargs: 浼犻€掔粰 pd.read_sql_table 鐨勫叾浠栧弬鏁?                    - parse_dates: 瑙ｆ瀽鏃ユ湡鍒?        
+            table_name: 表名
+                       - 示例：'users', 'orders', 'products'
+            columns: 指定读取的列（可选）
+                     - 示例：['id', 'username', 'email']
+                     - 如果不指定，则读取所有列
+            **kwargs: 传递给 pd.read_sql_table 的其他参数
+                    - parse_dates: 解析日期列
+        
         Returns:
-            pd.DataFrame: 琛ㄦ暟鎹?        
-        浣跨敤绀轰緥锛?            # 璇诲彇鏁翠釜琛?            df = helper.read_sql_table('users')
+            pd.DataFrame: 表数据
+        
+        使用示例：
+            # 读取整个表
+            df = helper.read_sql_table('users')
             
-            # 鍙鍙栨寚瀹氬垪
+            # 只读取指定列
             df = helper.read_sql_table(
                 'users',
                 columns=['id', 'username', 'email']
             )
             
-            # 瑙ｆ瀽鏃ユ湡鍒?            df = helper.read_sql_table(
+            # 解析日期列
+            df = helper.read_sql_table(
                 'orders',
                 parse_dates=['order_date', 'created_at']
             )
         """
-        logger.info(f"[{self.datasource_name}] 璇诲彇琛? {table_name}")
+        logger.info(f"[{self.datasource_name}] 读取表: {table_name}")
         if columns:
-            logger.info(f"鎸囧畾鍒? {columns}")
+            logger.info(f"指定列: {columns}")
         
         result = datasource_manager.read_sql_table(
             table_name, 
@@ -247,7 +280,7 @@ class PandasDataHelper:
             **kwargs
         )
         
-        logger.success(f"璇诲彇鎴愬姛锛岃繑鍥?{len(result)} 鏉¤褰?)
+        logger.success(f"读取成功，返回 {len(result)} 条记录")
         return result
     
     def batch_read(
@@ -257,36 +290,40 @@ class PandasDataHelper:
         params: Optional[dict] = None
     ) -> pd.DataFrame:
         """
-        鎵归噺璇诲彇澶ф暟鎹泦锛堣嚜鍔ㄥ悎骞讹級
+        批量读取大数据集（自动合并）
         
-        閫傜敤浜庢暟鎹噺寰堝ぇ鐨勬儏鍐碉紝閬垮厤鍐呭瓨婧㈠嚭
+        适用于数据量很大的情况，避免内存溢出
         
         Args:
-            query: SQL 查询璇彞
-                   - 绀轰緥锛歋ELECT * FROM big_table WHERE created_at > '2024-01-01'
-            batch_size: 鎵规澶у皬锛堥粯璁?10000锛?                      - 根据鏁版嵁閲忓拰鍐呭瓨鎯呭喌璋冩暣
-                      - 寤鸿锛?0000-100000
-            params: SQL 鍙傛暟锛堥槻姝?SQL 娉ㄥ叆锛?        
-        Returns:
-            pd.DataFrame: 鍚堝苟鍚庣殑瀹屾暣鏁版嵁
+            query: SQL 查询语句
+                   - 示例：SELECT * FROM big_table WHERE created_at > '2024-01-01'
+            batch_size: 批次大小（默认 10000）
+                      - 根据数据量和内存情况调整
+                      - 建议：10000-100000
+            params: SQL 参数（防止 SQL 注入）
         
-        浣跨敤绀轰緥锛?            # 璇诲彇澶ф暟鎹泦锛?00涓囨潯璁板綍锛?            df = helper.batch_read(
+        Returns:
+            pd.DataFrame: 合并后的完整数据
+        
+        使用示例：
+            # 读取大数据集（100万条记录）
+            df = helper.batch_read(
                 "SELECT * FROM big_table WHERE created_at > %s",
                 batch_size=10000,
                 params={'created_at': '2024-01-01'}
             )
             
-            # 璋冩暣鎵规澶у皬锛堟暟鎹噺鏇村ぇ鏃讹級
+            # 调整批次大小（数据量更大时）
             df = helper.batch_read(
                 "SELECT * FROM huge_table",
                 batch_size=50000
             )
         """
-        logger.info(f"[{self.datasource_name}] 鎵归噺璇诲彇澶ф暟鎹泦")
-        logger.info(f"SQL 璇彞: {query}")
-        logger.info(f"鎵规澶у皬: {batch_size}")
+        logger.info(f"[{self.datasource_name}] 批量读取大数据集")
+        logger.info(f"SQL 语句: {query}")
+        logger.info(f"批次大小: {batch_size}")
         if params:
-            logger.info(f"查询鍙傛暟: {params}")
+            logger.info(f"查询参数: {params}")
         
         chunks = []
         total_rows = 0
@@ -294,14 +331,15 @@ class PandasDataHelper:
         for i, chunk in enumerate(self.read_sql(query, params=params, chunksize=batch_size)):
             chunks.append(chunk)
             total_rows += len(chunk)
-            logger.debug(f"宸茶鍙栨壒娆?{i+1}, 褰撳墠绱: {total_rows} 鏉¤褰?)
+            logger.debug(f"已读取批次 {i+1}, 当前累计: {total_rows} 条记录")
         
-        # 鍚堝苟鎵€鏈夋壒娆?        if chunks:
+        # 合并所有批次
+        if chunks:
             result = pd.concat(chunks, ignore_index=True)
-            logger.success(f"鎵归噺璇诲彇瀹屾垚锛屽叡 {len(result)} 鏉¤褰?)
+            logger.success(f"批量读取完成，共 {len(result)} 条记录")
             return result
         else:
-            logger.warning("鏈鍙栧埌浠讳綍鏁版嵁")
+            logger.warning("未读取到任何数据")
             return pd.DataFrame()
     
     def to_sql(
@@ -314,35 +352,43 @@ class PandasDataHelper:
         **kwargs
     ) -> Optional[int]:
         """
-        灏?DataFrame 鍐欏叆鏁版嵁搴?        
+        将 DataFrame 写入数据库
+        
         Args:
-            df: 瑕佸啓鍏ョ殑 DataFrame
-            table_name: 鐩爣琛ㄥ悕
-                      - 绀轰緥锛?new_table', 'backup_users'
-            if_exists: 琛ㄥ瓨鍦ㄦ椂鐨勫鐞嗘柟寮?                      - 'fail': 鎶涘嚭寮傚父锛堥粯璁わ級
-                      - 'replace': 删除鍘熻〃锛屽垱寤烘柊琛?                      - 'append': 杩藉姞鏁版嵁鍒板師琛?            index: 鏄惁鍐欏叆绱㈠紩鍒楋紙默认 False锛?            chunksize: 鍒嗗潡鍐欏叆澶у皬锛堢敤浜庡ぇ鏁版嵁闆嗭級
-                      - 绀轰緥锛?0000锛堟瘡娆″啓鍏?10000 鏉★級
-            **kwargs: 鍏朵粬鍙傛暟锛堝 dtype, method锛?        
+            df: 要写入的 DataFrame
+            table_name: 目标表名
+                      - 示例：'new_table', 'backup_users'
+            if_exists: 表存在时的处理方式
+                      - 'fail': 抛出异常（默认）
+                      - 'replace': 删除原表，创建新表
+                      - 'append': 追加数据到原表
+            index: 是否写入索引列（默认 False）
+            chunksize: 分块写入大小（用于大数据集）
+                      - 示例：10000（每次写入 10000 条）
+            **kwargs: 其他参数（如 dtype, method）
+        
         Returns:
-            Optional[int]: 鍐欏叆鐨勮鏁帮紙濡傛灉鏀寔锛?        
-        浣跨敤绀轰緥锛?            # 创建鏂拌〃锛堝鏋滆〃涓嶅瓨鍦級
+            Optional[int]: 写入的行数（如果支持）
+        
+        使用示例：
+            # 创建新表（如果表不存在）
             df.to_sql('new_table', helper.get_engine(), if_exists='fail')
             
-            # 鏇挎崲琛紙删除鍘熻〃锛屽垱寤烘柊琛級
+            # 替换表（删除原表，创建新表）
             df.to_sql('users_backup', helper.get_engine(), if_exists='replace')
             
-            # 杩藉姞鏁版嵁
+            # 追加数据
             df.to_sql('users', helper.get_engine(), if_exists='append')
             
-            # 鍒嗗潡鍐欏叆澶ф暟鎹泦
+            # 分块写入大数据集
             df.to_sql('big_table', helper.get_engine(), if_exists='append', chunksize=10000)
         """
-        logger.info(f"[{self.datasource_name}] 鍐欏叆鏁版嵁鍒拌〃: {table_name}")
-        logger.info(f"鏁版嵁琛屾暟: {len(df)}")
-        logger.info(f"琛ㄥ瓨鍦ㄦ椂澶勭悊鏂瑰紡: {if_exists}")
-        logger.info(f"鏄惁鍐欏叆绱㈠紩: {index}")
+        logger.info(f"[{self.datasource_name}] 写入数据到表: {table_name}")
+        logger.info(f"数据行数: {len(df)}")
+        logger.info(f"表存在时处理方式: {if_exists}")
+        logger.info(f"是否写入索引: {index}")
         if chunksize:
-            logger.info(f"鍒嗗潡鍐欏叆锛屾瘡鍧楀ぇ灏? {chunksize}")
+            logger.info(f"分块写入，每块大小: {chunksize}")
         
         engine = self.get_engine()
         result = df.to_sql(
@@ -354,23 +400,27 @@ class PandasDataHelper:
             **kwargs
         )
         
-        logger.success(f"鏁版嵁鍐欏叆鎴愬姛")
+        logger.success(f"数据写入成功")
         return result
     
     def execute_query(self, query: str, params: Optional[dict] = None) -> pd.DataFrame:
         """
-        鎵ц查询骞惰繑鍥?DataFrame锛堢畝鍖栫増锛?        
-        杩欐槸 read_sql 鐨勭畝鍖栫増鏈紝鏇寸畝娲?        
+        执行查询并返回 DataFrame（简化版）
+        
+        这是 read_sql 的简化版本，更简洁
+        
         Args:
-            query: SQL 查询璇彞
-            params: SQL 鍙傛暟
+            query: SQL 查询语句
+            params: SQL 参数
         
         Returns:
-            pd.DataFrame: 查询缁撴灉
+            pd.DataFrame: 查询结果
         
-        浣跨敤绀轰緥锛?            # 绠€鍗曟煡璇?            df = helper.execute_query("SELECT * FROM users")
+        使用示例：
+            # 简单查询
+            df = helper.execute_query("SELECT * FROM users")
             
-            # 甯﹀弬鏁扮殑查询
+            # 带参数的查询
             df = helper.execute_query(
                 "SELECT * FROM users WHERE status = %s",
                 params={'status': 'active'}
@@ -380,11 +430,14 @@ class PandasDataHelper:
     
     def get_engine(self):
         """
-        鑾峰彇鏁版嵁搴撳紩鎿?        
+        获取数据库引擎
+        
         Returns:
-            Engine: SQLAlchemy 鏁版嵁搴撳紩鎿?        
-        浣跨敤绀轰緥锛?            engine = helper.get_engine()
-            # 鐩存帴浣跨敤寮曟搸
+            Engine: SQLAlchemy 数据库引擎
+        
+        使用示例：
+            engine = helper.get_engine()
+            # 直接使用引擎
             with engine.connect() as conn:
                 result = conn.execute(text("SELECT * FROM users"))
         """
@@ -392,10 +445,13 @@ class PandasDataHelper:
     
     def get_session(self):
         """
-        鑾峰彇鏁版嵁搴撲細璇?        
+        获取数据库会话
+        
         Returns:
-            Session: SQLAlchemy 鏁版嵁搴撲細璇?        
-        浣跨敤绀轰緥锛?            session = helper.get_session()
+            Session: SQLAlchemy 数据库会话
+        
+        使用示例：
+            session = helper.get_session()
             users = session.query(User).all()
             session.close()
         """
@@ -403,30 +459,35 @@ class PandasDataHelper:
     
     def get_datasource_name(self) -> str:
         """
-        鑾峰彇鏁版嵁婧愬悕绉?        
+        获取数据源名称
+        
         Returns:
-            str: 鏁版嵁婧愬悕绉?        
-        浣跨敤绀轰緥锛?            name = helper.get_datasource_name()
-            print(f"褰撳墠浣跨敤鐨勬暟鎹簮: {name}")
+            str: 数据源名称
+        
+        使用示例：
+            name = helper.get_datasource_name()
+            print(f"当前使用的数据源: {name}")
         """
         return self.datasource_name
     
     def __repr__(self) -> str:
-        """瀛楃涓茶〃绀?""
+        """字符串表示"""
         return f"PandasDataHelper(datasource_name='{self.datasource_name}')"
 
 
-# 渚挎嵎鍑芥暟
+# 便捷函数
 def create_helper(datasource_name: str) -> PandasDataHelper:
     """
-    创建 Pandas 鏁版嵁鍔╂墜锛堜究鎹峰嚱鏁帮級
+    创建 Pandas 数据助手（便捷函数）
     
     Args:
-        datasource_name: 鏁版嵁婧愬悕绉?    
-    Returns:
-        PandasDataHelper: 鏁版嵁鍔╂墜瀹炰緥
+        datasource_name: 数据源名称
     
-    浣跨敤绀轰緥锛?        helper = create_helper('mysql')
+    Returns:
+        PandasDataHelper: 数据助手实例
+    
+    使用示例：
+        helper = create_helper('mysql')
         df = helper.read_sql("SELECT * FROM users")
     """
     return PandasDataHelper(datasource_name)

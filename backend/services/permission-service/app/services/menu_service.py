@@ -1,15 +1,17 @@
 ﻿# -*- coding: utf-8 -*-
 """
-鑿滃崟鏈嶅姟
+菜单服务
 
-鍔熻兘璇存槑锛?1. 鑿滃崟CRUD鎿嶄綔
-2. 鑿滃崟鏍戝舰缁撴瀯绠＄悊
-3. 鑿滃崟鏉冮檺绠＄悊
+功能说明：
+1. 菜单CRUD操作
+2. 菜单树形结构管理
+3. 菜单权限管理
 
-浣跨敤绀轰緥锛?    from app.services.menu_service import MenuService
+使用示例：
+    from app.services.menu_service import MenuService
     
     menu_service = MenuService(db)
-    menu = menu_service.create_menu(name="鐢ㄦ埛绠＄悊", code="user_manage")
+    menu = menu_service.create_menu(name="用户管理", code="user_manage")
 """
 
 from sqlalchemy.orm import Session
@@ -22,129 +24,141 @@ from app.repositories.menu_repository import MenuRepository
 
 class MenuService:
     """
-    鑿滃崟鏈嶅姟
+    菜单服务
     
-    鍔熻兘锛?    - 鑿滃崟CRUD鎿嶄綔
-    - 鑿滃崟鏍戝舰缁撴瀯绠＄悊
-    - 鑿滃崟鏉冮檺绠＄悊
+    功能：
+    - 菜单CRUD操作
+    - 菜单树形结构管理
+    - 菜单权限管理
     
-    浣跨敤鏂规硶锛?        menu_service = MenuService(db)
-        menu = menu_service.create_menu(name="鐢ㄦ埛绠＄悊", code="user_manage")
+    使用方法：
+        menu_service = MenuService(db)
+        menu = menu_service.create_menu(name="用户管理", code="user_manage")
     """
     
     def __init__(self, db: Session):
         """
-        鍒濆鍖栬彍鍗曟湇鍔?        
+        初始化菜单服务
+        
         Args:
-            db: 鏁版嵁搴撲細璇?        """
+            db: 数据库会话
+        """
         self.db = db
         self.menu_repo = MenuRepository(db)
     
     def create_menu(self, menu_data: Dict[str, Any]) -> Menu:
         """
-        创建鑿滃崟
+        创建菜单
         
         Args:
-            menu_data: 鑿滃崟鏁版嵁
+            menu_data: 菜单数据
         
         Returns:
-            Menu: 创建鐨勮彍鍗曞璞?        
+            Menu: 创建的菜单对象
+        
         Raises:
-            ValueError: 鑿滃崟编码宸插瓨鍦?            ValueError: 鐖惰彍鍗曚笉瀛樺湪
-            ValueError: 鐖惰彍鍗曚笉灞炰簬璇ョ鎴?            ValueError: 鑿滃崟璺緞宸插瓨鍦?        """
-        logger.info(f"创建鑿滃崟: name={menu_data.get('name')}, code={menu_data.get('code')}")
+            ValueError: 菜单编码已存在
+            ValueError: 父菜单不存在
+            ValueError: 父菜单不属于该租户
+            ValueError: 菜单路径已存在
+        """
+        logger.info(f"创建菜单: name={menu_data.get('name')}, code={menu_data.get('code')}")
         
-        # 妫€查询彍鍗曠紪鐮佹槸鍚﹀凡瀛樺湪
+        # 检查菜单编码是否已存在
         if self.menu_repo.exists_by_code(menu_data.get("code")):
-            raise ValueError("鑿滃崟编码宸插瓨鍦?)
+            raise ValueError("菜单编码已存在")
         
-        # 楠岃瘉鐖惰彍鍗?        parent_id = menu_data.get("parent_id")
+        # 验证父菜单
+        parent_id = menu_data.get("parent_id")
         tenant_id = menu_data.get("tenant_id")
         if parent_id:
             parent_menu = self.menu_repo.get_by_id(parent_id)
             if not parent_menu:
-                raise ValueError("鐖惰彍鍗曚笉瀛樺湪")
+                raise ValueError("父菜单不存在")
             if tenant_id and parent_menu.tenant_id != tenant_id:
-                raise ValueError("鐖惰彍鍗曚笉灞炰簬璇ョ鎴?)
-            # 璁剧疆灞傜骇
+                raise ValueError("父菜单不属于该租户")
+            # 设置层级
             menu_data["level"] = parent_menu.level + 1
         
-        # 妫€查询彍鍗曡矾寰勬槸鍚﹀凡瀛樺湪
+        # 检查菜单路径是否已存在
         path = menu_data.get("path")
         if path and tenant_id:
             if self.menu_repo.exists_by_path_in_tenant(path, tenant_id):
-                raise ValueError("鑿滃崟璺緞宸插瓨鍦?)
+                raise ValueError("菜单路径已存在")
         
-        # 创建鑿滃崟
+        # 创建菜单
         menu = Menu(**menu_data)
         return self.menu_repo.create(menu)
     
     def get_menu(self, menu_id: str) -> Optional[Menu]:
         """
-        鑾峰彇鑿滃崟
+        获取菜单
         
         Args:
-            menu_id: 鑿滃崟ID
+            menu_id: 菜单ID
         
         Returns:
-            Optional[Menu]: 鑿滃崟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Menu]: 菜单对象，不存在返回None
         """
         return self.menu_repo.get_by_id(menu_id)
     
     def get_menu_by_code(self, code: str) -> Optional[Menu]:
         """
-        根据编码鑾峰彇鑿滃崟
+        根据编码获取菜单
         
         Args:
-            code: 鑿滃崟编码
+            code: 菜单编码
         
         Returns:
-            Optional[Menu]: 鑿滃崟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Menu]: 菜单对象，不存在返回None
         """
         return self.menu_repo.get_by_code(code)
     
     def update_menu(self, menu_id: str, menu_data: Dict[str, Any]) -> Optional[Menu]:
         """
-        更新鑿滃崟
+        更新菜单
         
         Args:
-            menu_id: 鑿滃崟ID
-            menu_data: 鑿滃崟鏁版嵁
+            menu_id: 菜单ID
+            menu_data: 菜单数据
         
         Returns:
-            Optional[Menu]: 更新鍚庣殑鑿滃崟瀵硅薄锛屼笉瀛樺湪杩斿洖None
+            Optional[Menu]: 更新后的菜单对象，不存在返回None
         
         Raises:
-            ValueError: 鐖惰彍鍗曚笉瀛樺湪
-            ValueError: 鐖惰彍鍗曚笉灞炰簬璇ョ鎴?            ValueError: 涓嶈兘灏嗚彍鍗曡缃负鑷繁鐨勫瓙鑿滃崟
-            ValueError: 鑿滃崟璺緞宸茶鍏朵粬鑿滃崟浣跨敤
+            ValueError: 父菜单不存在
+            ValueError: 父菜单不属于该租户
+            ValueError: 不能将菜单设置为自己的子菜单
+            ValueError: 菜单路径已被其他菜单使用
         """
-        logger.info(f"更新鑿滃崟: menu_id={menu_id}")
+        logger.info(f"更新菜单: menu_id={menu_id}")
         
         menu = self.menu_repo.get_by_id(menu_id)
         if not menu:
             return None
         
-        # 楠岃瘉鐖惰彍鍗?        if "parent_id" in menu_data:
+        # 验证父菜单
+        if "parent_id" in menu_data:
             parent_id = menu_data["parent_id"]
             if parent_id:
                 parent_menu = self.menu_repo.get_by_id(parent_id)
                 if not parent_menu:
-                    raise ValueError("鐖惰彍鍗曚笉瀛樺湪")
+                    raise ValueError("父菜单不存在")
                 if parent_menu.tenant_id != menu.tenant_id:
-                    raise ValueError("鐖惰彍鍗曚笉灞炰簬璇ョ鎴?)
-                # 妫€鏌ユ槸鍚﹀皢鑿滃崟璁剧疆涓鸿嚜宸辩殑瀛愯彍鍗?                if parent_id == menu_id:
-                    raise ValueError("涓嶈兘灏嗚彍鍗曡缃负鑷繁鐨勫瓙鑿滃崟")
-                # 璁剧疆灞傜骇
+                    raise ValueError("父菜单不属于该租户")
+                # 检查是否将菜单设置为自己的子菜单
+                if parent_id == menu_id:
+                    raise ValueError("不能将菜单设置为自己的子菜单")
+                # 设置层级
                 menu_data["level"] = parent_menu.level + 1
         
-        # 妫€查询彍鍗曡矾寰勬槸鍚﹁鍏朵粬鑿滃崟浣跨敤
+        # 检查菜单路径是否被其他菜单使用
         if "path" in menu_data and menu_data["path"]:
             existing_menu = self.menu_repo.exists_by_path_in_tenant(menu_data["path"], menu.tenant_id)
             if existing_menu and existing_menu.id != menu_id:
-                raise ValueError("鑿滃崟璺緞宸茶鍏朵粬鑿滃崟浣跨敤")
+                raise ValueError("菜单路径已被其他菜单使用")
         
-        # 更新鑿滃崟
+        # 更新菜单
         for key, value in menu_data.items():
             if hasattr(menu, key):
                 setattr(menu, key, value)
@@ -153,31 +167,31 @@ class MenuService:
     
     def delete_menu(self, menu_id: str) -> bool:
         """
-        删除鑿滃崟
+        删除菜单
         
         Args:
-            menu_id: 鑿滃崟ID
+            menu_id: 菜单ID
         
         Returns:
-            bool: 删除鏄惁鎴愬姛
+            bool: 删除是否成功
         """
-        logger.info(f"删除鑿滃崟: menu_id={menu_id}")
+        logger.info(f"删除菜单: menu_id={menu_id}")
         return self.menu_repo.delete(menu_id)
     
     def list_menus(self, tenant_id: Optional[str] = None, parent_id: Optional[str] = None,
                    keyword: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[Menu]:
         """
-        鑾峰彇鑿滃崟鍒楄〃
+        获取菜单列表
         
         Args:
-            tenant_id: 租户ID锛堝彲閫夛級
-            parent_id: 鐖惰彍鍗旾D锛堝彲閫夛級
-            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
-            page: 椤电爜
-            page_size: 姣忛〉数量
+            tenant_id: 租户ID（可选）
+            parent_id: 父菜单ID（可选）
+            keyword: 搜索关键词（可选）
+            page: 页码
+            page_size: 每页数量
         
         Returns:
-            List[Menu]: 鑿滃崟鍒楄〃
+            List[Menu]: 菜单列表
         """
         if keyword:
             return self.menu_repo.search(keyword, tenant_id, page, page_size)
@@ -190,46 +204,49 @@ class MenuService:
     
     def get_menu_tree(self, tenant_id: str) -> List[Menu]:
         """
-        鑾峰彇鑿滃崟鏍?        
+        获取菜单树
+        
         Args:
             tenant_id: 租户ID
         
         Returns:
-            List[Menu]: 鑿滃崟鏍?        """
+            List[Menu]: 菜单树
+        """
         return self.menu_repo.get_tree(tenant_id)
     
     def get_visible_menus(self, tenant_id: str) -> List[Menu]:
         """
-        鑾峰彇鍙鑿滃崟
+        获取可见菜单
         
         Args:
             tenant_id: 租户ID
         
         Returns:
-            List[Menu]: 鍙鑿滃崟鍒楄〃
+            List[Menu]: 可见菜单列表
         """
         return self.menu_repo.get_visible_menus(tenant_id)
     
     def get_user_menus(self, user_id: str) -> List[Menu]:
         """
-        鑾峰彇鐢ㄦ埛鑿滃崟
+        获取用户菜单
         
         Args:
             user_id: 用户ID
         
         Returns:
-            List[Menu]: 鐢ㄦ埛鑿滃崟鍒楄〃
+            List[Menu]: 用户菜单列表
         """
-        # 鑾峰彇鐢ㄦ埛鐨勬墍鏈夎鑹?        from common.database.models.user import Role
+        # 获取用户的所有角色
+        from common.database.models.user import Role
         roles = self.db.query(Role).join("users").filter(users.id == user_id).all()
         
-        # 鏀堕泦鎵€鏈夎彍鍗旾D
+        # 收集所有菜单ID
         menu_ids = set()
         for role in roles:
             for menu in role.menus:
                 menu_ids.add(menu.id)
         
-        # 鑾峰彇鑿滃崟
+        # 获取菜单
         menus = []
         for menu_id in menu_ids:
             menu = self.menu_repo.get_by_id(menu_id)
@@ -240,14 +257,14 @@ class MenuService:
     
     def count_menus(self, tenant_id: Optional[str] = None, parent_id: Optional[str] = None) -> int:
         """
-        缁熻鑿滃崟数量
+        统计菜单数量
         
         Args:
-            tenant_id: 租户ID锛堝彲閫夛級
-            parent_id: 鐖惰彍鍗旾D锛堝彲閫夛級
+            tenant_id: 租户ID（可选）
+            parent_id: 父菜单ID（可选）
         
         Returns:
-            int: 鑿滃崟数量
+            int: 菜单数量
         """
         if parent_id:
             return self.menu_repo.count_by_parent(parent_id)
@@ -258,30 +275,32 @@ class MenuService:
     
     def search_menus(self, query_params: Dict[str, Any], offset: int = 0, limit: int = 10) -> tuple:
         """
-        鎼滅储鑿滃崟
+        搜索菜单
         
         Args:
-            query_params: 查询鍙傛暟
-            offset: 鍋忕Щ閲?            limit: 闄愬埗数量
+            query_params: 查询参数
+            offset: 偏移量
+            limit: 限制数量
         
         Returns:
-            tuple: (鑿滃崟鍒楄〃, 鎬绘暟)
+            tuple: (菜单列表, 总数)
         """
         from sqlalchemy import and_
         
         query = self.db.query(Menu)
         
-        # 租户ID杩囨护
+        # 租户ID过滤
         if query_params.get("tenant_id"):
             query = query.filter(Menu.tenant_id == query_params["tenant_id"])
         
-        # 状态佽繃婊?        if query_params.get("status"):
+        # 状态过滤
+        if query_params.get("status"):
             query = query.filter(Menu.status == query_params["status"])
         
-        # 缁熻鎬绘暟
+        # 统计总数
         total = query.count()
         
-        # 鍒嗛〉
+        # 分页
         menus = query.offset(offset).limit(limit).all()
         
         return menus, total

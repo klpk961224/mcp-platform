@@ -1,19 +1,21 @@
 ﻿"""
-璁よ瘉API璺敱
+认证API路由
 
-鍔熻兘璇存槑锛?1. 鐢ㄦ埛鐧诲綍
-2. 鐢ㄦ埛娉ㄥ唽
-3. 鐢ㄦ埛鐧诲嚭
-4. Token鍒锋柊
+功能说明：
+1. 用户登录
+2. 用户注册
+3. 用户登出
+4. Token刷新
 
-浣跨敤绀轰緥锛?    # 鐧诲綍
+使用示例：
+    # 登录
     POST /api/v1/auth/login
     {
         "username": "admin",
         "password": "123456"
     }
     
-    # 娉ㄥ唽
+    # 注册
     POST /api/v1/auth/register
     {
         "username": "newuser",
@@ -21,13 +23,13 @@
         "email": "newuser@example.com"
     }
     
-    # 鍒锋柊Token
+    # 刷新Token
     POST /api/v1/auth/refresh
     {
         "refresh_token": "xxx"
     }
     
-    # 鐧诲嚭
+    # 登出
     POST /api/v1/auth/logout
     {
         "refresh_token": "xxx"
@@ -41,7 +43,7 @@ from typing import Optional
 import sys
 import os
 
-# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
+# 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from common.security import verify_token
@@ -60,38 +62,41 @@ from app.schemas.auth import (
 )
 from app.services.auth_service import AuthService
 
-router = APIRouter(prefix="/auth", tags=["璁よ瘉"])
+router = APIRouter(prefix="/auth", tags=["认证"])
 
 
-@router.post("/login", response_model=LoginResponse, summary="鐢ㄦ埛鐧诲綍")
+@router.post("/login", response_model=LoginResponse, summary="用户登录")
 async def login(
     request: LoginRequest,
     db: Session = Depends(get_db)
 ):
     """
-    鐢ㄦ埛鐧诲綍
+    用户登录
     
-    鍔熻兘璇存槑锛?    1. 楠岃瘉用户名嶅拰瀵嗙爜
-    2. 鐢熸垚璁块棶Token鍜屽埛鏂癟oken
-    3. 杩斿洖鐢ㄦ埛淇℃伅鍜孴oken
+    功能说明：
+    1. 验证用户名和密码
+    2. 生成访问Token和刷新Token
+    3. 返回用户信息和Token
     
     Args:
-        request: 鐧诲綍璇锋眰
-        db: 鏁版嵁搴撲細璇?    
-    Returns:
-        LoginResponse: 鐧诲綍鍝嶅簲
+        request: 登录请求
+        db: 数据库会话
     
-    浣跨敤绀轰緥锛?        POST /api/v1/auth/login
+    Returns:
+        LoginResponse: 登录响应
+    
+    使用示例：
+        POST /api/v1/auth/login
         {
             "username": "admin",
             "password": "123456",
             "tenant_code": "default"
         }
     """
-    logger.info(f"鐢ㄦ埛鐧诲綍璇锋眰: username={request.username}")
+    logger.info(f"用户登录请求: username={request.username}")
     
     try:
-        # 浣跨敤AuthService杩涜鐧诲綍楠岃瘉
+        # 使用AuthService进行登录验证
         auth_service = AuthService(db)
         result = auth_service.login(
             username=request.username,
@@ -99,7 +104,7 @@ async def login(
             tenant_id=getattr(request, 'tenant_code', None)
         )
         
-        logger.info(f"鐢ㄦ埛鐧诲綍鎴愬姛: username={request.username}, user_id={result['user_info']['id']}")
+        logger.info(f"用户登录成功: username={request.username}, user_id={result['user_info']['id']}")
         
         return LoginResponse(
             access_token=result["access_token"],
@@ -109,48 +114,53 @@ async def login(
             user_info=result["user_info"]
         )
     except ValueError as e:
-        logger.warning(f"鐢ㄦ埛鐧诲綍澶辫触: username={request.username}, error={str(e)}")
+        logger.warning(f"用户登录失败: username={request.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"鐢ㄦ埛鐧诲綍寮傚父: username={request.username}, error={str(e)}")
+        logger.error(f"用户登录异常: username={request.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鐧诲綍澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="登录失败，请稍后重试"
         )
 
 
-@router.post("/register", response_model=RegisterResponse, summary="鐢ㄦ埛娉ㄥ唽")
+@router.post("/register", response_model=RegisterResponse, summary="用户注册")
 async def register(
     request: RegisterRequest,
     db: Session = Depends(get_db)
 ):
     """
-    鐢ㄦ埛娉ㄥ唽
+    用户注册
     
-    鍔熻兘璇存槑锛?    1. 楠岃瘉用户名嶅拰邮箱鏄惁宸插瓨鍦?    2. 创建鏂扮敤鎴?    3. 杩斿洖鐢ㄦ埛淇℃伅
+    功能说明：
+    1. 验证用户名和邮箱是否已存在
+    2. 创建新用户
+    3. 返回用户信息
     
     Args:
-        request: 娉ㄥ唽璇锋眰
-        db: 鏁版嵁搴撲細璇?    
-    Returns:
-        RegisterResponse: 娉ㄥ唽鍝嶅簲
+        request: 注册请求
+        db: 数据库会话
     
-    浣跨敤绀轰緥锛?        POST /api/v1/auth/register
+    Returns:
+        RegisterResponse: 注册响应
+    
+    使用示例：
+        POST /api/v1/auth/register
         {
             "username": "newuser",
             "password": "123456",
             "email": "newuser@example.com",
-            "phone": "132800138000",
+            "phone": "13800138000",
             "tenant_code": "default"
         }
     """
-    logger.info(f"鐢ㄦ埛娉ㄥ唽璇锋眰: username={request.username}, email={request.email}")
+    logger.info(f"用户注册请求: username={request.username}, email={request.email}")
     
     try:
-        # 浣跨敤AuthService杩涜娉ㄥ唽
+        # 使用AuthService进行注册
         auth_service = AuthService(db)
         result = auth_service.register(
             username=request.username,
@@ -160,7 +170,7 @@ async def register(
             tenant_id=getattr(request, 'tenant_code', None)
         )
         
-        logger.info(f"鐢ㄦ埛娉ㄥ唽鎴愬姛: username={request.username}, user_id={result['user_id']}")
+        logger.info(f"用户注册成功: username={request.username}, user_id={result['user_id']}")
         
         return RegisterResponse(
             message=result["message"],
@@ -169,50 +179,53 @@ async def register(
             email=result["email"]
         )
     except ValueError as e:
-        logger.warning(f"鐢ㄦ埛娉ㄥ唽澶辫触: username={request.username}, error={str(e)}")
+        logger.warning(f"用户注册失败: username={request.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"鐢ㄦ埛娉ㄥ唽寮傚父: username={request.username}, error={str(e)}")
+        logger.error(f"用户注册异常: username={request.username}, error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="娉ㄥ唽澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="注册失败，请稍后重试"
         )
 
 
-@router.post("/refresh", response_model=RefreshTokenResponse, summary="鍒锋柊Token")
+@router.post("/refresh", response_model=RefreshTokenResponse, summary="刷新Token")
 async def refresh_token(
     request: RefreshTokenRequest,
     db: Session = Depends(get_db)
 ):
     """
-    鍒锋柊Token
+    刷新Token
     
-    鍔熻兘璇存槑锛?    1. 楠岃瘉鍒锋柊Token
-    2. 鐢熸垚鏂扮殑璁块棶Token
-    3. 杩斿洖鏂扮殑璁块棶Token
+    功能说明：
+    1. 验证刷新Token
+    2. 生成新的访问Token
+    3. 返回新的访问Token
     
     Args:
-        request: 鍒锋柊Token璇锋眰
-        db: 鏁版嵁搴撲細璇?    
-    Returns:
-        RefreshTokenResponse: 鍒锋柊Token鍝嶅簲
+        request: 刷新Token请求
+        db: 数据库会话
     
-    浣跨敤绀轰緥锛?        POST /api/v1/auth/refresh
+    Returns:
+        RefreshTokenResponse: 刷新Token响应
+    
+    使用示例：
+        POST /api/v1/auth/refresh
         {
             "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         }
     """
-    logger.info("鍒锋柊Token璇锋眰")
+    logger.info("刷新Token请求")
     
     try:
-        # 浣跨敤AuthService鍒锋柊Token
+        # 使用AuthService刷新Token
         auth_service = AuthService(db)
         result = auth_service.refresh_token(request.refresh_token)
         
-        logger.info(f"鍒锋柊Token鎴愬姛: user_id={result.get('user_id', 'unknown')}")
+        logger.info(f"刷新Token成功: user_id={result.get('user_id', 'unknown')}")
         
         return RefreshTokenResponse(
             access_token=result["access_token"],
@@ -220,70 +233,75 @@ async def refresh_token(
             expires_in=result["expires_in"]
         )
     except ValueError as e:
-        logger.warning(f"鍒锋柊Token澶辫触: error={str(e)}")
+        logger.warning(f"刷新Token失败: error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"鍒锋柊Token寮傚父: error={str(e)}")
+        logger.error(f"刷新Token异常: error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鍒锋柊Token澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="刷新Token失败，请稍后重试"
         )
 
 
-@router.post("/logout", response_model=LogoutResponse, summary="鐢ㄦ埛鐧诲嚭")
+@router.post("/logout", response_model=LogoutResponse, summary="用户登出")
 async def logout(
     request: Optional[RefreshTokenRequest] = None,
     db: Session = Depends(get_db)
 ):
     """
-    鐢ㄦ埛鐧诲嚭
+    用户登出
     
-    鍔熻兘璇存槑锛?    1. 楠岃瘉Token锛堝彲閫夛級
-    2. 鍚婇攢鎵€鏈塗oken
-    3. 杩斿洖鐧诲嚭鎴愬姛娑堟伅
+    功能说明：
+    1. 验证Token（可选）
+    2. 吊销所有Token
+    3. 返回登出成功消息
     
     Args:
-        request: 鍖呭惈Token鐨勮姹傦紙鍙€夛級
-        db: 鏁版嵁搴撲細璇?    
-    Returns:
-        LogoutResponse: 鐧诲嚭鍝嶅簲
+        request: 包含Token的请求（可选）
+        db: 数据库会话
     
-    浣跨敤绀轰緥锛?        POST /api/v1/auth/logout
+    Returns:
+        LogoutResponse: 登出响应
+    
+    使用示例：
+        POST /api/v1/auth/logout
         {
             "refresh_token": "xxx"
         }
         
-        鎴?        
+        或
+        
         POST /api/v1/auth/logout
     """
-    logger.info("鐢ㄦ埛鐧诲嚭璇锋眰")
+    logger.info("用户登出请求")
     
     try:
-        # 濡傛灉鎻愪緵浜唕efresh_token锛屽垯楠岃瘉骞剁櫥鍑?        if request and request.refresh_token:
-            # 楠岃瘉Token骞惰幏鍙栫敤鎴稩D
+        # 如果提供了refresh_token，则验证并登出
+        if request and request.refresh_token:
+            # 验证Token并获取用户ID
             payload = verify_token(request.refresh_token)
             if payload:
                 user_id = payload.get("user_id")
                 
-                # 浣跨敤AuthService杩涜鐧诲嚭
+                # 使用AuthService进行登出
                 auth_service = AuthService(db)
                 auth_service.logout(user_id)
                 
-                logger.info(f"鐢ㄦ埛鐧诲嚭鎴愬姛: user_id={user_id}")
+                logger.info(f"用户登出成功: user_id={user_id}")
             else:
-                logger.warning("Token鏃犳晥锛屼絾浠嶇劧杩斿洖鐧诲嚭鎴愬姛")
+                logger.warning("Token无效，但仍然返回登出成功")
         else:
-            logger.info("鏈彁渚汿oken锛岀洿鎺ヨ繑鍥炵櫥鍑烘垚鍔?)
+            logger.info("未提供Token，直接返回登出成功")
         
-        return LogoutResponse(message="鐧诲嚭鎴愬姛")
+        return LogoutResponse(message="登出成功")
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"鐢ㄦ埛鐧诲嚭寮傚父: error={str(e)}")
+        logger.error(f"用户登出异常: error={str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="鐧诲嚭澶辫触锛岃绋嶅悗閲嶈瘯"
+            detail="登出失败，请稍后重试"
         )

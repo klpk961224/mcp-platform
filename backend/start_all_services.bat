@@ -28,6 +28,7 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 echo MySQL已启动
+
 echo 检查Redis (localhost:6379)...
 netstat -ano | findstr "6379" >nul
 if %ERRORLEVEL% NEQ 0 (
@@ -38,6 +39,7 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 echo Redis已启动
+
 echo.
 echo [3/3] 启动所有服务...
 docker-compose up -d --build

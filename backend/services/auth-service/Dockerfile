@@ -22,5 +22,8 @@ COPY . .
 # 创建日志目录
 RUN mkdir -p logs
 
-# 启动命令（使用环境变量APP_PORT配置端口）
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${APP_PORT:-28001}"]
+# 暴露端口
+EXPOSE 28001
+
+# 启动命令
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "28001"]

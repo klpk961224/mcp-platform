@@ -1,10 +1,13 @@
 ﻿"""
-渚濊禆娉ㄥ叆妯″潡
+依赖注入模块
 
-鍔熻兘璇存槑锛?1. 鎻愪緵鏁版嵁搴撲細璇濅緷璧?2. 鎻愪緵褰撳墠鐢ㄦ埛渚濊禆
-3. 鎻愪緵鏉冮檺鏍￠獙渚濊禆
+功能说明：
+1. 提供数据库会话依赖
+2. 提供当前用户依赖
+3. 提供权限校验依赖
 
-浣跨敤绀轰緥锛?    from app.core.deps import get_db
+使用示例：
+    from app.core.deps import get_db
 
     @router.get("/users")
     async def get_users(db: Session = Depends(get_db)):
@@ -16,7 +19,7 @@ from typing import Generator
 import sys
 import os
 
-# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
+# 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from common.database.connection import datasource_manager
@@ -24,11 +27,13 @@ from common.database.connection import datasource_manager
 
 def get_db() -> Generator[Session, None, None]:
     """
-    鑾峰彇鏁版嵁搴撲細璇濓紙鐢熸垚鍣ㄥ嚱鏁帮紝鐢ㄤ簬FastAPI渚濊禆娉ㄥ叆锛?
-    Returns:
-        Generator[Session, None, None]: 鏁版嵁搴撲細璇濈敓鎴愬櫒
+    获取数据库会话（生成器函数，用于FastAPI依赖注入）
 
-    浣跨敤绀轰緥锛?        @router.get("/users")
+    Returns:
+        Generator[Session, None, None]: 数据库会话生成器
+
+    使用示例：
+        @router.get("/users")
         async def get_users(db: Session = Depends(get_db)):
             return db.query(User).all()
     """

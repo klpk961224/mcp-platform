@@ -1,18 +1,20 @@
 ﻿# -*- coding: utf-8 -*-
 """
-API v1妯″潡
+API v1模块
 
-鍖呭惈鎵€鏈塿1鐗堟湰鐨凙PI璺敱
+包含所有v1版本的API路由
 """
 
 from fastapi import APIRouter
 from app.api.v1.routers import todos, logs, messages, announcements
 
-# 创建v1璺敱鍣?router = APIRouter(prefix="/api/v1")
+# 创建v1路由器
+router = APIRouter(prefix="/api/v1")
 
-# 娉ㄥ唽鎵€鏈夎矾鐢?router.include_router(todos.router, prefix="/todos", tags=["寰呭姙浠诲姟"])
-router.include_router(logs.router, tags=["鏃ュ織瀹¤"])
-router.include_router(messages.router, prefix="/messages", tags=["绔欏唴淇?])
-router.include_router(announcements.router, prefix="/announcements", tags=["閫氱煡鍏憡"])
+# 注册所有路由
+router.include_router(todos.router, prefix="/todos", tags=["待办任务"])
+router.include_router(logs.router, tags=["日志审计"])
+router.include_router(messages.router, prefix="/messages", tags=["站内信"])
+router.include_router(announcements.router, prefix="/announcements", tags=["通知公告"])
 
 __all__ = ["router"]
