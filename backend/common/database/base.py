@@ -13,6 +13,7 @@ class BaseModel(Base):
     """数据库模型基类"""
     
     __abstract__ = True
+    __table_args__ = {'extend_existing': True}
     
     @declared_attr.directive
     def __tablename__(cls):

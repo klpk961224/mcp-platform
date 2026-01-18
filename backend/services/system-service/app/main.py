@@ -20,8 +20,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from loguru import logger
 import uvicorn
+import sys
+import os
 
-from common.config.settings import settings
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+
+from app.core.config import settings
 from common.database.connection import datasource_manager
 from app.api.v1 import router as v1_router
 
@@ -148,6 +152,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8004,
+        port=settings.APP_PORT,
         reload=settings.APP_ENV == "development"
     )

@@ -20,8 +20,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from loguru import logger
 import uvicorn
+import sys
+import os
 
-from common.config.settings import settings
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+
+from app.core.config import settings
 from app.api.v1 import router as v1_router
 
 
@@ -100,7 +105,9 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup_event():
     """应用启动事件"""
-    logger.info("业务服务启动")
+    logger.info(f"{settings.APP_NAME} 启动中...")
+    logger.info(f"环境: {settings.APP_ENV}")
+    logger.info(f"端口: {settings.APP_PORT}")
 
 
 # 关闭事件
@@ -111,9 +118,10 @@ async def shutdown_event():
 
 
 if __name__ == "__main__":
+    logger.info(f"启动 {settings.APP_NAME}...")
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8006,
+        port=settings.APP_PORT,
         reload=settings.APP_ENV == "development"
     )

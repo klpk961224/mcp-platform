@@ -21,7 +21,8 @@ user_roles = Table(
     Column('id', String(50), primary_key=True, comment='关联ID'),
     Column('user_id', String(50), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, comment='用户ID'),
     Column('role_id', String(50), ForeignKey('roles.id', ondelete='CASCADE'), nullable=False, comment='角色ID'),
-    Column('created_at', DateTime, nullable=False, default=datetime.now, comment='创建时间')
+    Column('created_at', DateTime, nullable=False, default=datetime.now, comment='创建时间'),
+    keep_existing=True
 )
 
 

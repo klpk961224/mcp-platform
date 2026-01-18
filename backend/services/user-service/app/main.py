@@ -8,7 +8,7 @@ from loguru import logger
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
 from app.core.config import settings
 from app.api.v1 import users, departments, tenants, positions

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "系统域服务"
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
-    APP_PORT: int = 8004
+    APP_PORT: int = 28004
     
     # 数据库配置
     DATABASE_URL: str

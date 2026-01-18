@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "认证域服务"
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
-    APP_PORT: int = 8001
+    APP_PORT: int = 28001
     
     # 数据库配置
     DATABASE_URL: str

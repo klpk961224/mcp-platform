@@ -24,7 +24,8 @@ todo_task_tags = Table(
     Column('id', String(50), primary_key=True),
     Column('todo_task_id', String(50), ForeignKey('todo_tasks.id', ondelete='CASCADE'), nullable=False),
     Column('tag_id', String(50), ForeignKey('todo_tags.id', ondelete='CASCADE'), nullable=False),
-    Column('created_at', DateTime, nullable=False, default=datetime.now)
+    Column('created_at', DateTime, nullable=False, default=datetime.now),
+    keep_existing=True
 )
 
 
@@ -36,7 +37,8 @@ daily_plan_tasks = Table(
     Column('daily_plan_id', String(50), ForeignKey('daily_plans.id', ondelete='CASCADE'), nullable=False),
     Column('todo_task_id', String(50), ForeignKey('todo_tasks.id', ondelete='CASCADE'), nullable=False),
     Column('sort_order', Integer, nullable=False, default=0),
-    Column('created_at', DateTime, nullable=False, default=datetime.now)
+    Column('created_at', DateTime, nullable=False, default=datetime.now),
+    keep_existing=True
 )
 
 
