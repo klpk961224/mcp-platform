@@ -1,14 +1,11 @@
-"""
-认证域服务 - FastAPI应用入口
+﻿"""
+璁よ瘉鍩熸湇鍔?- FastAPI搴旂敤鍏ュ彛
 
-功能说明：
-1. 创建FastAPI应用
-2. 配置中间件
-3. 注册路由
-4. 启动服务
+鍔熻兘璇存槑锛?1. 鍒涘缓FastAPI搴旂敤
+2. 閰嶇疆涓棿浠?3. 娉ㄥ唽璺敱
+4. 鍚姩鏈嶅姟
 
-使用示例：
-    uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+浣跨敤绀轰緥锛?    uvicorn app.main:app --host 0.0.0.0 --port 28001 --reload
 """
 
 from fastapi import FastAPI
@@ -17,44 +14,39 @@ from loguru import logger
 import sys
 import os
 
-# 添加项目根目录到Python路径
+# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
 from app.core.config import settings
 from app.api.v1 import auth
 from common.database.connection import datasource_manager
 
-# 创建FastAPI应用
+# 鍒涘缓FastAPI搴旂敤
 app = FastAPI(
     title=settings.APP_NAME,
-    description="认证域服务 - JWT认证、Token管理",
+    description="璁よ瘉鍩熸湇鍔?- JWT璁よ瘉銆乀oken绠＄悊",
     version="1.0.0",
     debug=settings.APP_DEBUG
 )
 
-# 配置CORS中间件
-app.add_middleware(
+# 閰嶇疆CORS涓棿浠?app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生产环境应该设置具体的域名
-    allow_credentials=True,
+    allow_origins=["*"],  # 鐢熶骇鐜搴旇璁剧疆鍏蜂綋鐨勫煙鍚?    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 注册路由
+# 娉ㄥ唽璺敱
 app.include_router(auth.router, prefix="/api/v1")
 
 
-@app.get("/", summary="健康检查")
+@app.get("/", summary="鍋ュ悍妫€鏌?)
 async def root():
     """
-    健康检查接口
-    
+    鍋ュ悍妫€鏌ユ帴鍙?    
     Returns:
-        dict: 服务状态信息
-    
-    使用示例：
-        GET /
+        dict: 鏈嶅姟鐘舵€佷俊鎭?    
+    浣跨敤绀轰緥锛?        GET /
     """
     return {
         "service": settings.APP_NAME,
@@ -63,16 +55,13 @@ async def root():
     }
 
 
-@app.get("/health", summary="健康检查")
+@app.get("/health", summary="鍋ュ悍妫€鏌?)
 async def health():
     """
-    健康检查接口
-    
+    鍋ュ悍妫€鏌ユ帴鍙?    
     Returns:
-        dict: 服务健康状态
-    
-    使用示例：
-        GET /health
+        dict: 鏈嶅姟鍋ュ悍鐘舵€?    
+    浣跨敤绀轰緥锛?        GET /health
     """
     return {
         "status": "healthy",
@@ -82,17 +71,16 @@ async def health():
 
 @app.on_event("startup")
 async def startup_event():
-    """应用启动事件"""
-    logger.info(f"{settings.APP_NAME} 启动中...")
-    logger.info(f"环境: {settings.APP_ENV}")
-    logger.info(f"端口: {settings.APP_PORT}")
+    """搴旂敤鍚姩浜嬩欢"""
+    logger.info(f"{settings.APP_NAME} 鍚姩涓?..")
+    logger.info(f"鐜: {settings.APP_ENV}")
+    logger.info(f"绔彛: {settings.APP_PORT}")
     
-    # 注册数据源
-    try:
-        # 解析 DATABASE_URL
+    # 娉ㄥ唽鏁版嵁婧?    try:
+        # 瑙ｆ瀽 DATABASE_URL
         db_url = settings.DATABASE_URL
         if db_url.startswith("mysql+pymysql://"):
-            # 格式: mysql+pymysql://username:password@host:port/database
+            # 鏍煎紡: mysql+pymysql://username:password@host:port/database
             url_without_prefix = db_url.replace("mysql+pymysql://", "")
             auth_part, host_port_db = url_without_prefix.split("@")
             username, password = auth_part.split(":")
@@ -111,24 +99,24 @@ async def startup_event():
                 max_overflow=20,
                 echo=False
             )
-            logger.info(f"数据源注册成功: mysql -> {host}:{port}/{database}")
+            logger.info(f"鏁版嵁婧愭敞鍐屾垚鍔? mysql -> {host}:{port}/{database}")
     except Exception as e:
-        logger.error(f"数据源注册失败: {e}")
+        logger.error(f"鏁版嵁婧愭敞鍐屽け璐? {e}")
         raise
     
-    logger.info(f"{settings.APP_NAME} 启动完成")
+    logger.info(f"{settings.APP_NAME} 鍚姩瀹屾垚")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """应用关闭事件"""
-    logger.info(f"{settings.APP_NAME} 关闭中...")
+    """搴旂敤鍏抽棴浜嬩欢"""
+    logger.info(f"{settings.APP_NAME} 鍏抽棴涓?..")
 
 
 if __name__ == "__main__":
     import uvicorn
     
-    logger.info(f"启动 {settings.APP_NAME}...")
+    logger.info(f"鍚姩 {settings.APP_NAME}...")
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",

@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-通知服务
+閫氱煡鏈嶅姟
 
-功能说明：
-1. 通知管理
-2. 通知发送
-3. 通知阅读管理
+鍔熻兘璇存槑锛?1. 閫氱煡绠＄悊
+2. 閫氱煡鍙戦€?3. 閫氱煡闃呰绠＄悊
 
-使用示例：
-    from app.services.notification_service import NotificationService
+浣跨敤绀轰緥锛?    from app.services.notification_service import NotificationService
     
     notification_service = NotificationService(db)
-    notification = notification_service.create_notification(title="系统通知", content="...")
+    notification = notification_service.create_notification(title="绯荤粺閫氱煡", content="...")
 """
 
 from sqlalchemy.orm import Session
@@ -25,25 +22,21 @@ from app.repositories.notification_repository import NotificationRepository
 
 class NotificationService:
     """
-    通知服务
+    閫氱煡鏈嶅姟
     
-    功能：
-    - 通知管理
-    - 通知发送
-    - 通知阅读管理
+    鍔熻兘锛?    - 閫氱煡绠＄悊
+    - 閫氱煡鍙戦€?    - 閫氱煡闃呰绠＄悊
     
-    使用方法：
-        notification_service = NotificationService(db)
-        notification = notification_service.create_notification(title="系统通知", content="...")
+    浣跨敤鏂规硶锛?        notification_service = NotificationService(db)
+        notification = notification_service.create_notification(title="绯荤粺閫氱煡", content="...")
     """
     
     def __init__(self, db: Session):
         """
-        初始化通知服务
+        鍒濆鍖栭€氱煡鏈嶅姟
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.notification_repo = NotificationRepository(db)
     
@@ -53,24 +46,23 @@ class NotificationService:
                            target_type: Optional[str] = None, target_ids: Optional[List[str]] = None,
                            attachment: Optional[str] = None) -> Notification:
         """
-        创建通知
+        鍒涘缓閫氱煡
         
         Args:
-            title: 标题
-            content: 内容
-            tenant_id: 租户ID
-            notification_type: 通知类型
-            priority: 优先级
-            sender_id: 发送者ID（可选）
-            sender_name: 发送者名称（可选）
-            target_type: 目标类型（可选）
-            target_ids: 目标ID列表（可选）
-            attachment: 附件URL（可选）
+            title: 鏍囬
+            content: 鍐呭
+            tenant_id: 绉熸埛ID
+            notification_type: 閫氱煡绫诲瀷
+            priority: 浼樺厛绾?            sender_id: 鍙戦€佽€匢D锛堝彲閫夛級
+            sender_name: 鍙戦€佽€呭悕绉帮紙鍙€夛級
+            target_type: 鐩爣绫诲瀷锛堝彲閫夛級
+            target_ids: 鐩爣ID鍒楄〃锛堝彲閫夛級
+            attachment: 闄勪欢URL锛堝彲閫夛級
         
         Returns:
-            Notification: 创建的通知对象
+            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
         """
-        logger.info(f"创建通知: title={title}, type={notification_type}")
+        logger.info(f"鍒涘缓閫氱煡: title={title}, type={notification_type}")
         
         import json
         notification = Notification(
@@ -92,10 +84,9 @@ class NotificationService:
         
         notification = self.notification_repo.create_notification(notification)
         
-        # 为每个目标用户创建阅读记录
-        if target_ids:
+        # 涓烘瘡涓洰鏍囩敤鎴峰垱寤洪槄璇昏褰?        if target_ids:
             for user_id in target_ids:
-                # 这里需要获取用户名，实际应用中可能需要调用user-service
+                # 杩欓噷闇€瑕佽幏鍙栫敤鎴峰悕锛屽疄闄呭簲鐢ㄤ腑鍙兘闇€瑕佽皟鐢╱ser-service
                 notification_read = NotificationRead(
                     notification_id=notification.id,
                     user_id=user_id,
@@ -109,17 +100,16 @@ class NotificationService:
     def send_system_notification(self, title: str, content: str, tenant_id: str,
                                   target_ids: List[str], priority: str = "normal") -> Notification:
         """
-        发送系统通知
+        鍙戦€佺郴缁熼€氱煡
         
         Args:
-            title: 标题
-            content: 内容
-            tenant_id: 租户ID
-            target_ids: 目标ID列表
-            priority: 优先级
-        
+            title: 鏍囬
+            content: 鍐呭
+            tenant_id: 绉熸埛ID
+            target_ids: 鐩爣ID鍒楄〃
+            priority: 浼樺厛绾?        
         Returns:
-            Notification: 创建的通知对象
+            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
         """
         return self.create_notification(
             title=title,
@@ -135,16 +125,15 @@ class NotificationService:
     def send_announcement(self, title: str, content: str, tenant_id: str,
                           target_ids: List[str]) -> Notification:
         """
-        发送公告
-        
+        鍙戦€佸叕鍛?        
         Args:
-            title: 标题
-            content: 内容
-            tenant_id: 租户ID
-            target_ids: 目标ID列表
+            title: 鏍囬
+            content: 鍐呭
+            tenant_id: 绉熸埛ID
+            target_ids: 鐩爣ID鍒楄〃
         
         Returns:
-            Notification: 创建的通知对象
+            Notification: 鍒涘缓鐨勯€氱煡瀵硅薄
         """
         return self.create_notification(
             title=title,
@@ -160,80 +149,78 @@ class NotificationService:
     def get_user_notifications(self, user_id: str, unread_only: bool = False,
                               page: int = 1, page_size: int = 10) -> List[Notification]:
         """
-        获取用户通知
+        鑾峰彇鐢ㄦ埛閫氱煡
         
         Args:
-            user_id: 用户ID
-            unread_only: 是否只获取未读通知
-            page: 页码
-            page_size: 每页数量
+            user_id: 鐢ㄦ埛ID
+            unread_only: 鏄惁鍙幏鍙栨湭璇婚€氱煡
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Notification]: 通知列表
+            List[Notification]: 閫氱煡鍒楄〃
         """
         return self.notification_repo.get_user_notifications(user_id, unread_only, page, page_size)
     
     def get_unread_count(self, user_id: str) -> int:
         """
-        获取用户未读通知数量
+        鑾峰彇鐢ㄦ埛鏈閫氱煡鏁伴噺
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            int: 未读通知数量
+            int: 鏈閫氱煡鏁伴噺
         """
         return self.notification_repo.get_unread_count(user_id)
     
     def mark_as_read(self, notification_id: str, user_id: str) -> bool:
         """
-        标记通知为已读
-        
+        鏍囪閫氱煡涓哄凡璇?        
         Args:
-            notification_id: 通知ID
-            user_id: 用户ID
+            notification_id: 閫氱煡ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            bool: 是否成功
+            bool: 鏄惁鎴愬姛
         """
-        logger.info(f"标记通知为已读: notification_id={notification_id}, user_id={user_id}")
+        logger.info(f"鏍囪閫氱煡涓哄凡璇? notification_id={notification_id}, user_id={user_id}")
         return self.notification_repo.mark_as_read(notification_id, user_id)
     
     def mark_all_as_read(self, user_id: str) -> int:
         """
-        标记所有通知为已读
-        
+        鏍囪鎵€鏈夐€氱煡涓哄凡璇?        
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            int: 标记的通知数量
+            int: 鏍囪鐨勯€氱煡鏁伴噺
         """
-        logger.info(f"标记所有通知为已读: user_id={user_id}")
+        logger.info(f"鏍囪鎵€鏈夐€氱煡涓哄凡璇? user_id={user_id}")
         return self.notification_repo.mark_all_as_read(user_id)
     
     def delete_notification(self, notification_id: str) -> bool:
         """
-        删除通知
+        鍒犻櫎閫氱煡
         
         Args:
-            notification_id: 通知ID
+            notification_id: 閫氱煡ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除通知: notification_id={notification_id}")
+        logger.info(f"鍒犻櫎閫氱煡: notification_id={notification_id}")
         return self.notification_repo.delete_notification(notification_id)
     
     def count_notifications(self, tenant_id: Optional[str] = None) -> int:
         """
-        统计通知数量
+        缁熻閫氱煡鏁伴噺
         
         Args:
-            tenant_id: 租户ID（可选）
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
         
         Returns:
-            int: 通知数量
+            int: 閫氱煡鏁伴噺
         """
         if tenant_id:
             return self.notification_repo.count_notifications_by_tenant(tenant_id)

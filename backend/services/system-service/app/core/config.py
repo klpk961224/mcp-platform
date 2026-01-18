@@ -1,12 +1,8 @@
-"""
-系统域服务配置模块
+﻿"""
+绯荤粺鍩熸湇鍔￠厤缃ā鍧?
+鍔熻兘璇存槑锛?1. 浠庣幆澧冨彉閲忓姞杞介厤缃?2. 鎻愪緵閰嶇疆璁块棶鎺ュ彛
 
-功能说明：
-1. 从环境变量加载配置
-2. 提供配置访问接口
-
-使用示例：
-    from app.core.config import settings
+浣跨敤绀轰緥锛?    from app.core.config import settings
     
     print(settings.APP_NAME)
     print(settings.DATABASE_URL)
@@ -17,33 +13,32 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
-    """配置类"""
+    """閰嶇疆绫?""
     
-    # 应用配置
-    APP_NAME: str = "系统域服务"
+    # 搴旂敤閰嶇疆
+    APP_NAME: str = "绯荤粺鍩熸湇鍔?
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
-    APP_PORT: int = 28004
+    APP_PORT: int = 228004
     
-    # 数据库配置
-    DATABASE_URL: str
+    # 鏁版嵁搴撻厤缃?    DATABASE_URL: str
     
-    # Redis配置
+    # Redis閰嶇疆
     REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: Optional[str] = None
     REDIS_DB: int = 0
     
-    # JWT配置
+    # JWT閰嶇疆
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
     
-    # API Key配置
+    # API Key閰嶇疆
     API_KEY_SECRET: str
     
-    # 日志配置
+    # 鏃ュ織閰嶇疆
     LOG_LEVEL: str = "DEBUG"
     LOG_FILE_PATH: str = "logs/system-service.log"
     

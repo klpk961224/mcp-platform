@@ -1,5 +1,5 @@
-"""
-岗位管理API路由
+﻿"""
+宀椾綅绠＄悊API璺敱
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
@@ -15,20 +15,20 @@ from app.core.config import settings
 from app.core.deps import get_db
 from app.services.position_service import PositionService
 
-router = APIRouter(prefix="/positions", tags=["岗位管理"])
+router = APIRouter(prefix="/positions", tags=["宀椾綅绠＄悊"])
 
 
-@router.post("", summary="创建岗位")
+@router.post("", summary="鍒涘缓宀椾綅")
 async def create_position(
-    name: str = Query(..., description="岗位名称"),
-    code: str = Query(..., description="岗位编码"),
-    tenant_id: str = Query(..., description="租户ID"),
-    level: int = Query(1, description="岗位级别"),
-    description: Optional[str] = Query(None, description="描述"),
+    name: str = Query(..., description="宀椾綅鍚嶇О"),
+    code: str = Query(..., description="宀椾綅缂栫爜"),
+    tenant_id: str = Query(..., description="绉熸埛ID"),
+    level: int = Query(1, description="宀椾綅绾у埆"),
+    description: Optional[str] = Query(None, description="鎻忚堪"),
     db: Session = Depends(get_db)
 ):
-    """创建岗位"""
-    logger.info(f"创建岗位: name={name}, code={code}")
+    """鍒涘缓宀椾綅"""
+    logger.info(f"鍒涘缓宀椾綅: name={name}, code={code}")
     
     try:
         position_service = PositionService(db)
@@ -43,27 +43,27 @@ async def create_position(
         
         new_position = position_service.create_position(position_data)
         
-        logger.info(f"创建岗位成功: name={name}, position_id={new_position.id}")
+        logger.info(f"鍒涘缓宀椾綅鎴愬姛: name={name}, position_id={new_position.id}")
         
         return new_position.to_dict()
     except ValueError as e:
-        logger.warning(f"创建岗位失败: name={name}, error={str(e)}")
+        logger.warning(f"鍒涘缓宀椾綅澶辫触: name={name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"创建岗位异常: name={name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建岗位失败，请稍后重试")
+        logger.error(f"鍒涘缓宀椾綅寮傚父: name={name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("", summary="获取岗位列表")
+@router.get("", summary="鑾峰彇宀椾綅鍒楄〃")
 async def get_positions(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    tenant_id: Optional[str] = Query(None, description="租户ID"),
-    keyword: Optional[str] = Query(None, description="搜索关键词"),
+    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
+    keyword: Optional[str] = Query(None, description="鎼滅储鍏抽敭璇?),
     db: Session = Depends(get_db)
 ):
-    """获取岗位列表"""
-    logger.info(f"获取岗位列表: page={page}")
+    """鑾峰彇宀椾綅鍒楄〃"""
+    logger.info(f"鑾峰彇宀椾綅鍒楄〃: page={page}")
     
     try:
         position_service = PositionService(db)
@@ -85,51 +85,51 @@ async def get_positions(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"获取岗位列表异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取岗位列表失败，请稍后重试")
+        logger.error(f"鑾峰彇宀椾綅鍒楄〃寮傚父: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇宀椾綅鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{position_id}", summary="获取岗位详情")
+@router.get("/{position_id}", summary="鑾峰彇宀椾綅璇︽儏")
 async def get_position(
     position_id: str,
     db: Session = Depends(get_db)
 ):
-    """获取岗位详情"""
-    logger.info(f"获取岗位详情: position_id={position_id}")
+    """鑾峰彇宀椾綅璇︽儏"""
+    logger.info(f"鑾峰彇宀椾綅璇︽儏: position_id={position_id}")
     
     try:
         position_service = PositionService(db)
         position = position_service.get_position(position_id)
         
         if not position:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="岗位不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="宀椾綅涓嶅瓨鍦?)
         
         return position.to_dict()
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取岗位详情异常: position_id={position_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取岗位详情失败，请稍后重试")
+        logger.error(f"鑾峰彇宀椾綅璇︽儏寮傚父: position_id={position_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇宀椾綅璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{position_id}", summary="更新岗位")
+@router.put("/{position_id}", summary="鏇存柊宀椾綅")
 async def update_position(
     position_id: str,
-    name: Optional[str] = Query(None, description="岗位名称"),
-    level: Optional[int] = Query(None, description="岗位级别"),
-    description: Optional[str] = Query(None, description="描述"),
-    status: Optional[str] = Query(None, description="状态"),
+    name: Optional[str] = Query(None, description="宀椾綅鍚嶇О"),
+    level: Optional[int] = Query(None, description="宀椾綅绾у埆"),
+    description: Optional[str] = Query(None, description="鎻忚堪"),
+    status: Optional[str] = Query(None, description="鐘舵€?),
     db: Session = Depends(get_db)
 ):
-    """更新岗位"""
-    logger.info(f"更新岗位: position_id={position_id}")
+    """鏇存柊宀椾綅"""
+    logger.info(f"鏇存柊宀椾綅: position_id={position_id}")
     
     try:
         position_service = PositionService(db)
         
         existing_position = position_service.get_position(position_id)
         if not existing_position:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="岗位不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="宀椾綅涓嶅瓨鍦?)
         
         update_data = {}
         if name is not None:
@@ -143,38 +143,38 @@ async def update_position(
         
         updated_position = position_service.update_position(position_id, update_data)
         
-        logger.info(f"更新岗位成功: position_id={position_id}")
+        logger.info(f"鏇存柊宀椾綅鎴愬姛: position_id={position_id}")
         
         return updated_position.to_dict()
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"更新岗位异常: position_id={position_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新岗位失败，请稍后重试")
+        logger.error(f"鏇存柊宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{position_id}", summary="删除岗位")
+@router.delete("/{position_id}", summary="鍒犻櫎宀椾綅")
 async def delete_position(
     position_id: str,
     db: Session = Depends(get_db)
 ):
-    """删除岗位"""
-    logger.info(f"删除岗位: position_id={position_id}")
+    """鍒犻櫎宀椾綅"""
+    logger.info(f"鍒犻櫎宀椾綅: position_id={position_id}")
     
     try:
         position_service = PositionService(db)
         
         existing_position = position_service.get_position(position_id)
         if not existing_position:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="岗位不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="宀椾綅涓嶅瓨鍦?)
         
         position_service.delete_position(position_id)
         
-        logger.info(f"删除岗位成功: position_id={position_id}")
+        logger.info(f"鍒犻櫎宀椾綅鎴愬姛: position_id={position_id}")
         
-        return {"message": "删除成功"}
+        return {"message": "鍒犻櫎鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"删除岗位异常: position_id={position_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除岗位失败，请稍后重试")
+        logger.error(f"鍒犻櫎宀椾綅寮傚父: position_id={position_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎宀椾綅澶辫触锛岃绋嶅悗閲嶈瘯")

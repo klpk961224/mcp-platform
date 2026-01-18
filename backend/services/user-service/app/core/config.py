@@ -1,18 +1,17 @@
-"""
-用户域服务配置模块
-"""
+﻿"""
+鐢ㄦ埛鍩熸湇鍔￠厤缃ā鍧?"""
 
 from pydantic_settings import BaseSettings
 from typing import Optional
 
 
 class Settings(BaseSettings):
-    """配置类"""
+    """閰嶇疆绫?""
     
-    APP_NAME: str = "用户域服务"
+    APP_NAME: str = "鐢ㄦ埛鍩熸湇鍔?
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
-    APP_PORT: int = 28002
+    APP_PORT: int = 228002
     
     DATABASE_URL: str
     
@@ -21,7 +20,7 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: Optional[str] = None
     REDIS_DB: int = 0
     
-    AUTH_SERVICE_URL: str = "http://localhost:28001/api/v1"
+    AUTH_SERVICE_URL: str = "http://localhost:228001/api/v1"
     
     LOG_LEVEL: str = "DEBUG"
     LOG_FILE_PATH: str = "logs/user-service.log"

@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-待办任务数据访问层
-
-功能说明：
-1. 待办任务CRUD操作
-2. 每日计划CRUD操作
-3. 待办任务查询和统计
-
-使用示例：
-    from app.repositories.todo_repository import TodoRepository
+寰呭姙浠诲姟鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 寰呭姙浠诲姟CRUD鎿嶄綔
+2. 姣忔棩璁″垝CRUD鎿嶄綔
+3. 寰呭姙浠诲姟鏌ヨ鍜岀粺璁?
+浣跨敤绀轰緥锛?    from app.repositories.todo_repository import TodoRepository
     
     todo_repo = TodoRepository(db)
     todos = todo_repo.get_user_todos(user_id="123")
@@ -25,39 +21,33 @@ from app.models.todo import TodoTask, DailyPlan
 
 class TodoRepository:
     """
-    待办任务数据访问层
-    
-    功能：
-    - 待办任务CRUD操作
-    - 每日计划CRUD操作
-    - 待办任务查询和统计
-    
-    使用方法：
-        todo_repo = TodoRepository(db)
+    寰呭姙浠诲姟鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 寰呭姙浠诲姟CRUD鎿嶄綔
+    - 姣忔棩璁″垝CRUD鎿嶄綔
+    - 寰呭姙浠诲姟鏌ヨ鍜岀粺璁?    
+    浣跨敤鏂规硶锛?        todo_repo = TodoRepository(db)
         todos = todo_repo.get_user_todos(user_id="123")
     """
     
     def __init__(self, db: Session):
         """
-        初始化待办任务数据访问层
+        鍒濆鍖栧緟鍔炰换鍔℃暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
-    # 待办任务相关方法
+    # 寰呭姙浠诲姟鐩稿叧鏂规硶
     def create_todo(self, todo: TodoTask) -> TodoTask:
         """
-        创建待办任务
+        鍒涘缓寰呭姙浠诲姟
         
         Args:
-            todo: 待办任务对象
+            todo: 寰呭姙浠诲姟瀵硅薄
         
         Returns:
-            TodoTask: 创建的待办任务对象
-        """
-        logger.info(f"创建待办任务: title={todo.title}, user_id={todo.user_id}")
+            TodoTask: 鍒涘缓鐨勫緟鍔炰换鍔″璞?        """
+        logger.info(f"鍒涘缓寰呭姙浠诲姟: title={todo.title}, user_id={todo.user_id}")
         self.db.add(todo)
         self.db.commit()
         self.db.refresh(todo)
@@ -65,30 +55,30 @@ class TodoRepository:
     
     def get_todo_by_id(self, todo_id: str) -> Optional[TodoTask]:
         """
-        根据ID获取待办任务
+        鏍规嵁ID鑾峰彇寰呭姙浠诲姟
         
         Args:
-            todo_id: 任务ID
+            todo_id: 浠诲姟ID
         
         Returns:
-            Optional[TodoTask]: 待办任务对象，不存在返回None
+            Optional[TodoTask]: 寰呭姙浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(TodoTask).filter(TodoTask.id == todo_id).first()
     
     def get_user_todos(self, user_id: str, status: Optional[str] = None,
                        priority: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        获取用户待办任务
+        鑾峰彇鐢ㄦ埛寰呭姙浠诲姟
         
         Args:
-            user_id: 用户ID
-            status: 状态（可选）
-            priority: 优先级（可选）
-            page: 页码
-            page_size: 每页数量
+            user_id: 鐢ㄦ埛ID
+            status: 鐘舵€侊紙鍙€夛級
+            priority: 浼樺厛绾э紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[TodoTask]: 待办任务列表
+            List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(TodoTask).filter(TodoTask.user_id == user_id)
@@ -102,15 +92,15 @@ class TodoRepository:
     
     def get_tenant_todos(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        获取租户待办任务
+        鑾峰彇绉熸埛寰呭姙浠诲姟
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[TodoTask]: 待办任务列表
+            List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(TodoTask).filter(
@@ -119,14 +109,14 @@ class TodoRepository:
     
     def get_overdue_todos(self, page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        获取逾期任务
+        鑾峰彇閫炬湡浠诲姟
         
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[TodoTask]: 逾期任务列表
+            List[TodoTask]: 閫炬湡浠诲姟鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(TodoTask).filter(
@@ -139,16 +129,15 @@ class TodoRepository:
     def search_todos(self, keyword: str, tenant_id: Optional[str] = None,
                       page: int = 1, page_size: int = 10) -> List[TodoTask]:
         """
-        搜索待办任务
+        鎼滅储寰呭姙浠诲姟
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[TodoTask]: 待办任务列表
+            List[TodoTask]: 寰呭姙浠诲姟鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(TodoTask).filter(
@@ -165,30 +154,30 @@ class TodoRepository:
     
     def update_todo(self, todo: TodoTask) -> TodoTask:
         """
-        更新待办任务
+        鏇存柊寰呭姙浠诲姟
         
         Args:
-            todo: 待办任务对象
+            todo: 寰呭姙浠诲姟瀵硅薄
         
         Returns:
-            TodoTask: 更新后的待办任务对象
+            TodoTask: 鏇存柊鍚庣殑寰呭姙浠诲姟瀵硅薄
         """
-        logger.info(f"更新待办任务: todo_id={todo.id}")
+        logger.info(f"鏇存柊寰呭姙浠诲姟: todo_id={todo.id}")
         self.db.commit()
         self.db.refresh(todo)
         return todo
     
     def delete_todo(self, todo_id: str) -> bool:
         """
-        删除待办任务
+        鍒犻櫎寰呭姙浠诲姟
         
         Args:
-            todo_id: 任务ID
+            todo_id: 浠诲姟ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除待办任务: todo_id={todo_id}")
+        logger.info(f"鍒犻櫎寰呭姙浠诲姟: todo_id={todo_id}")
         todo = self.get_todo_by_id(todo_id)
         if not todo:
             return False
@@ -197,18 +186,17 @@ class TodoRepository:
         self.db.commit()
         return True
     
-    # 每日计划相关方法
+    # 姣忔棩璁″垝鐩稿叧鏂规硶
     def create_daily_plan(self, daily_plan: DailyPlan) -> DailyPlan:
         """
-        创建每日计划
+        鍒涘缓姣忔棩璁″垝
         
         Args:
-            daily_plan: 每日计划对象
+            daily_plan: 姣忔棩璁″垝瀵硅薄
         
         Returns:
-            DailyPlan: 创建的每日计划对象
-        """
-        logger.info(f"创建每日计划: user_id={daily_plan.user_id}, plan_date={daily_plan.plan_date}")
+            DailyPlan: 鍒涘缓鐨勬瘡鏃ヨ鍒掑璞?        """
+        logger.info(f"鍒涘缓姣忔棩璁″垝: user_id={daily_plan.user_id}, plan_date={daily_plan.plan_date}")
         self.db.add(daily_plan)
         self.db.commit()
         self.db.refresh(daily_plan)
@@ -216,26 +204,25 @@ class TodoRepository:
     
     def get_daily_plan_by_id(self, plan_id: str) -> Optional[DailyPlan]:
         """
-        根据ID获取每日计划
+        鏍规嵁ID鑾峰彇姣忔棩璁″垝
         
         Args:
-            plan_id: 计划ID
+            plan_id: 璁″垝ID
         
         Returns:
-            Optional[DailyPlan]: 每日计划对象，不存在返回None
+            Optional[DailyPlan]: 姣忔棩璁″垝瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(DailyPlan).filter(DailyPlan.id == plan_id).first()
     
     def get_user_daily_plan(self, user_id: str, plan_date: date) -> Optional[DailyPlan]:
         """
-        获取用户指定日期的每日计划
-        
+        鑾峰彇鐢ㄦ埛鎸囧畾鏃ユ湡鐨勬瘡鏃ヨ鍒?        
         Args:
-            user_id: 用户ID
-            plan_date: 计划日期
+            user_id: 鐢ㄦ埛ID
+            plan_date: 璁″垝鏃ユ湡
         
         Returns:
-            Optional[DailyPlan]: 每日计划对象，不存在返回None
+            Optional[DailyPlan]: 姣忔棩璁″垝瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         start_date = datetime.combine(plan_date, datetime.min.time())
         end_date = start_date + timedelta(days=1)
@@ -251,17 +238,17 @@ class TodoRepository:
     def get_user_daily_plans(self, user_id: str, start_date: Optional[date] = None,
                              end_date: Optional[date] = None, page: int = 1, page_size: int = 10) -> List[DailyPlan]:
         """
-        获取用户每日计划列表
+        鑾峰彇鐢ㄦ埛姣忔棩璁″垝鍒楄〃
         
         Args:
-            user_id: 用户ID
-            start_date: 开始日期（可选）
-            end_date: 结束日期（可选）
-            page: 页码
-            page_size: 每页数量
+            user_id: 鐢ㄦ埛ID
+            start_date: 寮€濮嬫棩鏈燂紙鍙€夛級
+            end_date: 缁撴潫鏃ユ湡锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DailyPlan]: 每日计划列表
+            List[DailyPlan]: 姣忔棩璁″垝鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(DailyPlan).filter(DailyPlan.user_id == user_id)
@@ -275,30 +262,30 @@ class TodoRepository:
     
     def update_daily_plan(self, daily_plan: DailyPlan) -> DailyPlan:
         """
-        更新每日计划
+        鏇存柊姣忔棩璁″垝
         
         Args:
-            daily_plan: 每日计划对象
+            daily_plan: 姣忔棩璁″垝瀵硅薄
         
         Returns:
-            DailyPlan: 更新后的每日计划对象
+            DailyPlan: 鏇存柊鍚庣殑姣忔棩璁″垝瀵硅薄
         """
-        logger.info(f"更新每日计划: plan_id={daily_plan.id}")
+        logger.info(f"鏇存柊姣忔棩璁″垝: plan_id={daily_plan.id}")
         self.db.commit()
         self.db.refresh(daily_plan)
         return daily_plan
     
     def delete_daily_plan(self, plan_id: str) -> bool:
         """
-        删除每日计划
+        鍒犻櫎姣忔棩璁″垝
         
         Args:
-            plan_id: 计划ID
+            plan_id: 璁″垝ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除每日计划: plan_id={plan_id}")
+        logger.info(f"鍒犻櫎姣忔棩璁″垝: plan_id={plan_id}")
         daily_plan = self.get_daily_plan_by_id(plan_id)
         if not daily_plan:
             return False
@@ -307,17 +294,17 @@ class TodoRepository:
         self.db.commit()
         return True
     
-    # 统计方法
+    # 缁熻鏂规硶
     def count_todos_by_user(self, user_id: str, status: Optional[str] = None) -> int:
         """
-        统计用户待办任务数量
+        缁熻鐢ㄦ埛寰呭姙浠诲姟鏁伴噺
         
         Args:
-            user_id: 用户ID
-            status: 状态（可选）
+            user_id: 鐢ㄦ埛ID
+            status: 鐘舵€侊紙鍙€夛級
         
         Returns:
-            int: 任务数量
+            int: 浠诲姟鏁伴噺
         """
         query = self.db.query(TodoTask).filter(TodoTask.user_id == user_id)
         if status:
@@ -326,13 +313,13 @@ class TodoRepository:
     
     def count_overdue_todos(self, user_id: str) -> int:
         """
-        统计用户逾期任务数量
+        缁熻鐢ㄦ埛閫炬湡浠诲姟鏁伴噺
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            int: 逾期任务数量
+            int: 閫炬湡浠诲姟鏁伴噺
         """
         return self.db.query(TodoTask).filter(
             and_(
@@ -344,22 +331,21 @@ class TodoRepository:
     
     def count_all_todos(self) -> int:
         """
-        统计所有待办任务数量
-        
+        缁熻鎵€鏈夊緟鍔炰换鍔℃暟閲?        
         Returns:
-            int: 任务数量
+            int: 浠诲姟鏁伴噺
         """
         return self.db.query(TodoTask).count()
     
     def get_todo_statistics(self, user_id: str) -> dict:
         """
-        获取用户待办任务统计信息
+        鑾峰彇鐢ㄦ埛寰呭姙浠诲姟缁熻淇℃伅
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            dict: 统计信息
+            dict: 缁熻淇℃伅
         """
         total = self.count_todos_by_user(user_id)
         completed = self.count_todos_by_user(user_id, "completed")
@@ -367,7 +353,7 @@ class TodoRepository:
         in_progress = self.count_todos_by_user(user_id, "in_progress")
         overdue = self.count_overdue_todos(user_id)
         
-        # 按优先级统计
+        # 鎸変紭鍏堢骇缁熻
         high_priority = self.db.query(TodoTask).filter(
             and_(
                 TodoTask.user_id == user_id,

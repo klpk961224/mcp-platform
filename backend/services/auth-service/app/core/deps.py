@@ -1,13 +1,10 @@
-"""
-依赖注入模块
+﻿"""
+渚濊禆娉ㄥ叆妯″潡
 
-功能说明：
-1. 提供数据库会话依赖
-2. 提供当前用户依赖
-3. 提供权限校验依赖
+鍔熻兘璇存槑锛?1. 鎻愪緵鏁版嵁搴撲細璇濅緷璧?2. 鎻愪緵褰撳墠鐢ㄦ埛渚濊禆
+3. 鎻愪緵鏉冮檺鏍￠獙渚濊禆
 
-使用示例：
-    from app.core.deps import get_db, get_current_user
+浣跨敤绀轰緥锛?    from app.core.deps import get_db, get_current_user
 
     @router.get("/users")
     async def get_users(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -20,7 +17,7 @@ from typing import Optional, Generator
 import sys
 import os
 
-# 添加项目根目录到Python路径
+# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from common.database import get_session
@@ -30,13 +27,11 @@ from common.database.connection import datasource_manager
 
 def get_db() -> Generator[Session, None, None]:
     """
-    获取数据库会话（生成器函数，用于FastAPI依赖注入）
-
+    鑾峰彇鏁版嵁搴撲細璇濓紙鐢熸垚鍣ㄥ嚱鏁帮紝鐢ㄤ簬FastAPI渚濊禆娉ㄥ叆锛?
     Returns:
-        Generator[Session, None, None]: 数据库会话生成器
+        Generator[Session, None, None]: 鏁版嵁搴撲細璇濈敓鎴愬櫒
 
-    使用示例：
-        @router.get("/users")
+    浣跨敤绀轰緥锛?        @router.get("/users")
         async def get_users(db: Session = Depends(get_db)):
             return db.query(User).all()
     """
@@ -59,40 +54,38 @@ async def get_current_user(
     db: Session = Depends(get_db)
 ) -> Optional[dict]:
     """
-    获取当前用户
+    鑾峰彇褰撳墠鐢ㄦ埛
     
     Args:
         token: JWT Token
-        db: 数据库会话
-    
+        db: 鏁版嵁搴撲細璇?    
     Returns:
-        Optional[dict]: 用户信息
+        Optional[dict]: 鐢ㄦ埛淇℃伅
     
-    使用示例：
-        @router.get("/profile")
+    浣跨敤绀轰緥锛?        @router.get("/profile")
         async def get_profile(current_user = Depends(get_current_user)):
             return current_user
     """
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="未提供认证Token"
+            detail="鏈彁渚涜璇乀oken"
         )
     
-    # 验证Token
+    # 楠岃瘉Token
     payload = verify_token(token)
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token无效或已过期"
+            detail="Token鏃犳晥鎴栧凡杩囨湡"
         )
     
-    # 从数据库获取用户信息
+    # 浠庢暟鎹簱鑾峰彇鐢ㄦ埛淇℃伅
     # user = db.query(User).filter(User.id == payload.get("user_id")).first()
     # if not user:
     #     raise HTTPException(
     #         status_code=status.HTTP_404_NOT_FOUND,
-    #         detail="用户不存在"
+    #         detail="鐢ㄦ埛涓嶅瓨鍦?
     #     )
     
     return payload
@@ -102,23 +95,22 @@ async def get_current_active_user(
     current_user = Depends(get_current_user)
 ) -> dict:
     """
-    获取当前活跃用户
+    鑾峰彇褰撳墠娲昏穬鐢ㄦ埛
     
     Args:
-        current_user: 当前用户
+        current_user: 褰撳墠鐢ㄦ埛
     
     Returns:
-        dict: 用户信息
+        dict: 鐢ㄦ埛淇℃伅
     
-    使用示例：
-        @router.get("/profile")
+    浣跨敤绀轰緥锛?        @router.get("/profile")
         async def get_profile(current_user = Depends(get_current_active_user)):
             return current_user
     """
     if current_user.get("status") != "active":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="用户已被禁用"
+            detail="鐢ㄦ埛宸茶绂佺敤"
         )
     
     return current_user

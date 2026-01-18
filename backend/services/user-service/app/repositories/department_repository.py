@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-部门数据访问层
+閮ㄩ棬鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 閮ㄩ棬CRUD鎿嶄綔
+2. 閮ㄩ棬鏍戝舰缁撴瀯鏌ヨ
+3. 閮ㄩ棬缁熻鎿嶄綔
 
-功能说明：
-1. 部门CRUD操作
-2. 部门树形结构查询
-3. 部门统计操作
-
-使用示例：
-    from app.repositories.department_repository import DepartmentRepository
+浣跨敤绀轰緥锛?    from app.repositories.department_repository import DepartmentRepository
     
     dept_repo = DepartmentRepository(db)
     dept = dept_repo.get_by_code("tech")
@@ -24,38 +21,33 @@ from common.database.models import Department
 
 class DepartmentRepository:
     """
-    部门数据访问层
+    閮ㄩ棬鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 閮ㄩ棬CRUD鎿嶄綔
+    - 閮ㄩ棬鏍戝舰缁撴瀯鏌ヨ
+    - 閮ㄩ棬缁熻鎿嶄綔
     
-    功能：
-    - 部门CRUD操作
-    - 部门树形结构查询
-    - 部门统计操作
-    
-    使用方法：
-        dept_repo = DepartmentRepository(db)
+    浣跨敤鏂规硶锛?        dept_repo = DepartmentRepository(db)
         dept = dept_repo.get_by_code("tech")
     """
     
     def __init__(self, db: Session):
         """
-        初始化部门数据访问层
+        鍒濆鍖栭儴闂ㄦ暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, department: Department) -> Department:
         """
-        创建部门
+        鍒涘缓閮ㄩ棬
         
         Args:
-            department: 部门对象
+            department: 閮ㄩ棬瀵硅薄
         
         Returns:
-            Department: 创建的部门对象
-        """
-        logger.info(f"创建部门: name={department.name}, code={department.code}, tenant_id={department.tenant_id}")
+            Department: 鍒涘缓鐨勯儴闂ㄥ璞?        """
+        logger.info(f"鍒涘缓閮ㄩ棬: name={department.name}, code={department.code}, tenant_id={department.tenant_id}")
         self.db.add(department)
         self.db.commit()
         self.db.refresh(department)
@@ -63,69 +55,68 @@ class DepartmentRepository:
     
     def get_by_id(self, department_id: str) -> Optional[Department]:
         """
-        根据ID获取部门
+        鏍规嵁ID鑾峰彇閮ㄩ棬
         
         Args:
-            department_id: 部门ID
+            department_id: 閮ㄩ棬ID
         
         Returns:
-            Optional[Department]: 部门对象，不存在返回None
+            Optional[Department]: 閮ㄩ棬瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Department).filter(Department.id == department_id).first()
     
     def get_by_code(self, code: str) -> Optional[Department]:
         """
-        根据编码获取部门
+        鏍规嵁缂栫爜鑾峰彇閮ㄩ棬
         
         Args:
-            code: 部门编码
+            code: 閮ㄩ棬缂栫爜
         
         Returns:
-            Optional[Department]: 部门对象，不存在返回None
+            Optional[Department]: 閮ㄩ棬瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Department).filter(Department.code == code).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        根据租户ID获取部门列表
+        鏍规嵁绉熸埛ID鑾峰彇閮ㄩ棬鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Department]: 部门列表
+            List[Department]: 閮ㄩ棬鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Department).filter(Department.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_by_parent_id(self, parent_id: str, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        根据父部门ID获取子部门列表
-        
+        鏍规嵁鐖堕儴闂↖D鑾峰彇瀛愰儴闂ㄥ垪琛?        
         Args:
-            parent_id: 父部门ID
-            page: 页码
-            page_size: 每页数量
+            parent_id: 鐖堕儴闂↖D
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Department]: 部门列表
+            List[Department]: 閮ㄩ棬鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Department).filter(Department.parent_id == parent_id).offset(offset).limit(page_size).all()
     
     def get_root_departments(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        获取租户的根部门（没有父部门的部门）
+        鑾峰彇绉熸埛鐨勬牴閮ㄩ棬锛堟病鏈夌埗閮ㄩ棬鐨勯儴闂級
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Department]: 部门列表
+            List[Department]: 閮ㄩ棬鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Department).filter(
@@ -137,29 +128,27 @@ class DepartmentRepository:
     
     def get_tree(self, tenant_id: str) -> List[Department]:
         """
-        获取租户的部门树
+        鑾峰彇绉熸埛鐨勯儴闂ㄦ爲
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            List[Department]: 部门树
-        """
+            List[Department]: 閮ㄩ棬鏍?        """
         root_departments = self.get_root_departments(tenant_id, page=1, page_size=1000)
         return root_departments
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        搜索部门
+        鎼滅储閮ㄩ棬
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Department]: 部门列表
+            List[Department]: 閮ㄩ棬鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(Department).filter(
@@ -177,55 +166,53 @@ class DepartmentRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[Department]:
         """
-        获取所有部门
-        
+        鑾峰彇鎵€鏈夐儴闂?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Department]: 部门列表
+            List[Department]: 閮ㄩ棬鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Department).offset(offset).limit(page_size).all()
     
     def update(self, department: Department) -> Department:
         """
-        更新部门
+        鏇存柊閮ㄩ棬
         
         Args:
-            department: 部门对象
+            department: 閮ㄩ棬瀵硅薄
         
         Returns:
-            Department: 更新后的部门对象
+            Department: 鏇存柊鍚庣殑閮ㄩ棬瀵硅薄
         """
-        logger.info(f"更新部门: department_id={department.id}")
+        logger.info(f"鏇存柊閮ㄩ棬: department_id={department.id}")
         self.db.commit()
         self.db.refresh(department)
         return department
     
     def delete(self, department_id: str) -> bool:
         """
-        删除部门
+        鍒犻櫎閮ㄩ棬
         
         Args:
-            department_id: 部门ID
+            department_id: 閮ㄩ棬ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除部门: department_id={department_id}")
+        logger.info(f"鍒犻櫎閮ㄩ棬: department_id={department_id}")
         department = self.get_by_id(department_id)
         if not department:
             return False
         
-        # 检查是否有子部门
-        if department.children:
-            raise ValueError("无法删除部门：该部门下存在子部门")
+        # 妫€鏌ユ槸鍚︽湁瀛愰儴闂?        if department.children:
+            raise ValueError("鏃犳硶鍒犻櫎閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄥ瓙閮ㄩ棬")
         
-        # 检查是否有用户
+        # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if department.users:
-            raise ValueError("无法删除部门：该部门下存在用户")
+            raise ValueError("鏃犳硶鍒犻櫎閮ㄩ棬锛氳閮ㄩ棬涓嬪瓨鍦ㄧ敤鎴?)
         
         self.db.delete(department)
         self.db.commit()
@@ -233,59 +220,55 @@ class DepartmentRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户部门数量
+        缁熻绉熸埛閮ㄩ棬鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 部门数量
+            int: 閮ㄩ棬鏁伴噺
         """
         return self.db.query(Department).filter(Department.tenant_id == tenant_id).count()
     
     def count_by_parent(self, parent_id: str) -> int:
         """
-        统计子部门数量
-        
+        缁熻瀛愰儴闂ㄦ暟閲?        
         Args:
-            parent_id: 父部门ID
+            parent_id: 鐖堕儴闂↖D
         
         Returns:
-            int: 子部门数量
-        """
+            int: 瀛愰儴闂ㄦ暟閲?        """
         return self.db.query(Department).filter(Department.parent_id == parent_id).count()
     
     def count_all(self) -> int:
         """
-        统计所有部门数量
-        
+        缁熻鎵€鏈夐儴闂ㄦ暟閲?        
         Returns:
-            int: 部门数量
+            int: 閮ㄩ棬鏁伴噺
         """
         return self.db.query(Department).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        检查部门编码是否存在
-        
+        妫€鏌ラ儴闂ㄧ紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 部门编码
+            code: 閮ㄩ棬缂栫爜
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Department).filter(Department.code == code).first() is not None
     
     def exists_by_name_in_tenant(self, name: str, tenant_id: str) -> bool:
         """
-        检查租户内部门名称是否存在
+        妫€鏌ョ鎴峰唴閮ㄩ棬鍚嶇О鏄惁瀛樺湪
         
         Args:
-            name: 部门名称
-            tenant_id: 租户ID
+            name: 閮ㄩ棬鍚嶇О
+            tenant_id: 绉熸埛ID
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Department).filter(
             and_(

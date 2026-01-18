@@ -1,17 +1,13 @@
-"""
-岗位模型
+﻿"""
+宀椾綅妯″瀷
 
-功能说明：
-1. 岗位基本信息
-2. 岗位与用户关联
-3. 岗位与部门关联
-
-使用示例：
-    from common.database.models.position import Position
+鍔熻兘璇存槑锛?1. 宀椾綅鍩烘湰淇℃伅
+2. 宀椾綅涓庣敤鎴峰叧鑱?3. 宀椾綅涓庨儴闂ㄥ叧鑱?
+浣跨敤绀轰緥锛?    from common.database.models.position import Position
     
-    # 创建岗位
+    # 鍒涘缓宀椾綅
     position = Position(
-        name="开发工程师",
+        name="寮€鍙戝伐绋嬪笀",
         code="developer",
         tenant_id="tenant_001"
     )
@@ -26,42 +22,37 @@ from ..base import BaseModel, TimestampMixin
 
 class Position(BaseModel, TimestampMixin):
     """
-    岗位模型
+    宀椾綅妯″瀷
 
-    功能：
-    - 岗位基本信息
-    - 岗位与用户关联
-    - 岗位与部门关联
-
-    属性说明：
-    - id: 岗位ID（主键）
-    - tenant_id: 租户ID
-    - name: 岗位名称
-    - code: 岗位编码
-    - level: 岗位级别
-    - description: 描述
-    - status: 状态
-    - created_at: 创建时间
-    - updated_at: 更新时间
+    鍔熻兘锛?    - 宀椾綅鍩烘湰淇℃伅
+    - 宀椾綅涓庣敤鎴峰叧鑱?    - 宀椾綅涓庨儴闂ㄥ叧鑱?
+    灞炴€ц鏄庯細
+    - id: 宀椾綅ID锛堜富閿級
+    - tenant_id: 绉熸埛ID
+    - name: 宀椾綅鍚嶇О
+    - code: 宀椾綅缂栫爜
+    - level: 宀椾綅绾у埆
+    - description: 鎻忚堪
+    - status: 鐘舵€?    - created_at: 鍒涘缓鏃堕棿
+    - updated_at: 鏇存柊鏃堕棿
     """
 
     __tablename__ = "positions"
 
-    # 基本信息
-    tenant_id = Column(String(64), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True, comment="租户ID")
-    name = Column(String(100), nullable=False, comment="岗位名称")
-    code = Column(String(50), nullable=False, comment="岗位编码")
-    level = Column(Integer, nullable=False, default=1, comment="岗位级别")
-    description = Column(Text, nullable=True, comment="描述")
+    # 鍩烘湰淇℃伅
+    tenant_id = Column(String(64), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True, comment="绉熸埛ID")
+    name = Column(String(100), nullable=False, comment="宀椾綅鍚嶇О")
+    code = Column(String(50), nullable=False, comment="宀椾綅缂栫爜")
+    level = Column(Integer, nullable=False, default=1, comment="宀椾綅绾у埆")
+    description = Column(Text, nullable=True, comment="鎻忚堪")
 
-    # 状态
-    status = Column(String(20), nullable=False, default="active", comment="状态")
+    # 鐘舵€?    status = Column(String(20), nullable=False, default="active", comment="鐘舵€?)
 
     def __repr__(self):
         return f"<Position(id={self.id}, name={self.name}, code={self.code})>"
 
     def to_dict(self):
-        """转换为字典"""
+        """杞崲涓哄瓧鍏?""
         return {
             "id": self.id,
             "tenant_id": self.tenant_id,
@@ -75,5 +66,5 @@ class Position(BaseModel, TimestampMixin):
         }
 
     def is_active(self):
-        """检查岗位是否激活"""
+        """妫€鏌ュ矖浣嶆槸鍚︽縺娲?""
         return self.status == "active"

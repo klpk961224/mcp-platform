@@ -1,23 +1,12 @@
-"""
-数据库模块
-
-导出：
-- DataSourceManager: 多数据源管理器
-- PandasDataHelper: Pandas 数据分析助手
-- datasource_manager: 全局数据源管理器实例
-- get_session: 获取数据库会话
-- SessionManager: 会话管理器
-- TransactionManager: 事务管理器
-- SagaTransaction: Saga事务
-- SagaOrchestrator: Saga编排器
-- BaseModel: 数据库模型基类
-- TimestampMixin: 时间戳混入类
-- SoftDeleteMixin: 软删除混入类
-- AuditMixin: 审计混入类
-- FullModelMixin: 完整模型混入类
-
-使用示例：
-    from common.database import (
+﻿"""
+鏁版嵁搴撴ā鍧?
+瀵煎嚭锛?- DataSourceManager: 澶氭暟鎹簮绠＄悊鍣?- PandasDataHelper: Pandas 鏁版嵁鍒嗘瀽鍔╂墜
+- datasource_manager: 鍏ㄥ眬鏁版嵁婧愮鐞嗗櫒瀹炰緥
+- get_session: 鑾峰彇鏁版嵁搴撲細璇?- SessionManager: 浼氳瘽绠＄悊鍣?- TransactionManager: 浜嬪姟绠＄悊鍣?- SagaTransaction: Saga浜嬪姟
+- SagaOrchestrator: Saga缂栨帓鍣?- BaseModel: 鏁版嵁搴撴ā鍨嬪熀绫?- TimestampMixin: 鏃堕棿鎴虫贩鍏ョ被
+- SoftDeleteMixin: 杞垹闄ゆ贩鍏ョ被
+- AuditMixin: 瀹¤娣峰叆绫?- FullModelMixin: 瀹屾暣妯″瀷娣峰叆绫?
+浣跨敤绀轰緥锛?    from common.database import (
         datasource_manager, 
         PandasDataHelper,
         get_session,
@@ -26,8 +15,7 @@
         SoftDeleteMixin
     )
     
-    # 注册数据源
-    datasource_manager.register_datasource(
+    # 娉ㄥ唽鏁版嵁婧?    datasource_manager.register_datasource(
         name='mysql',
         db_type='mysql',
         host='localhost',
@@ -37,15 +25,15 @@
         database='mcp_platform'
     )
     
-    # 使用 PandasDataHelper
+    # 浣跨敤 PandasDataHelper
     helper = PandasDataHelper('mysql')
     df = helper.read_sql("SELECT * FROM users")
     
-    # 使用会话
+    # 浣跨敤浼氳瘽
     with get_session('mysql') as session:
         users = session.query(User).all()
     
-    # 创建模型
+    # 鍒涘缓妯″瀷
     class User(BaseModel, TimestampMixin, SoftDeleteMixin):
         __tablename__ = 'users'
         username = Column(String(50))
@@ -64,25 +52,25 @@ from .base import (
 )
 
 __all__ = [
-    # 连接管理
+    # 杩炴帴绠＄悊
     'DataSourceManager',
     'datasource_manager',
     'PandasDataHelper',
     'create_helper',
     
-    # 会话管理
+    # 浼氳瘽绠＄悊
     'get_session',
     'SessionManager',
     'session_manager',
     'TransactionManager',
     'transaction_manager',
     
-    # 事务管理
+    # 浜嬪姟绠＄悊
     'SagaTransaction',
     'SagaOrchestrator',
     'saga_orchestrator',
     
-    # 模型基类
+    # 妯″瀷鍩虹被
     'BaseModel',
     'TimestampMixin',
     'SoftDeleteMixin',

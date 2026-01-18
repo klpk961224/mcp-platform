@@ -1,125 +1,131 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
-  # 认证服务
+  # 璁よ瘉鏈嶅姟
   auth-service:
     build: ./services/auth-service
     container_name: mcp-auth-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228001
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 用户服务
+  # 鐢ㄦ埛鏈嶅姟
   user-service:
     build: ./services/user-service
     container_name: mcp-user-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228002
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+      - AUTH_SERVICE_URL=http://localhost:228001/api/v1
     depends_on:
       - auth-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228002/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 权限服务
+  # 鏉冮檺鏈嶅姟
   permission-service:
     build: ./services/permission-service
     container_name: mcp-permission-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228003
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+      - AUTH_SERVICE_URL=http://localhost:228001/api/v1
     depends_on:
       - auth-service
       - user-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28003/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228003/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 系统服务
+  # 绯荤粺鏈嶅姟
   system-service:
     build: ./services/system-service
     container_name: mcp-system-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228004
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+      - AUTH_SERVICE_URL=http://localhost:228001/api/v1
     depends_on:
       - auth-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28004/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228004/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 支撑服务
+  # 鏀拺鏈嶅姟
   support-service:
     build: ./services/support-service
     container_name: mcp-support-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228005
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+      - AUTH_SERVICE_URL=http://localhost:228001/api/v1
     depends_on:
       - auth-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28005/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228005/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 业务服务
+  # 涓氬姟鏈嶅姟
   business-service:
     build: ./services/business-service
     container_name: mcp-business-service
     network_mode: host
     environment:
       - APP_ENV=production
+      - APP_PORT=228006
       - DATABASE_URL=mysql+pymysql://root:12345678@localhost:3306/mcp_platform
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - AUTH_SERVICE_URL=http://localhost:28001/api/v1
+      - AUTH_SERVICE_URL=http://localhost:228001/api/v1
     depends_on:
       - auth-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:28006/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:228006/health"]
       interval: 30s
       timeout: 10s
       retries: 3

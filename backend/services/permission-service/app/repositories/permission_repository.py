@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-权限数据访问层
+鏉冮檺鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 鏉冮檺CRUD鎿嶄綔
+2. 鏉冮檺鏌ヨ鎿嶄綔
+3. 鏉冮檺缁熻鎿嶄綔
 
-功能说明：
-1. 权限CRUD操作
-2. 权限查询操作
-3. 权限统计操作
-
-使用示例：
-    from app.repositories.permission_repository import PermissionRepository
+浣跨敤绀轰緥锛?    from app.repositories.permission_repository import PermissionRepository
     
     perm_repo = PermissionRepository(db)
     perm = perm_repo.get_by_code("user:manage")
@@ -24,38 +21,33 @@ from common.database.models.permission import Permission
 
 class PermissionRepository:
     """
-    权限数据访问层
+    鏉冮檺鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 鏉冮檺CRUD鎿嶄綔
+    - 鏉冮檺鏌ヨ鎿嶄綔
+    - 鏉冮檺缁熻鎿嶄綔
     
-    功能：
-    - 权限CRUD操作
-    - 权限查询操作
-    - 权限统计操作
-    
-    使用方法：
-        perm_repo = PermissionRepository(db)
+    浣跨敤鏂规硶锛?        perm_repo = PermissionRepository(db)
         perm = perm_repo.get_by_code("user:manage")
     """
     
     def __init__(self, db: Session):
         """
-        初始化权限数据访问层
+        鍒濆鍖栨潈闄愭暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, permission: Permission) -> Permission:
         """
-        创建权限
+        鍒涘缓鏉冮檺
         
         Args:
-            permission: 权限对象
+            permission: 鏉冮檺瀵硅薄
         
         Returns:
-            Permission: 创建的权限对象
-        """
-        logger.info(f"创建权限: name={permission.name}, code={permission.code}, tenant_id={permission.tenant_id}")
+            Permission: 鍒涘缓鐨勬潈闄愬璞?        """
+        logger.info(f"鍒涘缓鏉冮檺: name={permission.name}, code={permission.code}, tenant_id={permission.tenant_id}")
         self.db.add(permission)
         self.db.commit()
         self.db.refresh(permission)
@@ -63,97 +55,96 @@ class PermissionRepository:
     
     def get_by_id(self, permission_id: str) -> Optional[Permission]:
         """
-        根据ID获取权限
+        鏍规嵁ID鑾峰彇鏉冮檺
         
         Args:
-            permission_id: 权限ID
+            permission_id: 鏉冮檺ID
         
         Returns:
-            Optional[Permission]: 权限对象，不存在返回None
+            Optional[Permission]: 鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Permission).filter(Permission.id == permission_id).first()
     
     def get_by_code(self, code: str) -> Optional[Permission]:
         """
-        根据编码获取权限
+        鏍规嵁缂栫爜鑾峰彇鏉冮檺
         
         Args:
-            code: 权限编码
+            code: 鏉冮檺缂栫爜
         
         Returns:
-            Optional[Permission]: 权限对象，不存在返回None
+            Optional[Permission]: 鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Permission).filter(Permission.code == code).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        根据租户ID获取权限列表
+        鏍规嵁绉熸埛ID鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Permission).filter(Permission.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_by_resource(self, resource: str, page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        根据资源类型获取权限列表
+        鏍规嵁璧勬簮绫诲瀷鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            resource: 资源类型
-            page: 页码
-            page_size: 每页数量
+            resource: 璧勬簮绫诲瀷
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Permission).filter(Permission.resource == resource).offset(offset).limit(page_size).all()
     
     def get_by_type(self, permission_type: str, page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        根据权限类型获取权限列表
+        鏍规嵁鏉冮檺绫诲瀷鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            permission_type: 权限类型
-            page: 页码
-            page_size: 每页数量
+            permission_type: 鏉冮檺绫诲瀷
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Permission).filter(Permission.type == permission_type).offset(offset).limit(page_size).all()
     
     def get_by_role_id(self, role_id: str) -> List[Permission]:
         """
-        根据角色ID获取权限列表
+        鏍规嵁瑙掕壊ID鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            role_id: 角色ID
+            role_id: 瑙掕壊ID
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         return self.db.query(Permission).join("roles").filter(roles.id == role_id).all()
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        搜索权限
+        鎼滅储鏉冮檺
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(Permission).filter(
@@ -171,51 +162,50 @@ class PermissionRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        获取所有权限
-        
+        鑾峰彇鎵€鏈夋潈闄?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Permission).offset(offset).limit(page_size).all()
     
     def update(self, permission: Permission) -> Permission:
         """
-        更新权限
+        鏇存柊鏉冮檺
         
         Args:
-            permission: 权限对象
+            permission: 鏉冮檺瀵硅薄
         
         Returns:
-            Permission: 更新后的权限对象
+            Permission: 鏇存柊鍚庣殑鏉冮檺瀵硅薄
         """
-        logger.info(f"更新权限: permission_id={permission.id}")
+        logger.info(f"鏇存柊鏉冮檺: permission_id={permission.id}")
         self.db.commit()
         self.db.refresh(permission)
         return permission
     
     def delete(self, permission_id: str) -> bool:
         """
-        删除权限
+        鍒犻櫎鏉冮檺
         
         Args:
-            permission_id: 权限ID
+            permission_id: 鏉冮檺ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除权限: permission_id={permission_id}")
+        logger.info(f"鍒犻櫎鏉冮檺: permission_id={permission_id}")
         permission = self.get_by_id(permission_id)
         if not permission:
             return False
         
-        # 检查是否有角色使用
+        # 妫€鏌ユ槸鍚︽湁瑙掕壊浣跨敤
         if permission.roles:
-            raise ValueError("无法删除权限：该权限被角色使用")
+            raise ValueError("鏃犳硶鍒犻櫎鏉冮檺锛氳鏉冮檺琚鑹蹭娇鐢?)
         
         self.db.delete(permission)
         self.db.commit()
@@ -223,45 +213,43 @@ class PermissionRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户权限数量
+        缁熻绉熸埛鏉冮檺鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 权限数量
+            int: 鏉冮檺鏁伴噺
         """
         return self.db.query(Permission).filter(Permission.tenant_id == tenant_id).count()
     
     def count_by_resource(self, resource: str) -> int:
         """
-        统计资源权限数量
+        缁熻璧勬簮鏉冮檺鏁伴噺
         
         Args:
-            resource: 资源类型
+            resource: 璧勬簮绫诲瀷
         
         Returns:
-            int: 权限数量
+            int: 鏉冮檺鏁伴噺
         """
         return self.db.query(Permission).filter(Permission.resource == resource).count()
     
     def count_all(self) -> int:
         """
-        统计所有权限数量
-        
+        缁熻鎵€鏈夋潈闄愭暟閲?        
         Returns:
-            int: 权限数量
+            int: 鏉冮檺鏁伴噺
         """
         return self.db.query(Permission).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        检查权限编码是否存在
-        
+        妫€鏌ユ潈闄愮紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 权限编码
+            code: 鏉冮檺缂栫爜
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Permission).filter(Permission.code == code).first() is not None

@@ -1,19 +1,17 @@
-"""
-JWT工具模块
+﻿"""
+JWT宸ュ叿妯″潡
 
-功能说明：
-1. JWT Token生成
-2. JWT Token验证
-3. JWT Token刷新
-4. JWT Token解码
+鍔熻兘璇存槑锛?1. JWT Token鐢熸垚
+2. JWT Token楠岃瘉
+3. JWT Token鍒锋柊
+4. JWT Token瑙ｇ爜
 
-使用示例：
-    from common.security.jwt import create_access_token, verify_token
+浣跨敤绀轰緥锛?    from common.security.jwt import create_access_token, verify_token
     
-    # 生成Token
+    # 鐢熸垚Token
     token = create_access_token(user_id="123", username="test")
     
-    # 验证Token
+    # 楠岃瘉Token
     payload = verify_token(token)
 """
 
@@ -33,43 +31,39 @@ def create_access_token(
     expires_minutes: Optional[int] = None
 ) -> str:
     """
-    创建访问Token
+    鍒涘缓璁块棶Token
     
     Args:
-        data: 包含用户信息的字典（推荐方式）
-            - 示例：{"user_id": "123", "username": "test"}
-        user_id: 用户ID（可选，如果提供了data则忽略）
-        username: 用户名（可选，如果提供了data则忽略）
-        additional_claims: 额外的声明（可选）
-        expires_delta: 过期时间增量（可选）
-        expires_minutes: 过期时间（分钟）（可选，与expires_delta二选一）
-    
+        data: 鍖呭惈鐢ㄦ埛淇℃伅鐨勫瓧鍏革紙鎺ㄨ崘鏂瑰紡锛?            - 绀轰緥锛歿"user_id": "123", "username": "test"}
+        user_id: 鐢ㄦ埛ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        username: 鐢ㄦ埛鍚嶏紙鍙€夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        additional_claims: 棰濆鐨勫０鏄庯紙鍙€夛級
+        expires_delta: 杩囨湡鏃堕棿澧為噺锛堝彲閫夛級
+        expires_minutes: 杩囨湡鏃堕棿锛堝垎閽燂級锛堝彲閫夛紝涓巈xpires_delta浜岄€変竴锛?    
     Returns:
         str: JWT Token
     
-    使用示例：
-        # 方式1：使用data字典（推荐）
+    浣跨敤绀轰緥锛?        # 鏂瑰紡1锛氫娇鐢╠ata瀛楀吀锛堟帹鑽愶級
         token = create_access_token(
             data={"user_id": "123", "username": "test"},
             expires_minutes=30
         )
         
-        # 方式2：直接传递参数
-        token = create_access_token(
+        # 鏂瑰紡2锛氱洿鎺ヤ紶閫掑弬鏁?        token = create_access_token(
             user_id="123",
             username="test",
             expires_delta=timedelta(minutes=30)
         )
     """
-    # 如果提供了data字典，从中提取user_id和username
+    # 濡傛灉鎻愪緵浜哾ata瀛楀吀锛屼粠涓彁鍙杣ser_id鍜寀sername
     if data:
         user_id = data.get("user_id")
         username = data.get("username")
     
     if not user_id:
-        raise ValueError("必须提供user_id参数或data字典中包含user_id")
+        raise ValueError("蹇呴』鎻愪緵user_id鍙傛暟鎴杁ata瀛楀吀涓寘鍚玼ser_id")
     
-    # 计算过期时间
+    # 璁＄畻杩囨湡鏃堕棿
     if expires_delta:
         expire = datetime.now() + expires_delta
     elif expires_minutes:
@@ -85,8 +79,7 @@ def create_access_token(
         "type": "access"
     }
     
-    # 如果提供了data字典，将其他字段也添加到token中
-    if data:
+    # 濡傛灉鎻愪緵浜哾ata瀛楀吀锛屽皢鍏朵粬瀛楁涔熸坊鍔犲埌token涓?    if data:
         for key, value in data.items():
             if key not in ["user_id", "username"]:
                 to_encode[key] = value
@@ -100,7 +93,7 @@ def create_access_token(
         algorithm=settings.JWT_ALGORITHM
     )
     
-    logger.debug(f"创建访问Token: user_id={user_id}, username={username}")
+    logger.debug(f"鍒涘缓璁块棶Token: user_id={user_id}, username={username}")
     return encoded_jwt
 
 
@@ -111,39 +104,36 @@ def create_refresh_token(
     expires_days: Optional[int] = None
 ) -> str:
     """
-    创建刷新Token
+    鍒涘缓鍒锋柊Token
     
     Args:
-        data: 包含用户信息的字典（可选）
-            - 示例：{"user_id": "123"}
-        user_id: 用户ID（可选，如果提供了data则忽略）
-        expires_delta: 过期时间增量（可选）
-        expires_days: 过期时间（天）（可选，与expires_delta二选一）
-    
+        data: 鍖呭惈鐢ㄦ埛淇℃伅鐨勫瓧鍏革紙鍙€夛級
+            - 绀轰緥锛歿"user_id": "123"}
+        user_id: 鐢ㄦ埛ID锛堝彲閫夛紝濡傛灉鎻愪緵浜哾ata鍒欏拷鐣ワ級
+        expires_delta: 杩囨湡鏃堕棿澧為噺锛堝彲閫夛級
+        expires_days: 杩囨湡鏃堕棿锛堝ぉ锛夛紙鍙€夛紝涓巈xpires_delta浜岄€変竴锛?    
     Returns:
         str: JWT Token
     
-    使用示例：
-        # 方式1：使用data字典（推荐）
+    浣跨敤绀轰緥锛?        # 鏂瑰紡1锛氫娇鐢╠ata瀛楀吀锛堟帹鑽愶級
         token = create_refresh_token(
             data={"user_id": "123"},
             expires_days=7
         )
         
-        # 方式2：直接传递参数
-        token = create_refresh_token(
+        # 鏂瑰紡2锛氱洿鎺ヤ紶閫掑弬鏁?        token = create_refresh_token(
             user_id="123",
             expires_delta=timedelta(days=7)
         )
     """
-    # 如果提供了data字典，从中提取user_id
+    # 濡傛灉鎻愪緵浜哾ata瀛楀吀锛屼粠涓彁鍙杣ser_id
     if data:
         user_id = data.get("user_id")
     
     if not user_id:
-        raise ValueError("必须提供user_id参数或data字典中包含user_id")
+        raise ValueError("蹇呴』鎻愪緵user_id鍙傛暟鎴杁ata瀛楀吀涓寘鍚玼ser_id")
     
-    # 计算过期时间
+    # 璁＄畻杩囨湡鏃堕棿
     if expires_delta:
         expire = datetime.now() + expires_delta
     elif expires_days:
@@ -158,8 +148,7 @@ def create_refresh_token(
         "type": "refresh"
     }
     
-    # 如果提供了data字典，将其他字段也添加到token中
-    if data:
+    # 濡傛灉鎻愪緵浜哾ata瀛楀吀锛屽皢鍏朵粬瀛楁涔熸坊鍔犲埌token涓?    if data:
         for key, value in data.items():
             if key != "user_id":
                 to_encode[key] = value
@@ -170,26 +159,25 @@ def create_refresh_token(
         algorithm=settings.JWT_ALGORITHM
     )
     
-    logger.debug(f"创建刷新Token: user_id={user_id}")
+    logger.debug(f"鍒涘缓鍒锋柊Token: user_id={user_id}")
     return encoded_jwt
 
 
 def verify_token(token: str) -> Optional[Dict[str, Any]]:
     """
-    验证Token
+    楠岃瘉Token
     
     Args:
         token: JWT Token
     
     Returns:
-        Optional[Dict[str, Any]]: Token载荷（验证成功）或 None（验证失败）
+        Optional[Dict[str, Any]]: Token杞借嵎锛堥獙璇佹垚鍔燂級鎴?None锛堥獙璇佸け璐ワ級
     
-    使用示例：
-        payload = verify_token(token)
+    浣跨敤绀轰緥锛?        payload = verify_token(token)
         if payload:
-            print(f"用户ID: {payload['sub']}")
+            print(f"鐢ㄦ埛ID: {payload['sub']}")
         else:
-            print("Token无效")
+            print("Token鏃犳晥")
     """
     try:
         payload = jwt.decode(
@@ -197,27 +185,25 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
             settings.JWT_SECRET,
             algorithms=[settings.JWT_ALGORITHM]
         )
-        logger.debug(f"Token验证成功: user_id={payload.get('sub')}")
+        logger.debug(f"Token楠岃瘉鎴愬姛: user_id={payload.get('sub')}")
         return payload
     except JWTError as e:
-        logger.warning(f"Token验证失败: {e}")
+        logger.warning(f"Token楠岃瘉澶辫触: {e}")
         return None
 
 
 def decode_token(token: str) -> Optional[Dict[str, Any]]:
     """
-    解码Token（不验证过期时间）
-    
+    瑙ｇ爜Token锛堜笉楠岃瘉杩囨湡鏃堕棿锛?    
     Args:
         token: JWT Token
     
     Returns:
-        Optional[Dict[str, Any]]: Token载荷（解码成功）或 None（解码失败）
+        Optional[Dict[str, Any]]: Token杞借嵎锛堣В鐮佹垚鍔燂級鎴?None锛堣В鐮佸け璐ワ級
     
-    使用示例：
-        payload = decode_token(token)
+    浣跨敤绀轰緥锛?        payload = decode_token(token)
         if payload:
-            print(f"Token类型: {payload.get('type')}")
+            print(f"Token绫诲瀷: {payload.get('type')}")
     """
     try:
         payload = jwt.decode(
@@ -228,5 +214,5 @@ def decode_token(token: str) -> Optional[Dict[str, Any]]:
         )
         return payload
     except JWTError as e:
-        logger.warning(f"Token解码失败: {e}")
+        logger.warning(f"Token瑙ｇ爜澶辫触: {e}")
         return None

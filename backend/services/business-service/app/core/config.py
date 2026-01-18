@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-业务服务配置
+涓氬姟鏈嶅姟閰嶇疆
 
-功能说明：
-1. 业务服务特定的配置
-2. 覆盖通用配置
-3. 提供业务服务特有的配置项
+鍔熻兘璇存槑锛?1. 涓氬姟鏈嶅姟鐗瑰畾鐨勯厤缃?2. 瑕嗙洊閫氱敤閰嶇疆
+3. 鎻愪緵涓氬姟鏈嶅姟鐗规湁鐨勯厤缃」
 
-使用示例：
-    from app.core.config import settings
+浣跨敤绀轰緥锛?    from app.core.config import settings
     
     print(settings.APP_NAME)
     print(settings.APP_PORT)
@@ -21,34 +18,30 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """
-    业务服务配置类
-    
-    功能：
-    - 业务服务特定的配置
-    - 覆盖通用配置的默认值
-    - 提供业务服务特有的配置项
+    涓氬姟鏈嶅姟閰嶇疆绫?    
+    鍔熻兘锛?    - 涓氬姟鏈嶅姟鐗瑰畾鐨勯厤缃?    - 瑕嗙洊閫氱敤閰嶇疆鐨勯粯璁ゅ€?    - 鎻愪緵涓氬姟鏈嶅姟鐗规湁鐨勯厤缃」
     """
     
-    # ========== 应用配置 ==========
-    APP_NAME: str = Field(default="业务域服务", description="应用名称")
-    APP_ENV: str = Field(default="development", description="运行环境")
-    APP_DEBUG: bool = Field(default=True, description="调试模式")
-    APP_PORT: int = Field(default=28006, description="应用端口")
+    # ========== 搴旂敤閰嶇疆 ==========
+    APP_NAME: str = Field(default="涓氬姟鍩熸湇鍔?, description="搴旂敤鍚嶇О")
+    APP_ENV: str = Field(default="development", description="杩愯鐜")
+    APP_DEBUG: bool = Field(default=True, description="璋冭瘯妯″紡")
+    APP_PORT: int = Field(default=228006, description="搴旂敤绔彛")
     
-    # ========== 数据库配置 ==========
-    DB_TYPE: str = Field(default="mysql", description="数据库类型")
-    DB_HOST: str = Field(default="localhost", description="数据库主机")
-    DB_PORT: int = Field(default=3306, description="数据库端口")
-    DB_NAME: str = Field(default="mcp_platform", description="数据库名称")
-    DB_USER: str = Field(default="root", description="数据库用户名")
-    DB_PASSWORD: str = Field(default="12345678", description="数据库密码")
-    DB_CHARSET: str = Field(default="utf8mb4", description="数据库字符集")
-    DB_POOL_SIZE: int = Field(default=10, description="连接池大小")
-    DB_MAX_OVERFLOW: int = Field(default=20, description="最大溢出连接数")
-    DB_ECHO: bool = Field(default=False, description="是否打印SQL")
+    # ========== 鏁版嵁搴撻厤缃?==========
+    DB_TYPE: str = Field(default="mysql", description="鏁版嵁搴撶被鍨?)
+    DB_HOST: str = Field(default="localhost", description="鏁版嵁搴撲富鏈?)
+    DB_PORT: int = Field(default=3306, description="鏁版嵁搴撶鍙?)
+    DB_NAME: str = Field(default="mcp_platform", description="鏁版嵁搴撳悕绉?)
+    DB_USER: str = Field(default="root", description="鏁版嵁搴撶敤鎴峰悕")
+    DB_PASSWORD: str = Field(default="12345678", description="鏁版嵁搴撳瘑鐮?)
+    DB_CHARSET: str = Field(default="utf8mb4", description="鏁版嵁搴撳瓧绗﹂泦")
+    DB_POOL_SIZE: int = Field(default=10, description="杩炴帴姹犲ぇ灏?)
+    DB_MAX_OVERFLOW: int = Field(default=20, description="鏈€澶ф孩鍑鸿繛鎺ユ暟")
+    DB_ECHO: bool = Field(default=False, description="鏄惁鎵撳嵃SQL")
     
     class Config:
-        """Pydantic配置"""
+        """Pydantic閰嶇疆"""
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
@@ -56,27 +49,27 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """
-        构建数据库连接URL
+        鏋勫缓鏁版嵁搴撹繛鎺RL
         
         Returns:
-            str: 数据库连接URL
+            str: 鏁版嵁搴撹繛鎺RL
         """
         if self.DB_TYPE == "mysql":
             return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={self.DB_CHARSET}"
         else:
-            raise ValueError(f"不支持的数据库类型: {self.DB_TYPE}")
+            raise ValueError(f"涓嶆敮鎸佺殑鏁版嵁搴撶被鍨? {self.DB_TYPE}")
 
 
 @lru_cache()
 def get_settings() -> Settings:
     """
-    获取配置实例（单例模式）
+    鑾峰彇閰嶇疆瀹炰緥锛堝崟渚嬫ā寮忥級
     
     Returns:
-        Settings: 配置实例
+        Settings: 閰嶇疆瀹炰緥
     """
     return Settings()
 
 
-# 全局配置实例
+# 鍏ㄥ眬閰嶇疆瀹炰緥
 settings = get_settings()

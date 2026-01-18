@@ -1,111 +1,82 @@
-"""
-常量定义模块
+﻿"""
+甯搁噺瀹氫箟妯″潡
 
-功能说明：
-1. 定义系统常量
-2. 定义枚举值
-3. 定义错误码
-4. 定义状态码
+鍔熻兘璇存槑锛?1. 瀹氫箟绯荤粺甯搁噺
+2. 瀹氫箟鏋氫妇鍊?3. 瀹氫箟閿欒鐮?4. 瀹氫箟鐘舵€佺爜
 
-使用示例：
-    from common.config.constants import (
+浣跨敤绀轰緥锛?    from common.config.constants import (
         UserStatus,
         ErrorCode,
         ResponseCode,
         DEFAULT_PAGE_SIZE
     )
     
-    # 使用枚举
+    # 浣跨敤鏋氫妇
     status = UserStatus.ACTIVE
     
-    # 使用错误码
-    error = ErrorCode.USER_NOT_FOUND
+    # 浣跨敤閿欒鐮?    error = ErrorCode.USER_NOT_FOUND
     
-    # 使用响应码
-    response_code = ResponseCode.SUCCESS
+    # 浣跨敤鍝嶅簲鐮?    response_code = ResponseCode.SUCCESS
 """
 
 from enum import Enum
 from typing import Dict
 
 
-# ========== 用户状态 ==========
+# ========== 鐢ㄦ埛鐘舵€?==========
 class UserStatus(str, Enum):
-    """用户状态枚举"""
-    ACTIVE = "active"  # 激活
-    INACTIVE = "inactive"  # 未激活
-    LOCKED = "locked"  # 锁定
-    DELETED = "deleted"  # 已删除
+    """鐢ㄦ埛鐘舵€佹灇涓?""
+    ACTIVE = "active"  # 婵€娲?    INACTIVE = "inactive"  # 鏈縺娲?    LOCKED = "locked"  # 閿佸畾
+    DELETED = "deleted"  # 宸插垹闄?
 
-
-# ========== 用户性别 ==========
+# ========== 鐢ㄦ埛鎬у埆 ==========
 class Gender(str, Enum):
-    """性别枚举"""
-    MALE = "male"  # 男
-    FEMALE = "female"  # 女
-    UNKNOWN = "unknown"  # 未知
+    """鎬у埆鏋氫妇"""
+    MALE = "male"  # 鐢?    FEMALE = "female"  # 濂?    UNKNOWN = "unknown"  # 鏈煡
 
 
-# ========== 订单状态 ==========
+# ========== 璁㈠崟鐘舵€?==========
 class OrderStatus(str, Enum):
-    """订单状态枚举"""
-    PENDING = "pending"  # 待支付
-    PAID = "paid"  # 已支付
-    SHIPPED = "shipped"  # 已发货
-    DELIVERED = "delivered"  # 已送达
-    CANCELLED = "cancelled"  # 已取消
-    REFUNDED = "refunded"  # 已退款
+    """璁㈠崟鐘舵€佹灇涓?""
+    PENDING = "pending"  # 寰呮敮浠?    PAID = "paid"  # 宸叉敮浠?    SHIPPED = "shipped"  # 宸插彂璐?    DELIVERED = "delivered"  # 宸查€佽揪
+    CANCELLED = "cancelled"  # 宸插彇娑?    REFUNDED = "refunded"  # 宸查€€娆?
 
-
-# ========== 支付状态 ==========
+# ========== 鏀粯鐘舵€?==========
 class PaymentStatus(str, Enum):
-    """支付状态枚举"""
-    PENDING = "pending"  # 待支付
-    SUCCESS = "success"  # 支付成功
-    FAILED = "failed"  # 支付失败
-    REFUNDED = "refunded"  # 已退款
+    """鏀粯鐘舵€佹灇涓?""
+    PENDING = "pending"  # 寰呮敮浠?    SUCCESS = "success"  # 鏀粯鎴愬姛
+    FAILED = "failed"  # 鏀粯澶辫触
+    REFUNDED = "refunded"  # 宸查€€娆?
 
-
-# ========== 审批状态 ==========
+# ========== 瀹℃壒鐘舵€?==========
 class ApprovalStatus(str, Enum):
-    """审批状态枚举"""
-    PENDING = "pending"  # 待审批
-    APPROVED = "approved"  # 已通过
-    REJECTED = "rejected"  # 已拒绝
-    CANCELLED = "cancelled"  # 已取消
+    """瀹℃壒鐘舵€佹灇涓?""
+    PENDING = "pending"  # 寰呭鎵?    APPROVED = "approved"  # 宸查€氳繃
+    REJECTED = "rejected"  # 宸叉嫆缁?    CANCELLED = "cancelled"  # 宸插彇娑?
 
-
-# ========== 任务状态 ==========
+# ========== 浠诲姟鐘舵€?==========
 class TaskStatus(str, Enum):
-    """任务状态枚举"""
-    PENDING = "pending"  # 待处理
-    IN_PROGRESS = "in_progress"  # 进行中
-    COMPLETED = "completed"  # 已完成
-    FAILED = "failed"  # 失败
-    CANCELLED = "cancelled"  # 已取消
+    """浠诲姟鐘舵€佹灇涓?""
+    PENDING = "pending"  # 寰呭鐞?    IN_PROGRESS = "in_progress"  # 杩涜涓?    COMPLETED = "completed"  # 宸插畬鎴?    FAILED = "failed"  # 澶辫触
+    CANCELLED = "cancelled"  # 宸插彇娑?
 
-
-# ========== 任务优先级 ==========
+# ========== 浠诲姟浼樺厛绾?==========
 class TaskPriority(str, Enum):
-    """任务优先级枚举"""
-    LOW = "low"  # 低
-    MEDIUM = "medium"  # 中
-    HIGH = "high"  # 高
-    URGENT = "urgent"  # 紧急
+    """浠诲姟浼樺厛绾ф灇涓?""
+    LOW = "low"  # 浣?    MEDIUM = "medium"  # 涓?    HIGH = "high"  # 楂?    URGENT = "urgent"  # 绱ф€?
 
-
-# ========== 通知类型 ==========
+# ========== 閫氱煡绫诲瀷 ==========
 class NotificationType(str, Enum):
-    """通知类型枚举"""
-    SYSTEM = "system"  # 系统通知
-    USER = "user"  # 用户通知
-    TASK = "task"  # 任务通知
-    APPROVAL = "approval"  # 审批通知
+    """閫氱煡绫诲瀷鏋氫妇"""
+    SYSTEM = "system"  # 绯荤粺閫氱煡
+    USER = "user"  # 鐢ㄦ埛閫氱煡
+    TASK = "task"  # 浠诲姟閫氱煡
+    APPROVAL = "approval"  # 瀹℃壒閫氱煡
 
 
-# ========== 日志级别 ==========
+# ========== 鏃ュ織绾у埆 ==========
 class LogLevel(str, Enum):
-    """日志级别枚举"""
+    """鏃ュ織绾у埆鏋氫妇"""
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -113,201 +84,164 @@ class LogLevel(str, Enum):
     CRITICAL = "CRITICAL"
 
 
-# ========== 日志类型 ==========
+# ========== 鏃ュ織绫诲瀷 ==========
 class LogType(str, Enum):
-    """日志类型枚举"""
-    LOGIN = "login"  # 登录日志
-    OPERATION = "operation"  # 操作日志
-    ERROR = "error"  # 错误日志
-    SYSTEM = "system"  # 系统日志
+    """鏃ュ織绫诲瀷鏋氫妇"""
+    LOGIN = "login"  # 鐧诲綍鏃ュ織
+    OPERATION = "operation"  # 鎿嶄綔鏃ュ織
+    ERROR = "error"  # 閿欒鏃ュ織
+    SYSTEM = "system"  # 绯荤粺鏃ュ織
 
 
-# ========== 响应码 ==========
+# ========== 鍝嶅簲鐮?==========
 class ResponseCode(int, Enum):
-    """响应码枚举"""
-    SUCCESS = 200  # 成功
-    CREATED = 201  # 创建成功
-    NO_CONTENT = 204  # 无内容
+    """鍝嶅簲鐮佹灇涓?""
+    SUCCESS = 200  # 鎴愬姛
+    CREATED = 201  # 鍒涘缓鎴愬姛
+    NO_CONTENT = 204  # 鏃犲唴瀹?    
+    BAD_REQUEST = 400  # 璇锋眰閿欒
+    UNAUTHORIZED = 401  # 鏈巿鏉?    FORBIDDEN = 403  # 绂佹璁块棶
+    NOT_FOUND = 404  # 鏈壘鍒?    METHOD_NOT_ALLOWED = 405  # 鏂规硶涓嶅厑璁?    CONFLICT = 409  # 鍐茬獊
+    VALIDATION_ERROR = 422  # 楠岃瘉閿欒
     
-    BAD_REQUEST = 400  # 请求错误
-    UNAUTHORIZED = 401  # 未授权
-    FORBIDDEN = 403  # 禁止访问
-    NOT_FOUND = 404  # 未找到
-    METHOD_NOT_ALLOWED = 405  # 方法不允许
-    CONFLICT = 409  # 冲突
-    VALIDATION_ERROR = 422  # 验证错误
-    
-    INTERNAL_ERROR = 500  # 内部错误
-    NOT_IMPLEMENTED = 501  # 未实现
-    SERVICE_UNAVAILABLE = 503  # 服务不可用
+    INTERNAL_ERROR = 500  # 鍐呴儴閿欒
+    NOT_IMPLEMENTED = 501  # 鏈疄鐜?    SERVICE_UNAVAILABLE = 503  # 鏈嶅姟涓嶅彲鐢?
 
-
-# ========== 错误码 ==========
+# ========== 閿欒鐮?==========
 class ErrorCode(int, Enum):
-    """错误码枚举"""
-    # 通用错误 (1000-1999)
-    SUCCESS = 0  # 成功
-    UNKNOWN_ERROR = 1000  # 未知错误
-    PARAMETER_ERROR = 1001  # 参数错误
-    VALIDATION_ERROR = 1002  # 验证错误
-    NOT_FOUND = 1003  # 未找到
-    PERMISSION_DENIED = 1004  # 权限不足
-    RATE_LIMIT_EXCEEDED = 1005  # 超出速率限制
+    """閿欒鐮佹灇涓?""
+    # 閫氱敤閿欒 (1000-1999)
+    SUCCESS = 0  # 鎴愬姛
+    UNKNOWN_ERROR = 1000  # 鏈煡閿欒
+    PARAMETER_ERROR = 1001  # 鍙傛暟閿欒
+    VALIDATION_ERROR = 1002  # 楠岃瘉閿欒
+    NOT_FOUND = 1003  # 鏈壘鍒?    PERMISSION_DENIED = 1004  # 鏉冮檺涓嶈冻
+    RATE_LIMIT_EXCEEDED = 1005  # 瓒呭嚭閫熺巼闄愬埗
     
-    # 用户错误 (2000-2999)
-    USER_NOT_FOUND = 2000  # 用户不存在
-    USER_ALREADY_EXISTS = 2001  # 用户已存在
-    USER_PASSWORD_ERROR = 2002  # 密码错误
-    USER_ACCOUNT_LOCKED = 2003  # 账户已锁定
-    USER_ACCOUNT_INACTIVE = 2004  # 账户未激活
-    USER_TOKEN_EXPIRED = 2005  # Token已过期
-    USER_TOKEN_INVALID = 2006  # Token无效
+    # 鐢ㄦ埛閿欒 (2000-2999)
+    USER_NOT_FOUND = 2000  # 鐢ㄦ埛涓嶅瓨鍦?    USER_ALREADY_EXISTS = 2001  # 鐢ㄦ埛宸插瓨鍦?    USER_PASSWORD_ERROR = 2002  # 瀵嗙爜閿欒
+    USER_ACCOUNT_LOCKED = 2003  # 璐︽埛宸查攣瀹?    USER_ACCOUNT_INACTIVE = 2004  # 璐︽埛鏈縺娲?    USER_TOKEN_EXPIRED = 2005  # Token宸茶繃鏈?    USER_TOKEN_INVALID = 2006  # Token鏃犳晥
     
-    # 部门错误 (3000-3999)
-    DEPARTMENT_NOT_FOUND = 3000  # 部门不存在
-    DEPARTMENT_ALREADY_EXISTS = 3001  # 部门已存在
-    DEPARTMENT_HAS_CHILDREN = 3002  # 部门有子部门
-    DEPARTMENT_HAS_USERS = 3003  # 部门有用户
+    # 閮ㄩ棬閿欒 (3000-3999)
+    DEPARTMENT_NOT_FOUND = 3000  # 閮ㄩ棬涓嶅瓨鍦?    DEPARTMENT_ALREADY_EXISTS = 3001  # 閮ㄩ棬宸插瓨鍦?    DEPARTMENT_HAS_CHILDREN = 3002  # 閮ㄩ棬鏈夊瓙閮ㄩ棬
+    DEPARTMENT_HAS_USERS = 3003  # 閮ㄩ棬鏈夌敤鎴?    
+    # 瑙掕壊閿欒 (4000-4999)
+    ROLE_NOT_FOUND = 4000  # 瑙掕壊涓嶅瓨鍦?    ROLE_ALREADY_EXISTS = 4001  # 瑙掕壊宸插瓨鍦?    ROLE_HAS_USERS = 4002  # 瑙掕壊鏈夌敤鎴?    ROLE_HAS_PERMISSIONS = 4003  # 瑙掕壊鏈夋潈闄?    
+    # 鏉冮檺閿欒 (5000-5999)
+    PERMISSION_NOT_FOUND = 5000  # 鏉冮檺涓嶅瓨鍦?    PERMISSION_ALREADY_EXISTS = 5001  # 鏉冮檺宸插瓨鍦?    
+    # 鑿滃崟閿欒 (6000-6999)
+    MENU_NOT_FOUND = 6000  # 鑿滃崟涓嶅瓨鍦?    MENU_ALREADY_EXISTS = 6001  # 鑿滃崟宸插瓨鍦?    MENU_HAS_CHILDREN = 6002  # 鑿滃崟鏈夊瓙鑿滃崟
     
-    # 角色错误 (4000-4999)
-    ROLE_NOT_FOUND = 4000  # 角色不存在
-    ROLE_ALREADY_EXISTS = 4001  # 角色已存在
-    ROLE_HAS_USERS = 4002  # 角色有用户
-    ROLE_HAS_PERMISSIONS = 4003  # 角色有权限
+    # 绉熸埛閿欒 (7000-7999)
+    TENANT_NOT_FOUND = 7000  # 绉熸埛涓嶅瓨鍦?    TENANT_ALREADY_EXISTS = 7001  # 绉熸埛宸插瓨鍦?    TENANT_QUOTA_EXCEEDED = 7002  # 绉熸埛閰嶉宸茶秴鍑?    
+    # MCP宸ュ叿閿欒 (8000-8999)
+    MCP_TOOL_NOT_FOUND = 8000  # MCP宸ュ叿涓嶅瓨鍦?    MCP_TOOL_ALREADY_EXISTS = 28001  # MCP宸ュ叿宸插瓨鍦?    MCP_TOOL_EXECUTION_FAILED = 28002  # MCP宸ュ叿鎵ц澶辫触
+    MCP_TOOL_TIMEOUT = 28003  # MCP宸ュ叿瓒呮椂
     
-    # 权限错误 (5000-5999)
-    PERMISSION_NOT_FOUND = 5000  # 权限不存在
-    PERMISSION_ALREADY_EXISTS = 5001  # 权限已存在
+    # 鏁版嵁婧愰敊璇?(9000-9999)
+    DATASOURCE_NOT_FOUND = 9000  # 鏁版嵁婧愪笉瀛樺湪
+    DATASOURCE_ALREADY_EXISTS = 9001  # 鏁版嵁婧愬凡瀛樺湪
+    DATASOURCE_CONNECTION_FAILED = 9002  # 鏁版嵁婧愯繛鎺ュけ璐?    
+    # 瀛楀吀閿欒 (10000-10999)
+    DICT_NOT_FOUND = 10000  # 瀛楀吀涓嶅瓨鍦?    DICT_ALREADY_EXISTS = 10001  # 瀛楀吀宸插瓨鍦?    DICT_ITEM_NOT_FOUND = 10002  # 瀛楀吀椤逛笉瀛樺湪
     
-    # 菜单错误 (6000-6999)
-    MENU_NOT_FOUND = 6000  # 菜单不存在
-    MENU_ALREADY_EXISTS = 6001  # 菜单已存在
-    MENU_HAS_CHILDREN = 6002  # 菜单有子菜单
-    
-    # 租户错误 (7000-7999)
-    TENANT_NOT_FOUND = 7000  # 租户不存在
-    TENANT_ALREADY_EXISTS = 7001  # 租户已存在
-    TENANT_QUOTA_EXCEEDED = 7002  # 租户配额已超出
-    
-    # MCP工具错误 (8000-8999)
-    MCP_TOOL_NOT_FOUND = 8000  # MCP工具不存在
-    MCP_TOOL_ALREADY_EXISTS = 8001  # MCP工具已存在
-    MCP_TOOL_EXECUTION_FAILED = 8002  # MCP工具执行失败
-    MCP_TOOL_TIMEOUT = 8003  # MCP工具超时
-    
-    # 数据源错误 (9000-9999)
-    DATASOURCE_NOT_FOUND = 9000  # 数据源不存在
-    DATASOURCE_ALREADY_EXISTS = 9001  # 数据源已存在
-    DATASOURCE_CONNECTION_FAILED = 9002  # 数据源连接失败
-    
-    # 字典错误 (10000-10999)
-    DICT_NOT_FOUND = 10000  # 字典不存在
-    DICT_ALREADY_EXISTS = 10001  # 字典已存在
-    DICT_ITEM_NOT_FOUND = 10002  # 字典项不存在
-    
-    # 日志错误 (11000-11999)
-    LOG_NOT_FOUND = 11000  # 日志不存在
-    
-    # 通知错误 (12000-12999)
-    NOTIFICATION_NOT_FOUND = 12000  # 通知不存在
-    
-    # 待办任务错误 (13000-13999)
-    TODO_NOT_FOUND = 13000  # 待办任务不存在
-    TODO_ALREADY_EXISTS = 13001  # 待办任务已存在
-    
-    # 工作流错误 (14000-14999)
-    WORKFLOW_NOT_FOUND = 14000  # 工作流不存在
-    WORKFLOW_TEMPLATE_NOT_FOUND = 14001  # 工作流模板不存在
-    WORKFLOW_TASK_NOT_FOUND = 14002  # 工作流任务不存在
-    WORKFLOW_ALREADY_EXISTS = 14003  # 工作流已存在
+    # 鏃ュ織閿欒 (11000-11999)
+    LOG_NOT_FOUND = 11000  # 鏃ュ織涓嶅瓨鍦?    
+    # 閫氱煡閿欒 (12000-12999)
+    NOTIFICATION_NOT_FOUND = 12000  # 閫氱煡涓嶅瓨鍦?    
+    # 寰呭姙浠诲姟閿欒 (13000-13999)
+    TODO_NOT_FOUND = 13000  # 寰呭姙浠诲姟涓嶅瓨鍦?    TODO_ALREADY_EXISTS = 13001  # 寰呭姙浠诲姟宸插瓨鍦?    
+    # 宸ヤ綔娴侀敊璇?(14000-14999)
+    WORKFLOW_NOT_FOUND = 14000  # 宸ヤ綔娴佷笉瀛樺湪
+    WORKFLOW_TEMPLATE_NOT_FOUND = 14001  # 宸ヤ綔娴佹ā鏉夸笉瀛樺湪
+    WORKFLOW_TASK_NOT_FOUND = 14002  # 宸ヤ綔娴佷换鍔′笉瀛樺湪
+    WORKFLOW_ALREADY_EXISTS = 14003  # 宸ヤ綔娴佸凡瀛樺湪
 
 
-# ========== 错误信息映射 ==========
+# ========== 閿欒淇℃伅鏄犲皠 ==========
 ERROR_MESSAGES: Dict[int, str] = {
-    ErrorCode.SUCCESS: "操作成功",
-    ErrorCode.UNKNOWN_ERROR: "未知错误",
-    ErrorCode.PARAMETER_ERROR: "参数错误",
-    ErrorCode.VALIDATION_ERROR: "验证失败",
-    ErrorCode.NOT_FOUND: "资源不存在",
-    ErrorCode.PERMISSION_DENIED: "权限不足",
-    ErrorCode.RATE_LIMIT_EXCEEDED: "超出速率限制",
+    ErrorCode.SUCCESS: "鎿嶄綔鎴愬姛",
+    ErrorCode.UNKNOWN_ERROR: "鏈煡閿欒",
+    ErrorCode.PARAMETER_ERROR: "鍙傛暟閿欒",
+    ErrorCode.VALIDATION_ERROR: "楠岃瘉澶辫触",
+    ErrorCode.NOT_FOUND: "璧勬簮涓嶅瓨鍦?,
+    ErrorCode.PERMISSION_DENIED: "鏉冮檺涓嶈冻",
+    ErrorCode.RATE_LIMIT_EXCEEDED: "瓒呭嚭閫熺巼闄愬埗",
     
-    ErrorCode.USER_NOT_FOUND: "用户不存在",
-    ErrorCode.USER_ALREADY_EXISTS: "用户已存在",
-    ErrorCode.USER_PASSWORD_ERROR: "密码错误",
-    ErrorCode.USER_ACCOUNT_LOCKED: "账户已锁定",
-    ErrorCode.USER_ACCOUNT_INACTIVE: "账户未激活",
-    ErrorCode.USER_TOKEN_EXPIRED: "Token已过期",
-    ErrorCode.USER_TOKEN_INVALID: "Token无效",
+    ErrorCode.USER_NOT_FOUND: "鐢ㄦ埛涓嶅瓨鍦?,
+    ErrorCode.USER_ALREADY_EXISTS: "鐢ㄦ埛宸插瓨鍦?,
+    ErrorCode.USER_PASSWORD_ERROR: "瀵嗙爜閿欒",
+    ErrorCode.USER_ACCOUNT_LOCKED: "璐︽埛宸查攣瀹?,
+    ErrorCode.USER_ACCOUNT_INACTIVE: "璐︽埛鏈縺娲?,
+    ErrorCode.USER_TOKEN_EXPIRED: "Token宸茶繃鏈?,
+    ErrorCode.USER_TOKEN_INVALID: "Token鏃犳晥",
     
-    ErrorCode.DEPARTMENT_NOT_FOUND: "部门不存在",
-    ErrorCode.DEPARTMENT_ALREADY_EXISTS: "部门已存在",
-    ErrorCode.DEPARTMENT_HAS_CHILDREN: "部门有子部门",
-    ErrorCode.DEPARTMENT_HAS_USERS: "部门有用户",
+    ErrorCode.DEPARTMENT_NOT_FOUND: "閮ㄩ棬涓嶅瓨鍦?,
+    ErrorCode.DEPARTMENT_ALREADY_EXISTS: "閮ㄩ棬宸插瓨鍦?,
+    ErrorCode.DEPARTMENT_HAS_CHILDREN: "閮ㄩ棬鏈夊瓙閮ㄩ棬",
+    ErrorCode.DEPARTMENT_HAS_USERS: "閮ㄩ棬鏈夌敤鎴?,
     
-    ErrorCode.ROLE_NOT_FOUND: "角色不存在",
-    ErrorCode.ROLE_ALREADY_EXISTS: "角色已存在",
-    ErrorCode.ROLE_HAS_USERS: "角色有用户",
-    ErrorCode.ROLE_HAS_PERMISSIONS: "角色有权限",
+    ErrorCode.ROLE_NOT_FOUND: "瑙掕壊涓嶅瓨鍦?,
+    ErrorCode.ROLE_ALREADY_EXISTS: "瑙掕壊宸插瓨鍦?,
+    ErrorCode.ROLE_HAS_USERS: "瑙掕壊鏈夌敤鎴?,
+    ErrorCode.ROLE_HAS_PERMISSIONS: "瑙掕壊鏈夋潈闄?,
     
-    ErrorCode.PERMISSION_NOT_FOUND: "权限不存在",
-    ErrorCode.PERMISSION_ALREADY_EXISTS: "权限已存在",
+    ErrorCode.PERMISSION_NOT_FOUND: "鏉冮檺涓嶅瓨鍦?,
+    ErrorCode.PERMISSION_ALREADY_EXISTS: "鏉冮檺宸插瓨鍦?,
     
-    ErrorCode.MENU_NOT_FOUND: "菜单不存在",
-    ErrorCode.MENU_ALREADY_EXISTS: "菜单已存在",
-    ErrorCode.MENU_HAS_CHILDREN: "菜单有子菜单",
+    ErrorCode.MENU_NOT_FOUND: "鑿滃崟涓嶅瓨鍦?,
+    ErrorCode.MENU_ALREADY_EXISTS: "鑿滃崟宸插瓨鍦?,
+    ErrorCode.MENU_HAS_CHILDREN: "鑿滃崟鏈夊瓙鑿滃崟",
     
-    ErrorCode.TENANT_NOT_FOUND: "租户不存在",
-    ErrorCode.TENANT_ALREADY_EXISTS: "租户已存在",
-    ErrorCode.TENANT_QUOTA_EXCEEDED: "租户配额已超出",
+    ErrorCode.TENANT_NOT_FOUND: "绉熸埛涓嶅瓨鍦?,
+    ErrorCode.TENANT_ALREADY_EXISTS: "绉熸埛宸插瓨鍦?,
+    ErrorCode.TENANT_QUOTA_EXCEEDED: "绉熸埛閰嶉宸茶秴鍑?,
     
-    ErrorCode.MCP_TOOL_NOT_FOUND: "MCP工具不存在",
-    ErrorCode.MCP_TOOL_ALREADY_EXISTS: "MCP工具已存在",
-    ErrorCode.MCP_TOOL_EXECUTION_FAILED: "MCP工具执行失败",
-    ErrorCode.MCP_TOOL_TIMEOUT: "MCP工具超时",
+    ErrorCode.MCP_TOOL_NOT_FOUND: "MCP宸ュ叿涓嶅瓨鍦?,
+    ErrorCode.MCP_TOOL_ALREADY_EXISTS: "MCP宸ュ叿宸插瓨鍦?,
+    ErrorCode.MCP_TOOL_EXECUTION_FAILED: "MCP宸ュ叿鎵ц澶辫触",
+    ErrorCode.MCP_TOOL_TIMEOUT: "MCP宸ュ叿瓒呮椂",
     
-    ErrorCode.DATASOURCE_NOT_FOUND: "数据源不存在",
-    ErrorCode.DATASOURCE_ALREADY_EXISTS: "数据源已存在",
-    ErrorCode.DATASOURCE_CONNECTION_FAILED: "数据源连接失败",
+    ErrorCode.DATASOURCE_NOT_FOUND: "鏁版嵁婧愪笉瀛樺湪",
+    ErrorCode.DATASOURCE_ALREADY_EXISTS: "鏁版嵁婧愬凡瀛樺湪",
+    ErrorCode.DATASOURCE_CONNECTION_FAILED: "鏁版嵁婧愯繛鎺ュけ璐?,
 }
 
 
 def get_error_message(error_code: int) -> str:
     """
-    获取错误信息
+    鑾峰彇閿欒淇℃伅
     
     Args:
-        error_code: 错误码
-    
+        error_code: 閿欒鐮?    
     Returns:
-        str: 错误信息
+        str: 閿欒淇℃伅
     
-    使用示例：
-        message = get_error_message(ErrorCode.USER_NOT_FOUND)
-        print(message)  # "用户不存在"
+    浣跨敤绀轰緥锛?        message = get_error_message(ErrorCode.USER_NOT_FOUND)
+        print(message)  # "鐢ㄦ埛涓嶅瓨鍦?
     """
-    return ERROR_MESSAGES.get(error_code, "未知错误")
+    return ERROR_MESSAGES.get(error_code, "鏈煡閿欒")
 
 
-# ========== 常量 ==========
+# ========== 甯搁噺 ==========
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100
 DEFAULT_TIMEOUT = 30
 
-# 日期格式
+# 鏃ユ湡鏍煎紡
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 TIME_FORMAT = "%H:%M:%S"
 
-# 文件大小限制
+# 鏂囦欢澶у皬闄愬埗
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
 
-# Token配置
+# Token閰嶇疆
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-# 缓存配置
-CACHE_DEFAULT_TTL = 3600  # 1小时
-CACHE_LONG_TTL = 86400  # 24小时
-CACHE_SHORT_TTL = 300  # 5分钟
+# 缂撳瓨閰嶇疆
+CACHE_DEFAULT_TTL = 3600  # 1灏忔椂
+CACHE_LONG_TTL = 86400  # 24灏忔椂
+CACHE_SHORT_TTL = 300  # 5鍒嗛挓

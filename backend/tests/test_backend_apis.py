@@ -1,16 +1,11 @@
-"""
-后端接口自动化测试脚本
+﻿"""
+鍚庣鎺ュ彛鑷姩鍖栨祴璇曡剼鏈?
+鍔熻兘璇存槑锛?1. 鑷姩鍖栨祴璇曟墍鏈夊悗绔帴鍙?2. 鐢熸垚娴嬭瘯鎶ュ憡
+3. 璁板綍娴嬭瘯缁撴灉
 
-功能说明：
-1. 自动化测试所有后端接口
-2. 生成测试报告
-3. 记录测试结果
+浣跨敤鏂规硶锛?    python test_backend_apis.py
 
-使用方法：
-    python test_backend_apis.py
-
-依赖：
-    pip install requests pytest
+渚濊禆锛?    pip install requests pytest
 """
 
 import requests
@@ -21,33 +16,33 @@ from loguru import logger
 import sys
 import os
 
-# 添加项目根目录到Python路径
+# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 
 class APITester:
-    """API测试器"""
+    """API娴嬭瘯鍣?""
     
     def __init__(self):
         self.base_urls = {
-            "auth": "http://localhost:28001/api/v1",
-            "user": "http://localhost:28002/api/v1",
-            "permission": "http://localhost:28003/api/v1"
+            "auth": "http://localhost:228001/api/v1",
+            "user": "http://localhost:228002/api/v1",
+            "permission": "http://localhost:228003/api/v1"
         }
         self.results = []
         self.session = requests.Session()
     
     def test_health_check(self, service_name: str) -> bool:
-        """测试健康检查接口"""
+        """娴嬭瘯鍋ュ悍妫€鏌ユ帴鍙?""
         url = f"http://localhost:{self.get_service_port(service_name)}/health"
-        logger.info(f"测试健康检查: {service_name} - {url}")
+        logger.info(f"娴嬭瘯鍋ュ悍妫€鏌? {service_name} - {url}")
         
         try:
             response = self.session.get(url, timeout=5)
             success = response.status_code == 200
             
             self.results.append({
-                "test_case": f"健康检查-{service_name}",
+                "test_case": f"鍋ュ悍妫€鏌?{service_name}",
                 "service": service_name,
                 "url": url,
                 "method": "GET",
@@ -60,9 +55,9 @@ class APITester:
             
             return success
         except Exception as e:
-            logger.error(f"健康检查失败: {service_name} - {str(e)}")
+            logger.error(f"鍋ュ悍妫€鏌ュけ璐? {service_name} - {str(e)}")
             self.results.append({
-                "test_case": f"健康检查-{service_name}",
+                "test_case": f"鍋ュ悍妫€鏌?{service_name}",
                 "service": service_name,
                 "url": url,
                 "method": "GET",
@@ -75,11 +70,11 @@ class APITester:
             return False
     
     def get_service_port(self, service_name: str) -> int:
-        """获取服务端口"""
+        """鑾峰彇鏈嶅姟绔彛"""
         ports = {
-            "auth": 28001,
-            "user": 28002,
-            "permission": 28003
+            "auth": 228001,
+            "user": 228002,
+            "permission": 228003
         }
         return ports.get(service_name, 28000)
     
@@ -94,22 +89,21 @@ class APITester:
         headers: Dict[str, str] = None
     ) -> bool:
         """
-        测试API接口
+        娴嬭瘯API鎺ュ彛
         
         Args:
-            test_case: 测试用例名称
-            service: 服务名称
-            endpoint: 接口路径
-            method: HTTP方法
-            data: 请求数据
-            expected_status: 预期状态码
-            headers: 请求头
-        
+            test_case: 娴嬭瘯鐢ㄤ緥鍚嶇О
+            service: 鏈嶅姟鍚嶇О
+            endpoint: 鎺ュ彛璺緞
+            method: HTTP鏂规硶
+            data: 璇锋眰鏁版嵁
+            expected_status: 棰勬湡鐘舵€佺爜
+            headers: 璇锋眰澶?        
         Returns:
-            bool: 测试是否成功
+            bool: 娴嬭瘯鏄惁鎴愬姛
         """
         url = f"{self.base_urls[service]}{endpoint}"
-        logger.info(f"测试API: {test_case} - {method} {url}")
+        logger.info(f"娴嬭瘯API: {test_case} - {method} {url}")
         
         try:
             if method == "GET":
@@ -121,12 +115,12 @@ class APITester:
             elif method == "DELETE":
                 response = self.session.delete(url, headers=headers, timeout=10)
             else:
-                logger.error(f"不支持的HTTP方法: {method}")
+                logger.error(f"涓嶆敮鎸佺殑HTTP鏂规硶: {method}")
                 return False
             
             success = response.status_code == expected_status
             
-            # 尝试解析响应数据
+            # 灏濊瘯瑙ｆ瀽鍝嶅簲鏁版嵁
             response_data = None
             try:
                 if response.text:
@@ -150,13 +144,13 @@ class APITester:
             })
             
             if success:
-                logger.success(f"✓ {test_case} - 成功 ({response.elapsed.total_seconds():.3f}s)")
+                logger.success(f"鉁?{test_case} - 鎴愬姛 ({response.elapsed.total_seconds():.3f}s)")
             else:
-                logger.error(f"✗ {test_case} - 失败 (预期: {expected_status}, 实际: {response.status_code})")
+                logger.error(f"鉁?{test_case} - 澶辫触 (棰勬湡: {expected_status}, 瀹為檯: {response.status_code})")
             
             return success
         except Exception as e:
-            logger.error(f"✗ {test_case} - 异常: {str(e)}")
+            logger.error(f"鉁?{test_case} - 寮傚父: {str(e)}")
             self.results.append({
                 "test_case": test_case,
                 "service": service,
@@ -172,18 +166,18 @@ class APITester:
             return False
     
     def test_auth_service(self) -> Dict[str, int]:
-        """测试认证域服务"""
+        """娴嬭瘯璁よ瘉鍩熸湇鍔?""
         logger.info("=" * 50)
-        logger.info("开始测试认证域服务")
+        logger.info("寮€濮嬫祴璇曡璇佸煙鏈嶅姟")
         logger.info("=" * 50)
         
         results = {"total": 0, "passed": 0, "failed": 0}
         
-        # TC-001: 用户登录
+        # TC-001: 鐢ㄦ埛鐧诲綍
         results["total"] += 1
         login_response = None
         if self.test_api(
-            test_case="TC-001-用户登录",
+            test_case="TC-001-鐢ㄦ埛鐧诲綍",
             service="auth",
             endpoint="/auth/login",
             method="POST",
@@ -194,8 +188,7 @@ class APITester:
             expected_status=200
         ):
             results["passed"] += 1
-            # 获取登录响应，用于后续测试
-            if self.results and self.results[-1]["success"]:
+            # 鑾峰彇鐧诲綍鍝嶅簲锛岀敤浜庡悗缁祴璇?            if self.results and self.results[-1]["success"]:
                 try:
                     login_response = self.results[-1].get("response_data", {})
                 except:
@@ -203,15 +196,14 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-002: 刷新Token（使用登录获取的refresh_token）
-        results["total"] += 1
+        # TC-002: 鍒锋柊Token锛堜娇鐢ㄧ櫥褰曡幏鍙栫殑refresh_token锛?        results["total"] += 1
         refresh_token = None
         if login_response:
             refresh_token = login_response.get("refresh_token")
         
         if refresh_token:
             if self.test_api(
-                test_case="TC-002-刷新Token",
+                test_case="TC-002-鍒锋柊Token",
                 service="auth",
                 endpoint="/auth/refresh",
                 method="POST",
@@ -224,14 +216,13 @@ class APITester:
             else:
                 results["failed"] += 1
         else:
-            logger.warning("TC-002-刷新Token: 跳过测试（无法获取refresh_token）")
+            logger.warning("TC-002-鍒锋柊Token: 璺宠繃娴嬭瘯锛堟棤娉曡幏鍙杛efresh_token锛?)
             results["failed"] += 1
         
-        # TC-003: 用户登出（使用登录获取的refresh_token）
-        results["total"] += 1
+        # TC-003: 鐢ㄦ埛鐧诲嚭锛堜娇鐢ㄧ櫥褰曡幏鍙栫殑refresh_token锛?        results["total"] += 1
         if refresh_token:
             if self.test_api(
-                test_case="TC-003-用户登出",
+                test_case="TC-003-鐢ㄦ埛鐧诲嚭",
                 service="auth",
                 endpoint="/auth/logout",
                 method="POST",
@@ -244,24 +235,24 @@ class APITester:
             else:
                 results["failed"] += 1
         else:
-            logger.warning("TC-003-用户登出: 跳过测试（无法获取refresh_token）")
+            logger.warning("TC-003-鐢ㄦ埛鐧诲嚭: 璺宠繃娴嬭瘯锛堟棤娉曡幏鍙杛efresh_token锛?)
             results["failed"] += 1
         
-        logger.info(f"认证域服务测试完成: 通过 {results['passed']}/{results['total']}")
+        logger.info(f"璁よ瘉鍩熸湇鍔℃祴璇曞畬鎴? 閫氳繃 {results['passed']}/{results['total']}")
         return results
     
     def test_user_service(self) -> Dict[str, int]:
-        """测试用户域服务"""
+        """娴嬭瘯鐢ㄦ埛鍩熸湇鍔?""
         logger.info("=" * 50)
-        logger.info("开始测试用户域服务")
+        logger.info("寮€濮嬫祴璇曠敤鎴峰煙鏈嶅姟")
         logger.info("=" * 50)
         
         results = {"total": 0, "passed": 0, "failed": 0}
         
-        # TC-004: 创建用户
+        # TC-004: 鍒涘缓鐢ㄦ埛
         results["total"] += 1
         if self.test_api(
-            test_case="TC-004-创建用户",
+            test_case="TC-004-鍒涘缓鐢ㄦ埛",
             service="user",
             endpoint="/users",
             method="POST",
@@ -277,10 +268,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-005: 获取用户列表
+        # TC-005: 鑾峰彇鐢ㄦ埛鍒楄〃
         results["total"] += 1
         if self.test_api(
-            test_case="TC-005-获取用户列表",
+            test_case="TC-005-鑾峰彇鐢ㄦ埛鍒楄〃",
             service="user",
             endpoint="/users",
             method="GET",
@@ -290,10 +281,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-006: 获取用户详情
+        # TC-006: 鑾峰彇鐢ㄦ埛璇︽儏
         results["total"] += 1
         if self.test_api(
-            test_case="TC-006-获取用户详情",
+            test_case="TC-006-鑾峰彇鐢ㄦ埛璇︽儏",
             service="user",
             endpoint="/users/123",
             method="GET",
@@ -303,10 +294,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-007: 更新用户
+        # TC-007: 鏇存柊鐢ㄦ埛
         results["total"] += 1
         if self.test_api(
-            test_case="TC-007-更新用户",
+            test_case="TC-007-鏇存柊鐢ㄦ埛",
             service="user",
             endpoint="/users/123",
             method="PUT",
@@ -319,10 +310,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-008: 删除用户
+        # TC-008: 鍒犻櫎鐢ㄦ埛
         results["total"] += 1
         if self.test_api(
-            test_case="TC-008-删除用户",
+            test_case="TC-008-鍒犻櫎鐢ㄦ埛",
             service="user",
             endpoint="/users/123",
             method="DELETE",
@@ -332,15 +323,15 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-009: 创建部门
+        # TC-009: 鍒涘缓閮ㄩ棬
         results["total"] += 1
         if self.test_api(
-            test_case="TC-009-创建部门",
+            test_case="TC-009-鍒涘缓閮ㄩ棬",
             service="user",
             endpoint="/departments",
             method="POST",
             data={
-                "name": "技术部",
+                "name": "鎶€鏈儴",
                 "code": "tech",
                 "tenant_id": "default"
             },
@@ -350,10 +341,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-010: 获取部门列表
+        # TC-010: 鑾峰彇閮ㄩ棬鍒楄〃
         results["total"] += 1
         if self.test_api(
-            test_case="TC-010-获取部门列表",
+            test_case="TC-010-鑾峰彇閮ㄩ棬鍒楄〃",
             service="user",
             endpoint="/departments",
             method="GET",
@@ -363,10 +354,9 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-011: 获取部门树
-        results["total"] += 1
+        # TC-011: 鑾峰彇閮ㄩ棬鏍?        results["total"] += 1
         if self.test_api(
-            test_case="TC-011-获取部门树",
+            test_case="TC-011-鑾峰彇閮ㄩ棬鏍?,
             service="user",
             endpoint="/departments/tree",
             method="GET",
@@ -376,15 +366,15 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-012: 创建租户
+        # TC-012: 鍒涘缓绉熸埛
         results["total"] += 1
         if self.test_api(
-            test_case="TC-012-创建租户",
+            test_case="TC-012-鍒涘缓绉熸埛",
             service="user",
             endpoint="/tenants",
             method="POST",
             data={
-                "name": "测试租户",
+                "name": "娴嬭瘯绉熸埛",
                 "code": "test_tenant"
             },
             expected_status=200
@@ -393,26 +383,26 @@ class APITester:
         else:
             results["failed"] += 1
         
-        logger.info(f"用户域服务测试完成: 通过 {results['passed']}/{results['total']}")
+        logger.info(f"鐢ㄦ埛鍩熸湇鍔℃祴璇曞畬鎴? 閫氳繃 {results['passed']}/{results['total']}")
         return results
     
     def test_permission_service(self) -> Dict[str, int]:
-        """测试权限域服务"""
+        """娴嬭瘯鏉冮檺鍩熸湇鍔?""
         logger.info("=" * 50)
-        logger.info("开始测试权限域服务")
+        logger.info("寮€濮嬫祴璇曟潈闄愬煙鏈嶅姟")
         logger.info("=" * 50)
         
         results = {"total": 0, "passed": 0, "failed": 0}
         
-        # TC-013: 创建角色
+        # TC-013: 鍒涘缓瑙掕壊
         results["total"] += 1
         if self.test_api(
-            test_case="TC-013-创建角色",
+            test_case="TC-013-鍒涘缓瑙掕壊",
             service="permission",
             endpoint="/roles",
             method="POST",
             data={
-                "name": "管理员",
+                "name": "绠＄悊鍛?,
                 "code": "admin",
                 "tenant_id": "default"
             },
@@ -422,10 +412,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-014: 获取角色列表
+        # TC-014: 鑾峰彇瑙掕壊鍒楄〃
         results["total"] += 1
         if self.test_api(
-            test_case="TC-014-获取角色列表",
+            test_case="TC-014-鑾峰彇瑙掕壊鍒楄〃",
             service="permission",
             endpoint="/roles",
             method="GET",
@@ -435,10 +425,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-015: 获取角色详情
+        # TC-015: 鑾峰彇瑙掕壊璇︽儏
         results["total"] += 1
         if self.test_api(
-            test_case="TC-015-获取角色详情",
+            test_case="TC-015-鑾峰彇瑙掕壊璇︽儏",
             service="permission",
             endpoint="/roles/123",
             method="GET",
@@ -448,15 +438,15 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-016: 创建权限
+        # TC-016: 鍒涘缓鏉冮檺
         results["total"] += 1
         if self.test_api(
-            test_case="TC-016-创建权限",
+            test_case="TC-016-鍒涘缓鏉冮檺",
             service="permission",
             endpoint="/permissions",
             method="POST",
             data={
-                "name": "用户创建",
+                "name": "鐢ㄦ埛鍒涘缓",
                 "code": "user:create",
                 "type": "operation"
             },
@@ -466,10 +456,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-017: 获取权限列表
+        # TC-017: 鑾峰彇鏉冮檺鍒楄〃
         results["total"] += 1
         if self.test_api(
-            test_case="TC-017-获取权限列表",
+            test_case="TC-017-鑾峰彇鏉冮檺鍒楄〃",
             service="permission",
             endpoint="/permissions",
             method="GET",
@@ -479,15 +469,15 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-018: 创建菜单
+        # TC-018: 鍒涘缓鑿滃崟
         results["total"] += 1
         if self.test_api(
-            test_case="TC-018-创建菜单",
+            test_case="TC-018-鍒涘缓鑿滃崟",
             service="permission",
             endpoint="/menus",
             method="POST",
             data={
-                "name": "系统管理",
+                "name": "绯荤粺绠＄悊",
                 "path": "/system",
                 "icon": "setting",
                 "tenant_id": "default"
@@ -498,10 +488,10 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-019: 获取菜单列表
+        # TC-019: 鑾峰彇鑿滃崟鍒楄〃
         results["total"] += 1
         if self.test_api(
-            test_case="TC-019-获取菜单列表",
+            test_case="TC-019-鑾峰彇鑿滃崟鍒楄〃",
             service="permission",
             endpoint="/menus",
             method="GET",
@@ -511,10 +501,9 @@ class APITester:
         else:
             results["failed"] += 1
         
-        # TC-020: 获取菜单树
-        results["total"] += 1
+        # TC-020: 鑾峰彇鑿滃崟鏍?        results["total"] += 1
         if self.test_api(
-            test_case="TC-020-获取菜单树",
+            test_case="TC-020-鑾峰彇鑿滃崟鏍?,
             service="permission",
             endpoint="/menus/tree",
             method="GET",
@@ -524,19 +513,18 @@ class APITester:
         else:
             results["failed"] += 1
         
-        logger.info(f"权限域服务测试完成: 通过 {results['passed']}/{results['total']}")
+        logger.info(f"鏉冮檺鍩熸湇鍔℃祴璇曞畬鎴? 閫氳繃 {results['passed']}/{results['total']}")
         return results
     
     def test_all_services(self) -> Dict[str, Any]:
-        """测试所有服务"""
+        """娴嬭瘯鎵€鏈夋湇鍔?""
         logger.info("=" * 60)
-        logger.info("开始后端接口自动化测试")
-        logger.info(f"测试时间: {datetime.now().isoformat()}")
+        logger.info("寮€濮嬪悗绔帴鍙ｈ嚜鍔ㄥ寲娴嬭瘯")
+        logger.info(f"娴嬭瘯鏃堕棿: {datetime.now().isoformat()}")
         logger.info("=" * 60)
         
-        # 测试健康检查
-        logger.info("\n" + "=" * 50)
-        logger.info("第一阶段：健康检查")
+        # 娴嬭瘯鍋ュ悍妫€鏌?        logger.info("\n" + "=" * 50)
+        logger.info("绗竴闃舵锛氬仴搴锋鏌?)
         logger.info("=" * 50)
         
         health_results = {
@@ -545,17 +533,13 @@ class APITester:
             "permission": self.test_health_check("permission")
         }
         
-        # 测试认证域服务
-        auth_results = self.test_auth_service()
+        # 娴嬭瘯璁よ瘉鍩熸湇鍔?        auth_results = self.test_auth_service()
         
-        # 测试用户域服务
-        user_results = self.test_user_service()
+        # 娴嬭瘯鐢ㄦ埛鍩熸湇鍔?        user_results = self.test_user_service()
         
-        # 测试权限域服务
-        permission_results = self.test_permission_service()
+        # 娴嬭瘯鏉冮檺鍩熸湇鍔?        permission_results = self.test_permission_service()
         
-        # 汇总结果
-        total_tests = (
+        # 姹囨€荤粨鏋?        total_tests = (
             sum([r["total"] for r in [auth_results, user_results, permission_results]]) +
             len(health_results)
         )
@@ -578,31 +562,31 @@ class APITester:
             "test_results": self.results
         }
         
-        # 生成测试报告
+        # 鐢熸垚娴嬭瘯鎶ュ憡
         self.generate_report(summary)
         
         logger.info("\n" + "=" * 60)
-        logger.info("测试完成")
-        logger.info(f"总测试数: {total_tests}")
-        logger.info(f"通过数: {total_passed}")
-        logger.info(f"失败数: {total_failed}")
-        logger.info(f"通过率: {summary['pass_rate']}")
+        logger.info("娴嬭瘯瀹屾垚")
+        logger.info(f"鎬绘祴璇曟暟: {total_tests}")
+        logger.info(f"閫氳繃鏁? {total_passed}")
+        logger.info(f"澶辫触鏁? {total_failed}")
+        logger.info(f"閫氳繃鐜? {summary['pass_rate']}")
         logger.info("=" * 60)
         
         return summary
     
     def generate_report(self, summary: Dict[str, Any]):
-        """生成测试报告"""
-        report_path = os.path.join(os.path.dirname(__file__), "测试报告.json")
+        """鐢熸垚娴嬭瘯鎶ュ憡"""
+        report_path = os.path.join(os.path.dirname(__file__), "娴嬭瘯鎶ュ憡.json")
         
         with open(report_path, 'w', encoding='utf-8') as f:
             json.dump(summary, f, ensure_ascii=False, indent=2)
         
-        logger.success(f"测试报告已生成: {report_path}")
+        logger.success(f"娴嬭瘯鎶ュ憡宸茬敓鎴? {report_path}")
 
 
 def main():
-    """主函数"""
+    """涓诲嚱鏁?""
     tester = APITester()
     summary = tester.test_all_services()
     

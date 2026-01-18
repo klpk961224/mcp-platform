@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-工作流模板数据访问层
+宸ヤ綔娴佹ā鏉挎暟鎹闂眰
 
-功能说明：
-1. 工作流模板CRUD操作
-2. 工作流模板查询操作
-3. 工作流模板统计操作
-
-使用示例：
-    from app.repositories.workflow_template_repository import WorkflowTemplateRepository
+鍔熻兘璇存槑锛?1. 宸ヤ綔娴佹ā鏉緾RUD鎿嶄綔
+2. 宸ヤ綔娴佹ā鏉挎煡璇㈡搷浣?3. 宸ヤ綔娴佹ā鏉跨粺璁℃搷浣?
+浣跨敤绀轰緥锛?    from app.repositories.workflow_template_repository import WorkflowTemplateRepository
     
     template_repo = WorkflowTemplateRepository(db)
     templates = template_repo.get_tenant_templates(tenant_id="123")
@@ -24,38 +20,30 @@ from common.database.models.workflow import WorkflowTemplate
 
 class WorkflowTemplateRepository:
     """
-    工作流模板数据访问层
+    宸ヤ綔娴佹ā鏉挎暟鎹闂眰
     
-    功能：
-    - 工作流模板CRUD操作
-    - 工作流模板查询操作
-    - 工作流模板统计操作
-    
-    使用方法：
-        template_repo = WorkflowTemplateRepository(db)
+    鍔熻兘锛?    - 宸ヤ綔娴佹ā鏉緾RUD鎿嶄綔
+    - 宸ヤ綔娴佹ā鏉挎煡璇㈡搷浣?    - 宸ヤ綔娴佹ā鏉跨粺璁℃搷浣?    
+    浣跨敤鏂规硶锛?        template_repo = WorkflowTemplateRepository(db)
         templates = template_repo.get_tenant_templates(tenant_id="123")
     """
     
     def __init__(self, db: Session):
         """
-        初始化工作流模板数据访问层
-        
+        鍒濆鍖栧伐浣滄祦妯℃澘鏁版嵁璁块棶灞?        
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, template: WorkflowTemplate) -> WorkflowTemplate:
         """
-        创建工作流模板
-        
+        鍒涘缓宸ヤ綔娴佹ā鏉?        
         Args:
-            template: 工作流模板对象
-        
+            template: 宸ヤ綔娴佹ā鏉垮璞?        
         Returns:
-            WorkflowTemplate: 创建的工作流模板对象
+            WorkflowTemplate: 鍒涘缓鐨勫伐浣滄祦妯℃澘瀵硅薄
         """
-        logger.info(f"创建工作流模板: name={template.name}, code={template.code}")
+        logger.info(f"鍒涘缓宸ヤ綔娴佹ā鏉? name={template.name}, code={template.code}")
         self.db.add(template)
         self.db.commit()
         self.db.refresh(template)
@@ -63,42 +51,38 @@ class WorkflowTemplateRepository:
     
     def get_by_id(self, template_id: str) -> Optional[WorkflowTemplate]:
         """
-        根据ID获取工作流模板
-        
+        鏍规嵁ID鑾峰彇宸ヤ綔娴佹ā鏉?        
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 工作流模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.db.query(WorkflowTemplate).filter(WorkflowTemplate.id == template_id).first()
     
     def get_by_code(self, code: str) -> Optional[WorkflowTemplate]:
         """
-        根据编码获取工作流模板
-        
+        鏍规嵁缂栫爜鑾峰彇宸ヤ綔娴佹ā鏉?        
         Args:
-            code: 模板编码
+            code: 妯℃澘缂栫爜
         
         Returns:
-            Optional[WorkflowTemplate]: 工作流模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.db.query(WorkflowTemplate).filter(WorkflowTemplate.code == code).first()
     
     def get_tenant_templates(self, tenant_id: str, category: Optional[str] = None,
                             page: int = 1, page_size: int = 10) -> List[WorkflowTemplate]:
         """
-        获取租户工作流模板
-        
+        鑾峰彇绉熸埛宸ヤ綔娴佹ā鏉?        
         Args:
-            tenant_id: 租户ID
-            category: 分类（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            category: 鍒嗙被锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTemplate]: 工作流模板列表
-        """
+            List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
         offset = (page - 1) * page_size
         query = self.db.query(WorkflowTemplate).filter(WorkflowTemplate.tenant_id == tenant_id)
         
@@ -110,16 +94,14 @@ class WorkflowTemplateRepository:
     def get_system_templates(self, category: Optional[str] = None,
                             page: int = 1, page_size: int = 10) -> List[WorkflowTemplate]:
         """
-        获取系统工作流模板
-        
+        鑾峰彇绯荤粺宸ヤ綔娴佹ā鏉?        
         Args:
-            category: 分类（可选）
-            page: 页码
-            page_size: 每页数量
+            category: 鍒嗙被锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTemplate]: 工作流模板列表
-        """
+            List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
         offset = (page - 1) * page_size
         query = self.db.query(WorkflowTemplate).filter(WorkflowTemplate.is_system == True)
         
@@ -131,16 +113,14 @@ class WorkflowTemplateRepository:
     def get_active_templates(self, tenant_id: Optional[str] = None,
                            page: int = 1, page_size: int = 10) -> List[WorkflowTemplate]:
         """
-        获取激活的工作流模板
-        
+        鑾峰彇婵€娲荤殑宸ヤ綔娴佹ā鏉?        
         Args:
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTemplate]: 工作流模板列表
-        """
+            List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
         offset = (page - 1) * page_size
         query = self.db.query(WorkflowTemplate).filter(WorkflowTemplate.is_active == True)
         
@@ -152,17 +132,14 @@ class WorkflowTemplateRepository:
     def search_templates(self, keyword: str, tenant_id: Optional[str] = None,
                         page: int = 1, page_size: int = 10) -> List[WorkflowTemplate]:
         """
-        搜索工作流模板
-        
+        鎼滅储宸ヤ綔娴佹ā鏉?        
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTemplate]: 工作流模板列表
-        """
+            List[WorkflowTemplate]: 宸ヤ綔娴佹ā鏉垮垪琛?        """
         offset = (page - 1) * page_size
         query = self.db.query(WorkflowTemplate).filter(
             or_(
@@ -179,37 +156,33 @@ class WorkflowTemplateRepository:
     
     def update(self, template: WorkflowTemplate) -> WorkflowTemplate:
         """
-        更新工作流模板
-        
+        鏇存柊宸ヤ綔娴佹ā鏉?        
         Args:
-            template: 工作流模板对象
-        
+            template: 宸ヤ綔娴佹ā鏉垮璞?        
         Returns:
-            WorkflowTemplate: 更新后的工作流模板对象
-        """
-        logger.info(f"更新工作流模板: template_id={template.id}")
+            WorkflowTemplate: 鏇存柊鍚庣殑宸ヤ綔娴佹ā鏉垮璞?        """
+        logger.info(f"鏇存柊宸ヤ綔娴佹ā鏉? template_id={template.id}")
         self.db.commit()
         self.db.refresh(template)
         return template
     
     def delete(self, template_id: str) -> bool:
         """
-        删除工作流模板
-        
+        鍒犻櫎宸ヤ綔娴佹ā鏉?        
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除工作流模板: template_id={template_id}")
+        logger.info(f"鍒犻櫎宸ヤ綔娴佹ā鏉? template_id={template_id}")
         template = self.get_by_id(template_id)
         if not template:
             return False
         
-        # 检查是否为系统模板
+        # 妫€鏌ユ槸鍚︿负绯荤粺妯℃澘
         if template.is_system:
-            raise ValueError("无法删除系统模板")
+            raise ValueError("鏃犳硶鍒犻櫎绯荤粺妯℃澘")
         
         self.db.delete(template)
         self.db.commit()
@@ -217,21 +190,20 @@ class WorkflowTemplateRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户模板数量
+        缁熻绉熸埛妯℃澘鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 模板数量
+            int: 妯℃澘鏁伴噺
         """
         return self.db.query(WorkflowTemplate).filter(WorkflowTemplate.tenant_id == tenant_id).count()
     
     def count_all(self) -> int:
         """
-        统计所有模板数量
-        
+        缁熻鎵€鏈夋ā鏉挎暟閲?        
         Returns:
-            int: 模板数量
+            int: 妯℃澘鏁伴噺
         """
         return self.db.query(WorkflowTemplate).count()

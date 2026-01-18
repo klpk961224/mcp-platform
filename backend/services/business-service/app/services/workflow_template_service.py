@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-工作流模板服务
+宸ヤ綔娴佹ā鏉挎湇鍔?
+鍔熻兘璇存槑锛?1. 宸ヤ綔娴佹ā鏉跨鐞?2. 棰勭疆瀹℃壒妯℃澘
+3. 妯℃澘瀵煎叆瀵煎嚭
 
-功能说明：
-1. 工作流模板管理
-2. 预置审批模板
-3. 模板导入导出
-
-使用示例：
-    from app.services.workflow_template_service import WorkflowTemplateService
+浣跨敤绀轰緥锛?    from app.services.workflow_template_service import WorkflowTemplateService
     
     template_service = WorkflowTemplateService(db)
-    template = template_service.create_template(name="请假审批", code="leave_approval")
+    template = template_service.create_template(name="璇峰亣瀹℃壒", code="leave_approval")
 """
 
 from sqlalchemy.orm import Session
@@ -24,25 +20,20 @@ from app.repositories.workflow_template_repository import WorkflowTemplateReposi
 
 class WorkflowTemplateService:
     """
-    工作流模板服务
+    宸ヤ綔娴佹ā鏉挎湇鍔?    
+    鍔熻兘锛?    - 宸ヤ綔娴佹ā鏉跨鐞?    - 棰勭疆瀹℃壒妯℃澘
+    - 妯℃澘瀵煎叆瀵煎嚭
     
-    功能：
-    - 工作流模板管理
-    - 预置审批模板
-    - 模板导入导出
-    
-    使用方法：
-        template_service = WorkflowTemplateService(db)
-        template = template_service.create_template(name="请假审批", code="leave_approval")
+    浣跨敤鏂规硶锛?        template_service = WorkflowTemplateService(db)
+        template = template_service.create_template(name="璇峰亣瀹℃壒", code="leave_approval")
     """
     
     def __init__(self, db: Session):
         """
-        初始化工作流模板服务
+        鍒濆鍖栧伐浣滄祦妯℃澘鏈嶅姟
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.template_repo = WorkflowTemplateRepository(db)
     
@@ -50,28 +41,25 @@ class WorkflowTemplateService:
                        description: Optional[str] = None, category: str = "custom",
                        version: str = "1.0") -> WorkflowTemplate:
         """
-        创建工作流模板
-        
+        鍒涘缓宸ヤ綔娴佹ā鏉?        
         Args:
-            name: 模板名称
-            code: 模板编码
-            tenant_id: 租户ID
-            definition: 流程定义
-            description: 模板描述（可选）
-            category: 分类
-            version: 版本
+            name: 妯℃澘鍚嶇О
+            code: 妯℃澘缂栫爜
+            tenant_id: 绉熸埛ID
+            definition: 娴佺▼瀹氫箟
+            description: 妯℃澘鎻忚堪锛堝彲閫夛級
+            category: 鍒嗙被
+            version: 鐗堟湰
         
         Returns:
-            WorkflowTemplate: 创建的模板对象
-        
+            WorkflowTemplate: 鍒涘缓鐨勬ā鏉垮璞?        
         Raises:
-            ValueError: 模板编码已存在
-        """
-        logger.info(f"创建工作流模板: name={name}, code={code}")
+            ValueError: 妯℃澘缂栫爜宸插瓨鍦?        """
+        logger.info(f"鍒涘缓宸ヤ綔娴佹ā鏉? name={name}, code={code}")
         
-        # 检查模板编码是否已存在
+        # 妫€鏌ユā鏉跨紪鐮佹槸鍚﹀凡瀛樺湪
         if self.template_repo.get_by_code(code):
-            raise ValueError("模板编码已存在")
+            raise ValueError("妯℃澘缂栫爜宸插瓨鍦?)
         
         import json
         template = WorkflowTemplate(
@@ -90,46 +78,46 @@ class WorkflowTemplateService:
     
     def get_template(self, template_id: str) -> Optional[WorkflowTemplate]:
         """
-        获取模板
+        鑾峰彇妯℃澘
         
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.template_repo.get_by_id(template_id)
     
     def get_template_by_code(self, code: str) -> Optional[WorkflowTemplate]:
         """
-        根据编码获取模板
+        鏍规嵁缂栫爜鑾峰彇妯℃澘
         
         Args:
-            code: 模板编码
+            code: 妯℃澘缂栫爜
         
         Returns:
-            Optional[WorkflowTemplate]: 模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.template_repo.get_by_code(code)
     
     def update_template(self, template_id: str, template_data: Dict[str, Any]) -> Optional[WorkflowTemplate]:
         """
-        更新模板
+        鏇存柊妯℃澘
         
         Args:
-            template_id: 模板ID
-            template_data: 模板数据
+            template_id: 妯℃澘ID
+            template_data: 妯℃澘鏁版嵁
         
         Returns:
-            Optional[WorkflowTemplate]: 更新后的模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"更新工作流模板: template_id={template_id}")
+        logger.info(f"鏇存柊宸ヤ綔娴佹ā鏉? template_id={template_id}")
         
         template = self.template_repo.get_by_id(template_id)
         if not template:
             return None
         
-        # 更新模板
+        # 鏇存柊妯℃澘
         for key, value in template_data.items():
             if hasattr(template, key):
                 setattr(template, key, value)
@@ -138,31 +126,31 @@ class WorkflowTemplateService:
     
     def delete_template(self, template_id: str) -> bool:
         """
-        删除模板
+        鍒犻櫎妯℃澘
         
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除工作流模板: template_id={template_id}")
+        logger.info(f"鍒犻櫎宸ヤ綔娴佹ā鏉? template_id={template_id}")
         return self.template_repo.delete(template_id)
     
     def list_templates(self, tenant_id: Optional[str] = None, category: Optional[str] = None,
                       keyword: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[WorkflowTemplate]:
         """
-        获取模板列表
+        鑾峰彇妯℃澘鍒楄〃
         
         Args:
-            tenant_id: 租户ID（可选）
-            category: 分类（可选）
-            keyword: 搜索关键词（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            category: 鍒嗙被锛堝彲閫夛級
+            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTemplate]: 模板列表
+            List[WorkflowTemplate]: 妯℃澘鍒楄〃
         """
         if keyword:
             return self.template_repo.search_templates(keyword, tenant_id, page, page_size)
@@ -175,15 +163,14 @@ class WorkflowTemplateService:
     
     def activate_template(self, template_id: str) -> Optional[WorkflowTemplate]:
         """
-        激活模板
-        
+        婵€娲绘ā鏉?        
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 更新后的模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"激活工作流模板: template_id={template_id}")
+        logger.info(f"婵€娲诲伐浣滄祦妯℃澘: template_id={template_id}")
         
         template = self.template_repo.get_by_id(template_id)
         if not template:
@@ -194,15 +181,15 @@ class WorkflowTemplateService:
     
     def deactivate_template(self, template_id: str) -> Optional[WorkflowTemplate]:
         """
-        停用模板
+        鍋滅敤妯℃澘
         
         Args:
-            template_id: 模板ID
+            template_id: 妯℃澘ID
         
         Returns:
-            Optional[WorkflowTemplate]: 更新后的模板对象，不存在返回None
+            Optional[WorkflowTemplate]: 鏇存柊鍚庣殑妯℃澘瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"停用工作流模板: template_id={template_id}")
+        logger.info(f"鍋滅敤宸ヤ綔娴佹ā鏉? template_id={template_id}")
         
         template = self.template_repo.get_by_id(template_id)
         if not template:
@@ -213,13 +200,13 @@ class WorkflowTemplateService:
     
     def count_templates(self, tenant_id: Optional[str] = None) -> int:
         """
-        统计模板数量
+        缁熻妯℃澘鏁伴噺
         
         Args:
-            tenant_id: 租户ID（可选）
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
         
         Returns:
-            int: 模板数量
+            int: 妯℃澘鏁伴噺
         """
         if tenant_id:
             return self.template_repo.count_by_tenant(tenant_id)

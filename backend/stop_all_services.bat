@@ -1,32 +1,31 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 echo ========================================
-echo 停止企业级AI综合管理平台Docker服务
+echo 鍋滄浼佷笟绾I缁煎悎绠＄悊骞冲彴Docker鏈嶅姟
 echo ========================================
 
 cd /d %~dp0
 
 echo.
-echo [1/2] 停止所有服务...
+echo [1/2] 鍋滄鎵€鏈夋湇鍔?..
 docker-compose down
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo 警告: 服务停止失败
+    echo 璀﹀憡: 鏈嶅姟鍋滄澶辫触
     pause
     exit /b 1
 )
 
 echo.
-echo [2/2] 清理数据卷...
+echo [2/2] 娓呯悊鏁版嵁鍗?..
 docker-compose down -v
 
 echo.
 echo ========================================
-echo 所有服务已停止！
-echo ========================================
+echo 鎵€鏈夋湇鍔″凡鍋滄锛?echo ========================================
 echo.
-echo 重新启动: start_all_services.bat
+echo 閲嶆柊鍚姩: start_all_services.bat
 echo ========================================
 
 pause

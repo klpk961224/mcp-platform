@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""删除所有表"""
+"""鍒犻櫎鎵€鏈夎〃"""
 
 import pymysql
 
-# 数据库连接配置
-db_config = {
+# 鏁版嵁搴撹繛鎺ラ厤缃?db_config = {
     'host': 'localhost',
     'port': 3306,
     'user': 'root',
@@ -15,35 +14,32 @@ db_config = {
 }
 
 try:
-    # 连接MySQL数据库
-    print("正在连接数据库...")
+    # 杩炴帴MySQL鏁版嵁搴?    print("姝ｅ湪杩炴帴鏁版嵁搴?..")
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
 
-    # 禁用外键检查
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+    # 绂佺敤澶栭敭妫€鏌?    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
-    # 获取所有表
+    # 鑾峰彇鎵€鏈夎〃
     cursor.execute("SHOW TABLES")
     tables = cursor.fetchall()
 
-    # 删除所有表
+    # 鍒犻櫎鎵€鏈夎〃
     for table in tables:
         table_name = table[0]
         cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
-        print(f"已删除表: {table_name}")
+        print(f"宸插垹闄よ〃: {table_name}")
 
-    # 启用外键检查
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+    # 鍚敤澶栭敭妫€鏌?    cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
     connection.commit()
-    print("\n所有表已删除！")
+    print("\n鎵€鏈夎〃宸插垹闄わ紒")
 
 except Exception as e:
-    print(f"错误: {e}")
+    print(f"閿欒: {e}")
     if 'connection' in locals():
         connection.rollback()
 finally:
     if 'connection' in locals():
         connection.close()
-        print("数据库连接已关闭")
+        print("鏁版嵁搴撹繛鎺ュ凡鍏抽棴")

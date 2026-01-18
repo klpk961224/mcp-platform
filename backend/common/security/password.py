@@ -1,18 +1,15 @@
-"""
-密码加密模块
+﻿"""
+瀵嗙爜鍔犲瘑妯″潡
 
-功能说明：
-1. 密码哈希
-2. 密码验证
-3. 密码强度检查
-
-使用示例：
-    from common.security.password import hash_password, verify_password
+鍔熻兘璇存槑锛?1. 瀵嗙爜鍝堝笇
+2. 瀵嗙爜楠岃瘉
+3. 瀵嗙爜寮哄害妫€鏌?
+浣跨敤绀轰緥锛?    from common.security.password import hash_password, verify_password
     
-    # 哈希密码
+    # 鍝堝笇瀵嗙爜
     hashed = hash_password("password123")
     
-    # 验证密码
+    # 楠岃瘉瀵嗙爜
     is_valid = verify_password("password123", hashed)
 """
 
@@ -21,78 +18,73 @@ from typing import Optional
 from loguru import logger
 
 
-# 密码加密上下文
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# 瀵嗙爜鍔犲瘑涓婁笅鏂?pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
     """
-    哈希密码
+    鍝堝笇瀵嗙爜
     
     Args:
-        password: 明文密码
+        password: 鏄庢枃瀵嗙爜
     
     Returns:
-        str: 哈希后的密码
+        str: 鍝堝笇鍚庣殑瀵嗙爜
     
-    使用示例：
-        hashed = hash_password("password123")
+    浣跨敤绀轰緥锛?        hashed = hash_password("password123")
         print(hashed)
     """
     hashed = pwd_context.hash(password)
-    logger.debug("密码哈希成功")
+    logger.debug("瀵嗙爜鍝堝笇鎴愬姛")
     return hashed
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    验证密码
+    楠岃瘉瀵嗙爜
     
     Args:
-        plain_password: 明文密码
-        hashed_password: 哈希后的密码
+        plain_password: 鏄庢枃瀵嗙爜
+        hashed_password: 鍝堝笇鍚庣殑瀵嗙爜
     
     Returns:
-        bool: 是否匹配
+        bool: 鏄惁鍖归厤
     
-    使用示例：
-        is_valid = verify_password("password123", hashed)
+    浣跨敤绀轰緥锛?        is_valid = verify_password("password123", hashed)
         if is_valid:
-            print("密码正确")
+            print("瀵嗙爜姝ｇ‘")
     """
     is_valid = pwd_context.verify(plain_password, hashed_password)
     if is_valid:
-        logger.debug("密码验证成功")
+        logger.debug("瀵嗙爜楠岃瘉鎴愬姛")
     else:
-        logger.warning("密码验证失败")
+        logger.warning("瀵嗙爜楠岃瘉澶辫触")
     return is_valid
 
 
 def check_password_strength(password: str) -> tuple[bool, str]:
     """
-    检查密码强度
-    
+    妫€鏌ュ瘑鐮佸己搴?    
     Args:
-        password: 密码
+        password: 瀵嗙爜
     
     Returns:
-        tuple[bool, str]: (是否通过, 提示信息)
+        tuple[bool, str]: (鏄惁閫氳繃, 鎻愮ず淇℃伅)
     
-    使用示例：
-        is_valid, message = check_password_strength("password123")
+    浣跨敤绀轰緥锛?        is_valid, message = check_password_strength("password123")
         if not is_valid:
             print(message)
     """
     if len(password) < 8:
-        return False, "密码长度至少8位"
+        return False, "瀵嗙爜闀垮害鑷冲皯8浣?
     
     if not any(c.isupper() for c in password):
-        return False, "密码必须包含大写字母"
+        return False, "瀵嗙爜蹇呴』鍖呭惈澶у啓瀛楁瘝"
     
     if not any(c.islower() for c in password):
-        return False, "密码必须包含小写字母"
+        return False, "瀵嗙爜蹇呴』鍖呭惈灏忓啓瀛楁瘝"
     
     if not any(c.isdigit() for c in password):
-        return False, "密码必须包含数字"
+        return False, "瀵嗙爜蹇呴』鍖呭惈鏁板瓧"
     
-    return True, "密码强度符合要求"
+    return True, "瀵嗙爜寮哄害绗﹀悎瑕佹眰"

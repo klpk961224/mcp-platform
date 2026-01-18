@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-岗位数据访问层
+宀椾綅鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 宀椾綅CRUD鎿嶄綔
+2. 宀椾綅鏌ヨ鎿嶄綔
+3. 宀椾綅缁熻鎿嶄綔
 
-功能说明：
-1. 岗位CRUD操作
-2. 岗位查询操作
-3. 岗位统计操作
-
-使用示例：
-    from app.repositories.position_repository import PositionRepository
+浣跨敤绀轰緥锛?    from app.repositories.position_repository import PositionRepository
     
     position_repo = PositionRepository(db)
     position = position_repo.get_by_code("developer")
@@ -24,38 +21,33 @@ from common.database.models.position import Position
 
 class PositionRepository:
     """
-    岗位数据访问层
+    宀椾綅鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 宀椾綅CRUD鎿嶄綔
+    - 宀椾綅鏌ヨ鎿嶄綔
+    - 宀椾綅缁熻鎿嶄綔
     
-    功能：
-    - 岗位CRUD操作
-    - 岗位查询操作
-    - 岗位统计操作
-    
-    使用方法：
-        position_repo = PositionRepository(db)
+    浣跨敤鏂规硶锛?        position_repo = PositionRepository(db)
         position = position_repo.get_by_code("developer")
     """
     
     def __init__(self, db: Session):
         """
-        初始化岗位数据访问层
+        鍒濆鍖栧矖浣嶆暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, position: Position) -> Position:
         """
-        创建岗位
+        鍒涘缓宀椾綅
         
         Args:
-            position: 岗位对象
+            position: 宀椾綅瀵硅薄
         
         Returns:
-            Position: 创建的岗位对象
-        """
-        logger.info(f"创建岗位: name={position.name}, code={position.code}, tenant_id={position.tenant_id}")
+            Position: 鍒涘缓鐨勫矖浣嶅璞?        """
+        logger.info(f"鍒涘缓宀椾綅: name={position.name}, code={position.code}, tenant_id={position.tenant_id}")
         self.db.add(position)
         self.db.commit()
         self.db.refresh(position)
@@ -63,55 +55,54 @@ class PositionRepository:
     
     def get_by_id(self, position_id: str) -> Optional[Position]:
         """
-        根据ID获取岗位
+        鏍规嵁ID鑾峰彇宀椾綅
         
         Args:
-            position_id: 岗位ID
+            position_id: 宀椾綅ID
         
         Returns:
-            Optional[Position]: 岗位对象，不存在返回None
+            Optional[Position]: 宀椾綅瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Position).filter(Position.id == position_id).first()
     
     def get_by_code(self, code: str) -> Optional[Position]:
         """
-        根据编码获取岗位
+        鏍规嵁缂栫爜鑾峰彇宀椾綅
         
         Args:
-            code: 岗位编码
+            code: 宀椾綅缂栫爜
         
         Returns:
-            Optional[Position]: 岗位对象，不存在返回None
+            Optional[Position]: 宀椾綅瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Position).filter(Position.code == code).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Position]:
         """
-        根据租户ID获取岗位列表
+        鏍规嵁绉熸埛ID鑾峰彇宀椾綅鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Position]: 岗位列表
+            List[Position]: 宀椾綅鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Position).filter(Position.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[Position]:
         """
-        搜索岗位
+        鎼滅储宀椾綅
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Position]: 岗位列表
+            List[Position]: 宀椾綅鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(Position).filter(
@@ -129,44 +120,43 @@ class PositionRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[Position]:
         """
-        获取所有岗位
-        
+        鑾峰彇鎵€鏈夊矖浣?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Position]: 岗位列表
+            List[Position]: 宀椾綅鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Position).offset(offset).limit(page_size).all()
     
     def update(self, position: Position) -> Position:
         """
-        更新岗位
+        鏇存柊宀椾綅
         
         Args:
-            position: 岗位对象
+            position: 宀椾綅瀵硅薄
         
         Returns:
-            Position: 更新后的岗位对象
+            Position: 鏇存柊鍚庣殑宀椾綅瀵硅薄
         """
-        logger.info(f"更新岗位: position_id={position.id}")
+        logger.info(f"鏇存柊宀椾綅: position_id={position.id}")
         self.db.commit()
         self.db.refresh(position)
         return position
     
     def delete(self, position_id: str) -> bool:
         """
-        删除岗位
+        鍒犻櫎宀椾綅
         
         Args:
-            position_id: 岗位ID
+            position_id: 宀椾綅ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除岗位: position_id={position_id}")
+        logger.info(f"鍒犻櫎宀椾綅: position_id={position_id}")
         position = self.get_by_id(position_id)
         if not position:
             return False
@@ -177,33 +167,31 @@ class PositionRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户岗位数量
+        缁熻绉熸埛宀椾綅鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 岗位数量
+            int: 宀椾綅鏁伴噺
         """
         return self.db.query(Position).filter(Position.tenant_id == tenant_id).count()
     
     def count_all(self) -> int:
         """
-        统计所有岗位数量
-        
+        缁熻鎵€鏈夊矖浣嶆暟閲?        
         Returns:
-            int: 岗位数量
+            int: 宀椾綅鏁伴噺
         """
         return self.db.query(Position).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        检查岗位编码是否存在
-        
+        妫€鏌ュ矖浣嶇紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 岗位编码
+            code: 宀椾綅缂栫爜
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Position).filter(Position.code == code).first() is not None

@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-租户数据访问层
+绉熸埛鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 绉熸埛CRUD鎿嶄綔
+2. 绉熸埛鏌ヨ鎿嶄綔
+3. 绉熸埛缁熻鎿嶄綔
 
-功能说明：
-1. 租户CRUD操作
-2. 租户查询操作
-3. 租户统计操作
-
-使用示例：
-    from app.repositories.tenant_repository import TenantRepository
+浣跨敤绀轰緥锛?    from app.repositories.tenant_repository import TenantRepository
     
     tenant_repo = TenantRepository(db)
     tenant = tenant_repo.get_by_code("example")
@@ -24,38 +21,33 @@ from common.database.models import Tenant
 
 class TenantRepository:
     """
-    租户数据访问层
+    绉熸埛鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 绉熸埛CRUD鎿嶄綔
+    - 绉熸埛鏌ヨ鎿嶄綔
+    - 绉熸埛缁熻鎿嶄綔
     
-    功能：
-    - 租户CRUD操作
-    - 租户查询操作
-    - 租户统计操作
-    
-    使用方法：
-        tenant_repo = TenantRepository(db)
+    浣跨敤鏂规硶锛?        tenant_repo = TenantRepository(db)
         tenant = tenant_repo.get_by_code("example")
     """
     
     def __init__(self, db: Session):
         """
-        初始化租户数据访问层
+        鍒濆鍖栫鎴锋暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, tenant: Tenant) -> Tenant:
         """
-        创建租户
+        鍒涘缓绉熸埛
         
         Args:
-            tenant: 租户对象
+            tenant: 绉熸埛瀵硅薄
         
         Returns:
-            Tenant: 创建的租户对象
-        """
-        logger.info(f"创建租户: name={tenant.name}, code={tenant.code}")
+            Tenant: 鍒涘缓鐨勭鎴峰璞?        """
+        logger.info(f"鍒涘缓绉熸埛: name={tenant.name}, code={tenant.code}")
         self.db.add(tenant)
         self.db.commit()
         self.db.refresh(tenant)
@@ -63,65 +55,65 @@ class TenantRepository:
     
     def get_by_id(self, tenant_id: str) -> Optional[Tenant]:
         """
-        根据ID获取租户
+        鏍规嵁ID鑾峰彇绉熸埛
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            Optional[Tenant]: 租户对象，不存在返回None
+            Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
     
     def get_by_code(self, code: str) -> Optional[Tenant]:
         """
-        根据编码获取租户
+        鏍规嵁缂栫爜鑾峰彇绉熸埛
         
         Args:
-            code: 租户编码
+            code: 绉熸埛缂栫爜
         
         Returns:
-            Optional[Tenant]: 租户对象，不存在返回None
+            Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Tenant).filter(Tenant.code == code).first()
     
     def get_by_name(self, name: str) -> Optional[Tenant]:
         """
-        根据名称获取租户
+        鏍规嵁鍚嶇О鑾峰彇绉熸埛
         
         Args:
-            name: 租户名称
+            name: 绉熸埛鍚嶇О
         
         Returns:
-            Optional[Tenant]: 租户对象，不存在返回None
+            Optional[Tenant]: 绉熸埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Tenant).filter(Tenant.name == name).first()
     
     def get_by_package_id(self, package_id: str, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        根据套餐ID获取租户列表
+        鏍规嵁濂楅ID鑾峰彇绉熸埛鍒楄〃
         
         Args:
-            package_id: 套餐ID
-            page: 页码
-            page_size: 每页数量
+            package_id: 濂楅ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Tenant]: 租户列表
+            List[Tenant]: 绉熸埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Tenant).filter(Tenant.package_id == package_id).offset(offset).limit(page_size).all()
     
     def get_active_tenants(self, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        获取激活的租户列表
+        鑾峰彇婵€娲荤殑绉熸埛鍒楄〃
         
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Tenant]: 租户列表
+            List[Tenant]: 绉熸埛鍒楄〃
         """
         from datetime import datetime
         offset = (page - 1) * page_size
@@ -137,14 +129,13 @@ class TenantRepository:
     
     def get_expired_tenants(self, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        获取过期的租户列表
-        
+        鑾峰彇杩囨湡鐨勭鎴峰垪琛?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Tenant]: 租户列表
+            List[Tenant]: 绉熸埛鍒楄〃
         """
         from datetime import datetime
         offset = (page - 1) * page_size
@@ -157,15 +148,14 @@ class TenantRepository:
     
     def search(self, keyword: str, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        搜索租户
+        鎼滅储绉熸埛
         
         Args:
-            keyword: 关键词
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Tenant]: 租户列表
+            List[Tenant]: 绉熸埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Tenant).filter(
@@ -178,55 +168,54 @@ class TenantRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[Tenant]:
         """
-        获取所有租户
-        
+        鑾峰彇鎵€鏈夌鎴?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Tenant]: 租户列表
+            List[Tenant]: 绉熸埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Tenant).offset(offset).limit(page_size).all()
     
     def update(self, tenant: Tenant) -> Tenant:
         """
-        更新租户
+        鏇存柊绉熸埛
         
         Args:
-            tenant: 租户对象
+            tenant: 绉熸埛瀵硅薄
         
         Returns:
-            Tenant: 更新后的租户对象
+            Tenant: 鏇存柊鍚庣殑绉熸埛瀵硅薄
         """
-        logger.info(f"更新租户: tenant_id={tenant.id}")
+        logger.info(f"鏇存柊绉熸埛: tenant_id={tenant.id}")
         self.db.commit()
         self.db.refresh(tenant)
         return tenant
     
     def delete(self, tenant_id: str) -> bool:
         """
-        删除租户
+        鍒犻櫎绉熸埛
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除租户: tenant_id={tenant_id}")
+        logger.info(f"鍒犻櫎绉熸埛: tenant_id={tenant_id}")
         tenant = self.get_by_id(tenant_id)
         if not tenant:
             return False
         
-        # 检查是否有用户
+        # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if tenant.users:
-            raise ValueError("无法删除租户：该租户下存在用户")
+            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄧ敤鎴?)
         
-        # 检查是否有部门
+        # 妫€鏌ユ槸鍚︽湁閮ㄩ棬
         if tenant.departments:
-            raise ValueError("无法删除租户：该租户下存在部门")
+            raise ValueError("鏃犳硶鍒犻櫎绉熸埛锛氳绉熸埛涓嬪瓨鍦ㄩ儴闂?)
         
         self.db.delete(tenant)
         self.db.commit()
@@ -234,22 +223,22 @@ class TenantRepository:
     
     def count_by_package(self, package_id: str) -> int:
         """
-        统计套餐租户数量
+        缁熻濂楅绉熸埛鏁伴噺
         
         Args:
-            package_id: 套餐ID
+            package_id: 濂楅ID
         
         Returns:
-            int: 租户数量
+            int: 绉熸埛鏁伴噺
         """
         return self.db.query(Tenant).filter(Tenant.package_id == package_id).count()
     
     def count_active(self) -> int:
         """
-        统计激活的租户数量
+        缁熻婵€娲荤殑绉熸埛鏁伴噺
         
         Returns:
-            int: 租户数量
+            int: 绉熸埛鏁伴噺
         """
         from datetime import datetime
         return self.db.query(Tenant).filter(
@@ -264,10 +253,9 @@ class TenantRepository:
     
     def count_expired(self) -> int:
         """
-        统计过期的租户数量
-        
+        缁熻杩囨湡鐨勭鎴锋暟閲?        
         Returns:
-            int: 租户数量
+            int: 绉熸埛鏁伴噺
         """
         from datetime import datetime
         return self.db.query(Tenant).filter(
@@ -279,33 +267,30 @@ class TenantRepository:
     
     def count_all(self) -> int:
         """
-        统计所有租户数量
-        
+        缁熻鎵€鏈夌鎴锋暟閲?        
         Returns:
-            int: 租户数量
+            int: 绉熸埛鏁伴噺
         """
         return self.db.query(Tenant).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        检查租户编码是否存在
-        
+        妫€鏌ョ鎴风紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 租户编码
+            code: 绉熸埛缂栫爜
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Tenant).filter(Tenant.code == code).first() is not None
     
     def exists_by_name(self, name: str) -> bool:
         """
-        检查租户名称是否存在
-        
+        妫€鏌ョ鎴峰悕绉版槸鍚﹀瓨鍦?        
         Args:
-            name: 租户名称
+            name: 绉熸埛鍚嶇О
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Tenant).filter(Tenant.name == name).first() is not None

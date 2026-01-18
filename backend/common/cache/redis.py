@@ -1,4 +1,4 @@
-"""Redis缓存模块"""
+﻿"""Redis缂撳瓨妯″潡"""
 from typing import Optional, Any
 import redis
 from loguru import logger
@@ -6,7 +6,7 @@ from common.config import settings
 
 
 class RedisCache:
-    """Redis缓存类"""
+    """Redis缂撳瓨绫?""
     
     def __init__(self):
         self.client = redis.Redis(
@@ -16,22 +16,22 @@ class RedisCache:
             db=settings.REDIS_DB,
             decode_responses=True
         )
-        logger.info("Redis缓存初始化完成")
+        logger.info("Redis缂撳瓨鍒濆鍖栧畬鎴?)
     
     def get(self, key: str) -> Optional[str]:
-        """获取缓存"""
+        """鑾峰彇缂撳瓨"""
         return self.client.get(key)
     
     def set(self, key: str, value: str, ttl: int = 3600):
-        """设置缓存"""
+        """璁剧疆缂撳瓨"""
         self.client.setex(key, ttl, value)
     
     def delete(self, key: str):
-        """删除缓存"""
+        """鍒犻櫎缂撳瓨"""
         self.client.delete(key)
     
     def exists(self, key: str) -> bool:
-        """检查缓存是否存在"""
+        """妫€鏌ョ紦瀛樻槸鍚﹀瓨鍦?""
         return self.client.exists(key) > 0
 
 

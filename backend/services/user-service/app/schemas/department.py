@@ -1,5 +1,5 @@
-"""
-部门相关Schema
+﻿"""
+閮ㄩ棬鐩稿叧Schema
 """
 
 from pydantic import BaseModel, Field
@@ -8,24 +8,24 @@ from datetime import datetime
 
 
 class DepartmentBase(BaseModel):
-    """部门基础模型"""
+    """閮ㄩ棬鍩虹妯″瀷"""
     
-    name: str = Field(..., description="部门名称")
-    code: str = Field(..., description="部门编码")
-    parent_id: Optional[str] = Field(None, description="父部门ID")
-    level: int = Field(default=1, description="层级")
-    sort_order: int = Field(default=0, description="排序")
-    status: str = Field(default="active", description="状态")
+    name: str = Field(..., description="閮ㄩ棬鍚嶇О")
+    code: str = Field(..., description="閮ㄩ棬缂栫爜")
+    parent_id: Optional[str] = Field(None, description="鐖堕儴闂↖D")
+    level: int = Field(default=1, description="灞傜骇")
+    sort_order: int = Field(default=0, description="鎺掑簭")
+    status: str = Field(default="active", description="鐘舵€?)
 
 
 class DepartmentCreate(DepartmentBase):
-    """创建部门"""
+    """鍒涘缓閮ㄩ棬"""
     
-    tenant_id: str = Field(..., description="租户ID")
+    tenant_id: str = Field(..., description="绉熸埛ID")
 
 
 class DepartmentUpdate(BaseModel):
-    """更新部门"""
+    """鏇存柊閮ㄩ棬"""
     
     name: Optional[str] = None
     code: Optional[str] = None
@@ -35,7 +35,7 @@ class DepartmentUpdate(BaseModel):
 
 
 class DepartmentResponse(DepartmentBase):
-    """部门响应"""
+    """閮ㄩ棬鍝嶅簲"""
     
     id: str
     tenant_id: str
@@ -47,13 +47,13 @@ class DepartmentResponse(DepartmentBase):
 
 
 class DepartmentTreeResponse(DepartmentResponse):
-    """部门树响应"""
+    """閮ㄩ棬鏍戝搷搴?""
     
     children: List['DepartmentTreeResponse'] = []
 
 
 class DepartmentListResponse(BaseModel):
-    """部门列表响应"""
+    """閮ㄩ棬鍒楄〃鍝嶅簲"""
     
     total: int
     items: List[DepartmentResponse]

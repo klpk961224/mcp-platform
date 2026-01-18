@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-数据源模型
-
-功能说明：
-1. 数据源配置
-2. 数据源连接管理
-3. 数据源健康检查
-
-使用示例：
-    from app.models.datasource import DataSource
+鏁版嵁婧愭ā鍨?
+鍔熻兘璇存槑锛?1. 鏁版嵁婧愰厤缃?2. 鏁版嵁婧愯繛鎺ョ鐞?3. 鏁版嵁婧愬仴搴锋鏌?
+浣跨敤绀轰緥锛?    from app.models.datasource import DataSource
     
     datasource = DataSource(
-        name="主数据库",
+        name="涓绘暟鎹簱",
         type="mysql",
         host="localhost",
         port=3306,
@@ -27,71 +21,54 @@ from common.database.base import BaseModel
 
 class DataSource(BaseModel):
     """
-    数据源模型
-    
-    功能：
-    - 数据源配置
-    - 数据源连接管理
-    - 数据源健康检查
-    
-    属性说明：
-    - id: 数据源ID（主键）
-    - tenant_id: 租户ID
-    - name: 数据源名称
-    - type: 数据源类型（mysql/postgresql/oracle）
-    - host: 主机地址
-    - port: 端口
-    - database: 数据库名称
-    - username: 用户名
-    - password: 密码（加密）
-    - charset: 字符集
-    - pool_size: 连接池大小
-    - max_overflow: 最大溢出连接数
-    - status: 状态（active/inactive）
-    - is_default: 是否默认数据源
-    - health_check_interval: 健康检查间隔（秒）
-    - last_health_check_at: 最后健康检查时间
-    - is_healthy: 是否健康
-    - created_at: 创建时间
-    - updated_at: 更新时间
+    鏁版嵁婧愭ā鍨?    
+    鍔熻兘锛?    - 鏁版嵁婧愰厤缃?    - 鏁版嵁婧愯繛鎺ョ鐞?    - 鏁版嵁婧愬仴搴锋鏌?    
+    灞炴€ц鏄庯細
+    - id: 鏁版嵁婧怚D锛堜富閿級
+    - tenant_id: 绉熸埛ID
+    - name: 鏁版嵁婧愬悕绉?    - type: 鏁版嵁婧愮被鍨嬶紙mysql/postgresql/oracle锛?    - host: 涓绘満鍦板潃
+    - port: 绔彛
+    - database: 鏁版嵁搴撳悕绉?    - username: 鐢ㄦ埛鍚?    - password: 瀵嗙爜锛堝姞瀵嗭級
+    - charset: 瀛楃闆?    - pool_size: 杩炴帴姹犲ぇ灏?    - max_overflow: 鏈€澶ф孩鍑鸿繛鎺ユ暟
+    - status: 鐘舵€侊紙active/inactive锛?    - is_default: 鏄惁榛樿鏁版嵁婧?    - health_check_interval: 鍋ュ悍妫€鏌ラ棿闅旓紙绉掞級
+    - last_health_check_at: 鏈€鍚庡仴搴锋鏌ユ椂闂?    - is_healthy: 鏄惁鍋ュ悍
+    - created_at: 鍒涘缓鏃堕棿
+    - updated_at: 鏇存柊鏃堕棿
     """
     
     __tablename__ = "datasources"
     
-    # 基本信息
-    tenant_id = Column(String(64), nullable=False, index=True, comment="租户ID")
-    name = Column(String(100), nullable=False, comment="数据源名称")
-    type = Column(String(20), nullable=False, comment="数据源类型")
-    host = Column(String(255), nullable=False, comment="主机地址")
-    port = Column(Integer, nullable=False, comment="端口")
-    database = Column(String(100), nullable=False, comment="数据库名称")
+    # 鍩烘湰淇℃伅
+    tenant_id = Column(String(64), nullable=False, index=True, comment="绉熸埛ID")
+    name = Column(String(100), nullable=False, comment="鏁版嵁婧愬悕绉?)
+    type = Column(String(20), nullable=False, comment="鏁版嵁婧愮被鍨?)
+    host = Column(String(255), nullable=False, comment="涓绘満鍦板潃")
+    port = Column(Integer, nullable=False, comment="绔彛")
+    database = Column(String(100), nullable=False, comment="鏁版嵁搴撳悕绉?)
     
-    # 连接配置
-    username = Column(String(100), nullable=False, comment="用户名")
-    password = Column(String(255), nullable=False, comment="密码（加密）")
-    charset = Column(String(20), nullable=False, default="utf8mb4", comment="字符集")
+    # 杩炴帴閰嶇疆
+    username = Column(String(100), nullable=False, comment="鐢ㄦ埛鍚?)
+    password = Column(String(255), nullable=False, comment="瀵嗙爜锛堝姞瀵嗭級")
+    charset = Column(String(20), nullable=False, default="utf8mb4", comment="瀛楃闆?)
     
-    # 连接池配置
-    pool_size = Column(Integer, nullable=False, default=10, comment="连接池大小")
-    max_overflow = Column(Integer, nullable=False, default=20, comment="最大溢出连接数")
+    # 杩炴帴姹犻厤缃?    pool_size = Column(Integer, nullable=False, default=10, comment="杩炴帴姹犲ぇ灏?)
+    max_overflow = Column(Integer, nullable=False, default=20, comment="鏈€澶ф孩鍑鸿繛鎺ユ暟")
     
-    # 状态信息
-    status = Column(String(20), nullable=False, default="active", comment="状态")
-    is_default = Column(Boolean, nullable=False, default=False, comment="是否默认数据源")
+    # 鐘舵€佷俊鎭?    status = Column(String(20), nullable=False, default="active", comment="鐘舵€?)
+    is_default = Column(Boolean, nullable=False, default=False, comment="鏄惁榛樿鏁版嵁婧?)
     
-    # 健康检查配置
-    health_check_interval = Column(Integer, nullable=False, default=60, comment="健康检查间隔（秒）")
-    last_health_check_at = Column(DateTime, nullable=True, comment="最后健康检查时间")
-    is_healthy = Column(Boolean, nullable=True, comment="是否健康")
+    # 鍋ュ悍妫€鏌ラ厤缃?    health_check_interval = Column(Integer, nullable=False, default=60, comment="鍋ュ悍妫€鏌ラ棿闅旓紙绉掞級")
+    last_health_check_at = Column(DateTime, nullable=True, comment="鏈€鍚庡仴搴锋鏌ユ椂闂?)
+    is_healthy = Column(Boolean, nullable=True, comment="鏄惁鍋ュ悍")
     
-    # 扩展配置
-    config = Column(Text, nullable=True, comment="扩展配置（JSON）")
+    # 鎵╁睍閰嶇疆
+    config = Column(Text, nullable=True, comment="鎵╁睍閰嶇疆锛圝SON锛?)
     
     def __repr__(self):
         return f"<DataSource(id={self.id}, name={self.name}, type={self.type})>"
     
     def to_dict(self):
-        """转换为字典"""
+        """杞崲涓哄瓧鍏?""
         return {
             "id": self.id,
             "tenant_id": self.tenant_id,
@@ -114,16 +91,16 @@ class DataSource(BaseModel):
         }
     
     def update_health_status(self, is_healthy: bool):
-        """更新健康状态"""
+        """鏇存柊鍋ュ悍鐘舵€?""
         self.is_healthy = is_healthy
         self.last_health_check_at = datetime.now()
     
     def is_available(self) -> bool:
-        """检查数据源是否可用"""
+        """妫€鏌ユ暟鎹簮鏄惁鍙敤"""
         return self.status == "active" and self.is_healthy
     
     def get_connection_string(self) -> str:
-        """获取连接字符串"""
+        """鑾峰彇杩炴帴瀛楃涓?""
         if self.type == "mysql":
             return f"mysql+pymysql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}?charset={self.charset}"
         elif self.type == "postgresql":
@@ -131,4 +108,4 @@ class DataSource(BaseModel):
         elif self.type == "oracle":
             return f"oracle+cx_oracle://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
         else:
-            raise ValueError(f"不支持的数据源类型: {self.type}")
+            raise ValueError(f"涓嶆敮鎸佺殑鏁版嵁婧愮被鍨? {self.type}")

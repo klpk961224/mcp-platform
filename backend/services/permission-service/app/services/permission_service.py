@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-权限服务
+鏉冮檺鏈嶅姟
 
-功能说明：
-1. 权限CRUD操作
-2. 权限查询操作
-3. 权限验证操作
+鍔熻兘璇存槑锛?1. 鏉冮檺CRUD鎿嶄綔
+2. 鏉冮檺鏌ヨ鎿嶄綔
+3. 鏉冮檺楠岃瘉鎿嶄綔
 
-使用示例：
-    from app.services.permission_service import PermissionService
+浣跨敤绀轰緥锛?    from app.services.permission_service import PermissionService
     
     perm_service = PermissionService(db)
-    perm = perm_service.create_permission(name="用户管理", code="user:manage")
+    perm = perm_service.create_permission(name="鐢ㄦ埛绠＄悊", code="user:manage")
 """
 
 from sqlalchemy.orm import Session
@@ -24,93 +22,87 @@ from app.repositories.permission_repository import PermissionRepository
 
 class PermissionService:
     """
-    权限服务
+    鏉冮檺鏈嶅姟
     
-    功能：
-    - 权限CRUD操作
-    - 权限查询操作
-    - 权限验证操作
+    鍔熻兘锛?    - 鏉冮檺CRUD鎿嶄綔
+    - 鏉冮檺鏌ヨ鎿嶄綔
+    - 鏉冮檺楠岃瘉鎿嶄綔
     
-    使用方法：
-        perm_service = PermissionService(db)
-        perm = perm_service.create_permission(name="用户管理", code="user:manage")
+    浣跨敤鏂规硶锛?        perm_service = PermissionService(db)
+        perm = perm_service.create_permission(name="鐢ㄦ埛绠＄悊", code="user:manage")
     """
     
     def __init__(self, db: Session):
         """
-        初始化权限服务
-        
+        鍒濆鍖栨潈闄愭湇鍔?        
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.perm_repo = PermissionRepository(db)
     
     def create_permission(self, permission_data: Dict[str, Any]) -> Permission:
         """
-        创建权限
+        鍒涘缓鏉冮檺
         
         Args:
-            permission_data: 权限数据
+            permission_data: 鏉冮檺鏁版嵁
         
         Returns:
-            Permission: 创建的权限对象
-        
+            Permission: 鍒涘缓鐨勬潈闄愬璞?        
         Raises:
-            ValueError: 权限编码已存在
-        """
-        logger.info(f"创建权限: name={permission_data.get('name')}, code={permission_data.get('code')}")
+            ValueError: 鏉冮檺缂栫爜宸插瓨鍦?        """
+        logger.info(f"鍒涘缓鏉冮檺: name={permission_data.get('name')}, code={permission_data.get('code')}")
         
-        # 检查权限编码是否已存在
+        # 妫€鏌ユ潈闄愮紪鐮佹槸鍚﹀凡瀛樺湪
         if self.perm_repo.exists_by_code(permission_data.get("code")):
-            raise ValueError("权限编码已存在")
+            raise ValueError("鏉冮檺缂栫爜宸插瓨鍦?)
         
-        # 创建权限
+        # 鍒涘缓鏉冮檺
         permission = Permission(**permission_data)
         return self.perm_repo.create(permission)
     
     def get_permission(self, permission_id: str) -> Optional[Permission]:
         """
-        获取权限
+        鑾峰彇鏉冮檺
         
         Args:
-            permission_id: 权限ID
+            permission_id: 鏉冮檺ID
         
         Returns:
-            Optional[Permission]: 权限对象，不存在返回None
+            Optional[Permission]: 鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.perm_repo.get_by_id(permission_id)
     
     def get_permission_by_code(self, code: str) -> Optional[Permission]:
         """
-        根据编码获取权限
+        鏍规嵁缂栫爜鑾峰彇鏉冮檺
         
         Args:
-            code: 权限编码
+            code: 鏉冮檺缂栫爜
         
         Returns:
-            Optional[Permission]: 权限对象，不存在返回None
+            Optional[Permission]: 鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.perm_repo.get_by_code(code)
     
     def update_permission(self, permission_id: str, permission_data: Dict[str, Any]) -> Optional[Permission]:
         """
-        更新权限
+        鏇存柊鏉冮檺
         
         Args:
-            permission_id: 权限ID
-            permission_data: 权限数据
+            permission_id: 鏉冮檺ID
+            permission_data: 鏉冮檺鏁版嵁
         
         Returns:
-            Optional[Permission]: 更新后的权限对象，不存在返回None
+            Optional[Permission]: 鏇存柊鍚庣殑鏉冮檺瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"更新权限: permission_id={permission_id}")
+        logger.info(f"鏇存柊鏉冮檺: permission_id={permission_id}")
         
         permission = self.perm_repo.get_by_id(permission_id)
         if not permission:
             return None
         
-        # 更新权限
+        # 鏇存柊鏉冮檺
         for key, value in permission_data.items():
             if hasattr(permission, key):
                 setattr(permission, key, value)
@@ -119,33 +111,33 @@ class PermissionService:
     
     def delete_permission(self, permission_id: str) -> bool:
         """
-        删除权限
+        鍒犻櫎鏉冮檺
         
         Args:
-            permission_id: 权限ID
+            permission_id: 鏉冮檺ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除权限: permission_id={permission_id}")
+        logger.info(f"鍒犻櫎鏉冮檺: permission_id={permission_id}")
         return self.perm_repo.delete(permission_id)
     
     def list_permissions(self, tenant_id: Optional[str] = None, resource: Optional[str] = None,
                          permission_type: Optional[str] = None, keyword: Optional[str] = None,
                          page: int = 1, page_size: int = 10) -> List[Permission]:
         """
-        获取权限列表
+        鑾峰彇鏉冮檺鍒楄〃
         
         Args:
-            tenant_id: 租户ID（可选）
-            resource: 资源类型（可选）
-            permission_type: 权限类型（可选）
-            keyword: 搜索关键词（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            resource: 璧勬簮绫诲瀷锛堝彲閫夛級
+            permission_type: 鏉冮檺绫诲瀷锛堝彲閫夛級
+            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Permission]: 权限列表
+            List[Permission]: 鏉冮檺鍒楄〃
         """
         if keyword:
             return self.perm_repo.search(keyword, tenant_id, page, page_size)
@@ -160,14 +152,14 @@ class PermissionService:
     
     def count_permissions(self, tenant_id: Optional[str] = None, resource: Optional[str] = None) -> int:
         """
-        统计权限数量
+        缁熻鏉冮檺鏁伴噺
         
         Args:
-            tenant_id: 租户ID（可选）
-            resource: 资源类型（可选）
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            resource: 璧勬簮绫诲瀷锛堝彲閫夛級
         
         Returns:
-            int: 权限数量
+            int: 鏉冮檺鏁伴噺
         """
         if resource:
             return self.perm_repo.count_by_resource(resource)
@@ -178,21 +170,18 @@ class PermissionService:
     
     def check_user_permission(self, user_id: str, permission_code: str) -> bool:
         """
-        检查用户是否拥有指定权限
-        
+        妫€鏌ョ敤鎴锋槸鍚︽嫢鏈夋寚瀹氭潈闄?        
         Args:
-            user_id: 用户ID
-            permission_code: 权限编码
+            user_id: 鐢ㄦ埛ID
+            permission_code: 鏉冮檺缂栫爜
         
         Returns:
-            bool: 是否拥有权限
+            bool: 鏄惁鎷ユ湁鏉冮檺
         """
-        # 获取用户的所有角色
-        from common.database.models.user import Role
+        # 鑾峰彇鐢ㄦ埛鐨勬墍鏈夎鑹?        from common.database.models.user import Role
         roles = self.db.query(Role).join("users").filter(users.id == user_id).all()
         
-        # 检查任一角色是否拥有该权限
-        for role in roles:
+        # 妫€鏌ヤ换涓€瑙掕壊鏄惁鎷ユ湁璇ユ潈闄?        for role in roles:
             if role.has_permission(permission_code):
                 return True
         

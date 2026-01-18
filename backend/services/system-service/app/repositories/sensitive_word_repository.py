@@ -1,7 +1,7 @@
-"""
-敏感词Repository
+﻿"""
+鏁忔劅璇峈epository
 
-提供敏感词数据访问层
+鎻愪緵鏁忔劅璇嶆暟鎹闂眰
 """
 
 from typing import List, Optional, Dict, Any
@@ -12,80 +12,78 @@ from common.database.models.sensitive_word import SensitiveWord
 
 
 class SensitiveWordRepository:
-    """敏感词Repository"""
+    """鏁忔劅璇峈epository"""
 
     def __init__(self, db: Session):
         self.db = db
 
     def get_by_id(self, sensitive_word_id: str) -> Optional[SensitiveWord]:
-        """根据ID获取敏感词"""
+        """鏍规嵁ID鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.id == sensitive_word_id).first()
 
     def get_by_word(self, word: str) -> Optional[SensitiveWord]:
-        """根据敏感词获取"""
+        """鏍规嵁鏁忔劅璇嶈幏鍙?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.word == word).first()
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
-        """获取所有敏感词"""
+        """鑾峰彇鎵€鏈夋晱鎰熻瘝"""
         return self.db.query(SensitiveWord).order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
     def get_by_category(self, category: str, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
-        """根据分类获取敏感词"""
+        """鏍规嵁鍒嗙被鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(
             SensitiveWord.category == category,
             SensitiveWord.status == "active"
         ).order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
     def get_by_level(self, level: int, skip: int = 0, limit: int = 100) -> List[SensitiveWord]:
-        """根据敏感级别获取敏感词"""
+        """鏍规嵁鏁忔劅绾у埆鑾峰彇鏁忔劅璇?""
         return self.db.query(SensitiveWord).filter(
             SensitiveWord.level == level,
             SensitiveWord.status == "active"
         ).order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
     def search(self, query_params: Dict[str, Any], skip: int = 0, limit: int = 100) -> tuple:
-        """搜索敏感词"""
+        """鎼滅储鏁忔劅璇?""
         query = self.db.query(SensitiveWord)
 
-        # 敏感词搜索
-        if query_params.get("word"):
+        # 鏁忔劅璇嶆悳绱?        if query_params.get("word"):
             query = query.filter(SensitiveWord.word.like(f"%{query_params['word']}%"))
 
-        # 分类过滤
+        # 鍒嗙被杩囨护
         if query_params.get("category"):
             query = query.filter(SensitiveWord.category == query_params["category"])
 
-        # 敏感级别过滤
+        # 鏁忔劅绾у埆杩囨护
         if query_params.get("level"):
             query = query.filter(SensitiveWord.level == query_params["level"])
 
-        # 状态过滤
-        if query_params.get("status"):
+        # 鐘舵€佽繃婊?        if query_params.get("status"):
             query = query.filter(SensitiveWord.status == query_params["status"])
 
-        # 统计总数
+        # 缁熻鎬绘暟
         total = query.count()
 
-        # 分页
+        # 鍒嗛〉
         sensitive_words = query.order_by(SensitiveWord.level.desc()).offset(skip).limit(limit).all()
 
         return sensitive_words, total
 
     def create(self, sensitive_word: SensitiveWord) -> SensitiveWord:
-        """创建敏感词"""
+        """鍒涘缓鏁忔劅璇?""
         self.db.add(sensitive_word)
         self.db.commit()
         self.db.refresh(sensitive_word)
         return sensitive_word
 
     def update(self, sensitive_word: SensitiveWord) -> SensitiveWord:
-        """更新敏感词"""
+        """鏇存柊鏁忔劅璇?""
         self.db.commit()
         self.db.refresh(sensitive_word)
         return sensitive_word
 
     def delete(self, sensitive_word_id: str) -> bool:
-        """删除敏感词"""
+        """鍒犻櫎鏁忔劅璇?""
         sensitive_word = self.get_by_id(sensitive_word_id)
         if sensitive_word:
             self.db.delete(sensitive_word)
@@ -94,19 +92,19 @@ class SensitiveWordRepository:
         return False
 
     def count(self) -> int:
-        """统计敏感词数量"""
+        """缁熻鏁忔劅璇嶆暟閲?""
         return self.db.query(SensitiveWord).count()
 
     def count_by_category(self, category: str) -> int:
-        """根据分类统计敏感词数量"""
+        """鏍规嵁鍒嗙被缁熻鏁忔劅璇嶆暟閲?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.category == category).count()
 
     def count_by_level(self, level: int) -> int:
-        """根据敏感级别统计敏感词数量"""
+        """鏍规嵁鏁忔劅绾у埆缁熻鏁忔劅璇嶆暟閲?""
         return self.db.query(SensitiveWord).filter(SensitiveWord.level == level).count()
 
     def get_all_active_words(self) -> List[str]:
-        """获取所有激活的敏感词"""
+        """鑾峰彇鎵€鏈夋縺娲荤殑鏁忔劅璇?""
         results = self.db.query(SensitiveWord.word).filter(
             SensitiveWord.status == "active"
         ).all()

@@ -1,27 +1,20 @@
-"""
-配置模块
+﻿"""
+閰嶇疆妯″潡
 
-导出：
-- Settings: 配置类
-- settings: 全局配置实例
-- get_settings: 获取配置实例
-- UserStatus: 用户状态枚举
-- ErrorCode: 错误码枚举
-- ResponseCode: 响应码枚举
-- ERROR_MESSAGES: 错误信息映射
-- get_error_message: 获取错误信息
+瀵煎嚭锛?- Settings: 閰嶇疆绫?- settings: 鍏ㄥ眬閰嶇疆瀹炰緥
+- get_settings: 鑾峰彇閰嶇疆瀹炰緥
+- UserStatus: 鐢ㄦ埛鐘舵€佹灇涓?- ErrorCode: 閿欒鐮佹灇涓?- ResponseCode: 鍝嶅簲鐮佹灇涓?- ERROR_MESSAGES: 閿欒淇℃伅鏄犲皠
+- get_error_message: 鑾峰彇閿欒淇℃伅
 
-使用示例：
-    from common.config import settings, UserStatus, ErrorCode
+浣跨敤绀轰緥锛?    from common.config import settings, UserStatus, ErrorCode
     
-    # 访问配置
+    # 璁块棶閰嶇疆
     print(settings.APP_NAME)
     
-    # 使用枚举
+    # 浣跨敤鏋氫妇
     status = UserStatus.ACTIVE
     
-    # 使用错误码
-    error = ErrorCode.USER_NOT_FOUND
+    # 浣跨敤閿欒鐮?    error = ErrorCode.USER_NOT_FOUND
 """
 
 from .settings import Settings, get_settings, settings
@@ -56,12 +49,12 @@ from .constants import (
 )
 
 __all__ = [
-    # 配置
+    # 閰嶇疆
     'Settings',
     'settings',
     'get_settings',
     
-    # 枚举
+    # 鏋氫妇
     'UserStatus',
     'Gender',
     'OrderStatus',
@@ -75,11 +68,11 @@ __all__ = [
     'ResponseCode',
     'ErrorCode',
     
-    # 错误处理
+    # 閿欒澶勭悊
     'ERROR_MESSAGES',
     'get_error_message',
     
-    # 常量
+    # 甯搁噺
     'DEFAULT_PAGE_SIZE',
     'MAX_PAGE_SIZE',
     'DEFAULT_TIMEOUT',

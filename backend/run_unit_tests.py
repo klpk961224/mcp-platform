@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-后端单元测试运行脚本
+鍚庣鍗曞厓娴嬭瘯杩愯鑴氭湰
 
-功能说明：
-1. 运行所有服务的单元测试
-2. 生成测试报告
-3. 显示测试结果
+鍔熻兘璇存槑锛?1. 杩愯鎵€鏈夋湇鍔＄殑鍗曞厓娴嬭瘯
+2. 鐢熸垚娴嬭瘯鎶ュ憡
+3. 鏄剧ず娴嬭瘯缁撴灉
 
-使用方法：
-    python run_unit_tests.py
+浣跨敤鏂规硶锛?    python run_unit_tests.py
 
-依赖：
-    pip install pytest pytest-cov pytest-html
+渚濊禆锛?    pip install pytest pytest-cov pytest-html
 """
 
 import subprocess
@@ -23,20 +20,19 @@ from datetime import datetime
 
 def run_tests(service_name: str, test_path: str) -> dict:
     """
-    运行指定服务的单元测试
-
+    杩愯鎸囧畾鏈嶅姟鐨勫崟鍏冩祴璇?
     Args:
-        service_name: 服务名称
-        test_path: 测试路径
+        service_name: 鏈嶅姟鍚嶇О
+        test_path: 娴嬭瘯璺緞
 
     Returns:
-        dict: 测试结果
+        dict: 娴嬭瘯缁撴灉
     """
     print(f"\n{'='*60}")
-    print(f"开始测试: {service_name}")
+    print(f"寮€濮嬫祴璇? {service_name}")
     print(f"{'='*60}")
 
-    # 构建pytest命令
+    # 鏋勫缓pytest鍛戒护
     cmd = [
         sys.executable, "-m", "pytest",
         test_path,
@@ -51,13 +47,13 @@ def run_tests(service_name: str, test_path: str) -> dict:
         "--cov-fail-under=0"
     ]
 
-    # 运行测试
+    # 杩愯娴嬭瘯
     result = subprocess.run(cmd, capture_output=True, text=True)
 
-    # 解析结果
+    # 瑙ｆ瀽缁撴灉
     output = result.stdout + result.stderr
 
-    # 提取测试统计信息
+    # 鎻愬彇娴嬭瘯缁熻淇℃伅
     passed = output.count("PASSED")
     failed = output.count("FAILED")
     errors = output.count("ERROR")
@@ -74,28 +70,27 @@ def run_tests(service_name: str, test_path: str) -> dict:
         "output": output
     }
 
-    # 打印结果
-    print(f"\n测试结果: {service_name}")
-    print(f"  通过: {passed}")
-    print(f"  失败: {failed}")
-    print(f"  错误: {errors}")
-    print(f"  跳过: {skipped}")
-    print(f"  总计: {test_result['total']}")
-    print(f"  状态: {'✓ 成功' if test_result['success'] else '✗ 失败'}")
+    # 鎵撳嵃缁撴灉
+    print(f"\n娴嬭瘯缁撴灉: {service_name}")
+    print(f"  閫氳繃: {passed}")
+    print(f"  澶辫触: {failed}")
+    print(f"  閿欒: {errors}")
+    print(f"  璺宠繃: {skipped}")
+    print(f"  鎬昏: {test_result['total']}")
+    print(f"  鐘舵€? {'鉁?鎴愬姛' if test_result['success'] else '鉁?澶辫触'}")
 
     return test_result
 
 
 def generate_summary_report(results: list, backend_dir: Path):
     """
-    生成测试汇总报告
-
+    鐢熸垚娴嬭瘯姹囨€绘姤鍛?
     Args:
-        results: 测试结果列表
-        backend_dir: backend目录路径
+        results: 娴嬭瘯缁撴灉鍒楄〃
+        backend_dir: backend鐩綍璺緞
     """
     print(f"\n{'='*60}")
-    print("测试汇总报告")
+    print("娴嬭瘯姹囨€绘姤鍛?)
     print(f"{'='*60}")
 
     total_passed = sum(r["passed"] for r in results)
@@ -104,61 +99,59 @@ def generate_summary_report(results: list, backend_dir: Path):
     total_skipped = sum(r["skipped"] for r in results)
     total_tests = sum(r["total"] for r in results)
 
-    print(f"\n总体统计:")
-    print(f"  服务数量: {len(results)}")
-    print(f"  通过: {total_passed}")
-    print(f"  失败: {total_failed}")
-    print(f"  错误: {total_errors}")
-    print(f"  跳过: {total_skipped}")
-    print(f"  总计: {total_tests}")
+    print(f"\n鎬讳綋缁熻:")
+    print(f"  鏈嶅姟鏁伴噺: {len(results)}")
+    print(f"  閫氳繃: {total_passed}")
+    print(f"  澶辫触: {total_failed}")
+    print(f"  閿欒: {total_errors}")
+    print(f"  璺宠繃: {total_skipped}")
+    print(f"  鎬昏: {total_tests}")
 
     if total_tests > 0:
         success_rate = (total_passed / total_tests) * 100
-        print(f"  通过率: {success_rate:.2f}%")
+        print(f"  閫氳繃鐜? {success_rate:.2f}%")
 
-    print(f"\n各服务详情:")
+    print(f"\n鍚勬湇鍔¤鎯?")
     for result in results:
-        status = "✓ 成功" if result["success"] else "✗ 失败"
-        print(f"  {result['service']:20s} - {status:8s} (通过: {result['passed']}, 失败: {result['failed']}, 错误: {result['errors']}, 跳过: {result['skipped']})")
+        status = "鉁?鎴愬姛" if result["success"] else "鉁?澶辫触"
+        print(f"  {result['service']:20s} - {status:8s} (閫氳繃: {result['passed']}, 澶辫触: {result['failed']}, 閿欒: {result['errors']}, 璺宠繃: {result['skipped']})")
 
-    # 保存报告到文件
-    tests_dir = backend_dir / "tests"
+    # 淇濆瓨鎶ュ憡鍒版枃浠?    tests_dir = backend_dir / "tests"
     tests_dir.mkdir(exist_ok=True)
-    report_path = tests_dir / "测试报告_单元测试.txt"
+    report_path = tests_dir / "娴嬭瘯鎶ュ憡_鍗曞厓娴嬭瘯.txt"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("="*60 + "\n")
-        f.write("后端单元测试报告\n")
+        f.write("鍚庣鍗曞厓娴嬭瘯鎶ュ憡\n")
         f.write("="*60 + "\n")
-        f.write(f"测试时间: {datetime.now().isoformat()}\n")
-        f.write(f"\n总体统计:\n")
-        f.write(f"  服务数量: {len(results)}\n")
-        f.write(f"  通过: {total_passed}\n")
-        f.write(f"  失败: {total_failed}\n")
-        f.write(f"  错误: {total_errors}\n")
-        f.write(f"  跳过: {total_skipped}\n")
-        f.write(f"  总计: {total_tests}\n")
+        f.write(f"娴嬭瘯鏃堕棿: {datetime.now().isoformat()}\n")
+        f.write(f"\n鎬讳綋缁熻:\n")
+        f.write(f"  鏈嶅姟鏁伴噺: {len(results)}\n")
+        f.write(f"  閫氳繃: {total_passed}\n")
+        f.write(f"  澶辫触: {total_failed}\n")
+        f.write(f"  閿欒: {total_errors}\n")
+        f.write(f"  璺宠繃: {total_skipped}\n")
+        f.write(f"  鎬昏: {total_tests}\n")
         if total_tests > 0:
             success_rate = (total_passed / total_tests) * 100
-            f.write(f"  通过率: {success_rate:.2f}%\n")
-        f.write(f"\n各服务详情:\n")
+            f.write(f"  閫氳繃鐜? {success_rate:.2f}%\n")
+        f.write(f"\n鍚勬湇鍔¤鎯?\n")
         for result in results:
-            status = "成功" if result["success"] else "失败"
-            f.write(f"  {result['service']:20s} - {status:8s} (通过: {result['passed']}, 失败: {result['failed']}, 错误: {result['errors']}, 跳过: {result['skipped']})\n")
+            status = "鎴愬姛" if result["success"] else "澶辫触"
+            f.write(f"  {result['service']:20s} - {status:8s} (閫氳繃: {result['passed']}, 澶辫触: {result['failed']}, 閿欒: {result['errors']}, 璺宠繃: {result['skipped']})\n")
 
-    print(f"\n测试报告已保存: {report_path}")
+    print(f"\n娴嬭瘯鎶ュ憡宸蹭繚瀛? {report_path}")
 
 
 def main():
-    """主函数"""
-    # 确保在backend目录下运行
-    backend_dir = Path(__file__).parent
+    """涓诲嚱鏁?""
+    # 纭繚鍦╞ackend鐩綍涓嬭繍琛?    backend_dir = Path(__file__).parent
     os.chdir(backend_dir)
 
-    # 创建reports目录
+    # 鍒涘缓reports鐩綍
     reports_dir = backend_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
 
-    # 定义要测试的服务
+    # 瀹氫箟瑕佹祴璇曠殑鏈嶅姟
     services = [
         {
             "name": "auth-service",
@@ -186,8 +179,7 @@ def main():
         }
     ]
 
-    # 运行所有测试
-    results = []
+    # 杩愯鎵€鏈夋祴璇?    results = []
     for service in services:
         test_path = Path(service["path"])
         if test_path.exists():
@@ -195,7 +187,7 @@ def main():
             results.append(result)
         else:
             print(f"\n{'='*60}")
-            print(f"跳过测试: {service['name']} (测试目录不存在)")
+            print(f"璺宠繃娴嬭瘯: {service['name']} (娴嬭瘯鐩綍涓嶅瓨鍦?")
             print(f"{'='*60}")
             results.append({
                 "service": service["name"],
@@ -205,13 +197,12 @@ def main():
                 "skipped": 0,
                 "total": 0,
                 "success": False,
-                "output": "测试目录不存在"
+                "output": "娴嬭瘯鐩綍涓嶅瓨鍦?
             })
 
-    # 生成汇总报告
-    generate_summary_report(results, backend_dir)
+    # 鐢熸垚姹囨€绘姤鍛?    generate_summary_report(results, backend_dir)
 
-    # 返回退出码
+    # 杩斿洖閫€鍑虹爜
     if any(not r["success"] for r in results):
         sys.exit(1)
     else:
@@ -220,3 +211,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

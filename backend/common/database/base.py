@@ -74,3 +74,4 @@ class CreatedAtMixin:
 class FullModelMixin(TimestampMixin, SoftDeleteMixin, AuditMixin):
     """完整模型混入类"""
     pass
+

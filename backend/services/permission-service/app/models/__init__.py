@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-权限域服务模型
-
-包含：
-- Role: 角色模型
-- Permission: 权限模型
-- Menu: 菜单模型
+鏉冮檺鍩熸湇鍔℃ā鍨?
+鍖呭惈锛?- Role: 瑙掕壊妯″瀷
+- Permission: 鏉冮檺妯″瀷
+- Menu: 鑿滃崟妯″瀷
 """
 
 from common.database.models.user import Role

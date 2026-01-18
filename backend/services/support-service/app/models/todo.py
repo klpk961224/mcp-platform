@@ -1,24 +1,21 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-待办任务模型
+寰呭姙浠诲姟妯″瀷
 
-功能说明：
-1. 个人待办任务管理
-2. 每日计划管理
-3. 任务提醒
+鍔熻兘璇存槑锛?1. 涓汉寰呭姙浠诲姟绠＄悊
+2. 姣忔棩璁″垝绠＄悊
+3. 浠诲姟鎻愰啋
 
-使用示例：
-    from app.models.todo import TodoTask, DailyPlan
+浣跨敤绀轰緥锛?    from app.models.todo import TodoTask, DailyPlan
     
-    # 创建待办任务
+    # 鍒涘缓寰呭姙浠诲姟
     todo = TodoTask(
-        title="完成项目文档",
-        description="编写项目设计文档",
+        title="瀹屾垚椤圭洰鏂囨。",
+        description="缂栧啓椤圭洰璁捐鏂囨。",
         priority="high"
     )
 """
 
 from common.database.models.todo import TodoTask, DailyPlan
 
-# 重新导出模型，方便使用
-__all__ = ['TodoTask', 'DailyPlan']
+# 閲嶆柊瀵煎嚭妯″瀷锛屾柟渚夸娇鐢?__all__ = ['TodoTask', 'DailyPlan']

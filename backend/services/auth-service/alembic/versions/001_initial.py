@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-"""创建认证服务相关表
-
+﻿# -*- coding: utf-8 -*-
+"""鍒涘缓璁よ瘉鏈嶅姟鐩稿叧琛?
 Revision ID: 001
 Revises:
 Create Date: 2026-01-15
@@ -18,43 +17,41 @@ depends_on = None
 
 
 def upgrade():
-    # 创建用户表
-    op.create_table(
+    # 鍒涘缓鐢ㄦ埛琛?    op.create_table(
         'users',
-        sa.Column('id', sa.String(50), primary_key=True, comment='用户ID'),
-        sa.Column('tenant_id', sa.String(64), nullable=False, index=True, comment='租户ID'),
-        sa.Column('username', sa.String(50), nullable=False, unique=True, index=True, comment='用户名'),
-        sa.Column('email', sa.String(100), nullable=False, index=True, comment='邮箱'),
-        sa.Column('password_hash', sa.String(255), nullable=False, comment='密码哈希'),
-        sa.Column('status', sa.String(20), nullable=False, default='active', comment='状态'),
-        sa.Column('last_login_at', sa.DateTime, comment='最后登录时间'),
-        sa.Column('last_login_ip', sa.String(50), comment='最后登录IP'),
-        sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='创建时间'),
-        sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='更新时间'),
-        sa.Column('deleted_at', sa.DateTime, comment='删除时间'),
+        sa.Column('id', sa.String(50), primary_key=True, comment='鐢ㄦ埛ID'),
+        sa.Column('tenant_id', sa.String(64), nullable=False, index=True, comment='绉熸埛ID'),
+        sa.Column('username', sa.String(50), nullable=False, unique=True, index=True, comment='鐢ㄦ埛鍚?),
+        sa.Column('email', sa.String(100), nullable=False, index=True, comment='閭'),
+        sa.Column('password_hash', sa.String(255), nullable=False, comment='瀵嗙爜鍝堝笇'),
+        sa.Column('status', sa.String(20), nullable=False, default='active', comment='鐘舵€?),
+        sa.Column('last_login_at', sa.DateTime, comment='鏈€鍚庣櫥褰曟椂闂?),
+        sa.Column('last_login_ip', sa.String(50), comment='鏈€鍚庣櫥褰旾P'),
+        sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='鍒涘缓鏃堕棿'),
+        sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='鏇存柊鏃堕棿'),
+        sa.Column('deleted_at', sa.DateTime, comment='鍒犻櫎鏃堕棿'),
         sa.Index('idx_tenant_id', 'tenant_id'),
         sa.Index('idx_status', 'status'),
-        comment='用户表'
+        comment='鐢ㄦ埛琛?
     )
 
-    # 创建Token表
-    op.create_table(
+    # 鍒涘缓Token琛?    op.create_table(
         'tokens',
         sa.Column('id', sa.String(50), primary_key=True, comment='Token ID'),
-        sa.Column('user_id', sa.String(50), nullable=False, index=True, comment='用户ID'),
-        sa.Column('token_type', sa.String(20), nullable=False, comment='Token类型'),
-        sa.Column('access_token', sa.Text, nullable=False, comment='访问Token'),
-        sa.Column('refresh_token', sa.Text, nullable=False, comment='刷新Token'),
-        sa.Column('expires_at', sa.DateTime, nullable=False, comment='过期时间'),
-        sa.Column('is_revoked', sa.Boolean, nullable=False, default=False, comment='是否已吊销'),
-        sa.Column('revoked_at', sa.DateTime, comment='吊销时间'),
-        sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='创建时间'),
-        sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='更新时间'),
+        sa.Column('user_id', sa.String(50), nullable=False, index=True, comment='鐢ㄦ埛ID'),
+        sa.Column('token_type', sa.String(20), nullable=False, comment='Token绫诲瀷'),
+        sa.Column('access_token', sa.Text, nullable=False, comment='璁块棶Token'),
+        sa.Column('refresh_token', sa.Text, nullable=False, comment='鍒锋柊Token'),
+        sa.Column('expires_at', sa.DateTime, nullable=False, comment='杩囨湡鏃堕棿'),
+        sa.Column('is_revoked', sa.Boolean, nullable=False, default=False, comment='鏄惁宸插悐閿€'),
+        sa.Column('revoked_at', sa.DateTime, comment='鍚婇攢鏃堕棿'),
+        sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='鍒涘缓鏃堕棿'),
+        sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.func.now(), comment='鏇存柊鏃堕棿'),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.Index('idx_user_id', 'user_id'),
         sa.Index('idx_token_type', 'token_type'),
         sa.Index('idx_expires_at', 'expires_at'),
-        comment='Token表'
+        comment='Token琛?
     )
 
 

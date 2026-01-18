@@ -1,5 +1,5 @@
-"""
-角色管理API路由
+﻿"""
+瑙掕壊绠＄悊API璺敱
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
@@ -21,22 +21,22 @@ from app.schemas.role import (
 )
 from app.services.role_service import RoleService
 
-router = APIRouter(prefix="/roles", tags=["角色管理"])
+router = APIRouter(prefix="/roles", tags=["瑙掕壊绠＄悊"])
 
 
-@router.post("", response_model=RoleResponse, summary="创建角色")
+@router.post("", response_model=RoleResponse, summary="鍒涘缓瑙掕壊")
 async def create_role(
     role: RoleCreate,
     db: Session = Depends(get_db)
 ):
-    """创建角色"""
-    logger.info(f"创建角色: name={role.name}")
+    """鍒涘缓瑙掕壊"""
+    logger.info(f"鍒涘缓瑙掕壊: name={role.name}")
     
     try:
         role_service = RoleService(db)
         new_role = role_service.create_role(role.dict())
         
-        logger.info(f"创建角色成功: name={role.name}, role_id={new_role.id}")
+        logger.info(f"鍒涘缓瑙掕壊鎴愬姛: name={role.name}, role_id={new_role.id}")
         
         return RoleResponse(
             id=new_role.id,
@@ -50,14 +50,14 @@ async def create_role(
             updated_at=new_role.updated_at.isoformat() if new_role.updated_at else None
         )
     except ValueError as e:
-        logger.warning(f"创建角色失败: name={role.name}, error={str(e)}")
+        logger.warning(f"鍒涘缓瑙掕壊澶辫触: name={role.name}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"创建角色异常: name={role.name}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="创建角色失败，请稍后重试")
+        logger.error(f"鍒涘缓瑙掕壊寮傚父: name={role.name}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒涘缓瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("", response_model=RoleListResponse, summary="获取角色列表")
+@router.get("", response_model=RoleListResponse, summary="鑾峰彇瑙掕壊鍒楄〃")
 async def get_roles(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
@@ -66,13 +66,13 @@ async def get_roles(
     keyword: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
-    """获取角色列表"""
-    logger.info(f"获取角色列表: page={page}, tenant_id={tenant_id}")
+    """鑾峰彇瑙掕壊鍒楄〃"""
+    logger.info(f"鑾峰彇瑙掕壊鍒楄〃: page={page}, tenant_id={tenant_id}")
     
     try:
         role_service = RoleService(db)
         
-        # 查询角色列表
+        # 鏌ヨ瑙掕壊鍒楄〃
         roles = role_service.list_roles(
             tenant_id=tenant_id,
             keyword=keyword,
@@ -80,7 +80,7 @@ async def get_roles(
             page_size=page_size
         )
         
-        # 统计总数
+        # 缁熻鎬绘暟
         total = role_service.count_roles(tenant_id=tenant_id)
         
         items = [
@@ -100,24 +100,24 @@ async def get_roles(
         
         return RoleListResponse(total=total, items=items, page=page, page_size=page_size)
     except Exception as e:
-        logger.error(f"获取角色列表异常: error={str(e)}")
-        raise HTTPException(status_code=500, detail="获取角色列表失败，请稍后重试")
+        logger.error(f"鑾峰彇瑙掕壊鍒楄〃寮傚父: error={str(e)}")
+        raise HTTPException(status_code=500, detail="鑾峰彇瑙掕壊鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{role_id}", response_model=RoleResponse, summary="获取角色详情")
+@router.get("/{role_id}", response_model=RoleResponse, summary="鑾峰彇瑙掕壊璇︽儏")
 async def get_role(
     role_id: str,
     db: Session = Depends(get_db)
 ):
-    """获取角色详情"""
-    logger.info(f"获取角色详情: role_id={role_id}")
+    """鑾峰彇瑙掕壊璇︽儏"""
+    logger.info(f"鑾峰彇瑙掕壊璇︽儏: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
         role = role_service.get_by_id(role_id)
         
         if not role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         return RoleResponse(
             id=role.id,
@@ -133,30 +133,30 @@ async def get_role(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取角色详情异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色详情失败，请稍后重试")
+        logger.error(f"鑾峰彇瑙掕壊璇︽儏寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瑙掕壊璇︽儏澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.put("/{role_id}", response_model=RoleResponse, summary="更新角色")
+@router.put("/{role_id}", response_model=RoleResponse, summary="鏇存柊瑙掕壊")
 async def update_role(
     role_id: str,
     role: RoleUpdate,
     db: Session = Depends(get_db)
 ):
-    """更新角色"""
-    logger.info(f"更新角色: role_id={role_id}")
+    """鏇存柊瑙掕壊"""
+    logger.info(f"鏇存柊瑙掕壊: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         update_data = role.dict(exclude_unset=True)
         updated_role = role_service.update_role(role_id, update_data)
         
-        logger.info(f"更新角色成功: role_id={role_id}")
+        logger.info(f"鏇存柊瑙掕壊鎴愬姛: role_id={role_id}")
         
         return RoleResponse(
             id=updated_role.id,
@@ -172,75 +172,73 @@ async def update_role(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(f"更新角色失败: role_id={role_id}, error={str(e)}")
+        logger.warning(f"鏇存柊瑙掕壊澶辫触: role_id={role_id}, error={str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"更新角色异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="更新角色失败，请稍后重试")
+        logger.error(f"鏇存柊瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鏇存柊瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.delete("/{role_id}", summary="删除角色")
+@router.delete("/{role_id}", summary="鍒犻櫎瑙掕壊")
 async def delete_role(
     role_id: str,
     db: Session = Depends(get_db)
 ):
-    """删除角色"""
-    logger.info(f"删除角色: role_id={role_id}")
+    """鍒犻櫎瑙掕壊"""
+    logger.info(f"鍒犻櫎瑙掕壊: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         role_service.delete_role(role_id)
         
-        logger.info(f"删除角色成功: role_id={role_id}")
+        logger.info(f"鍒犻櫎瑙掕壊鎴愬姛: role_id={role_id}")
         
-        return {"message": "删除成功"}
+        return {"message": "鍒犻櫎鎴愬姛"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"删除角色异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="删除角色失败，请稍后重试")
+        logger.error(f"鍒犻櫎瑙掕壊寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒犻櫎瑙掕壊澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.post("/{role_id}/permissions", response_model=RoleResponse, summary="分配权限")
+@router.post("/{role_id}/permissions", response_model=RoleResponse, summary="鍒嗛厤鏉冮檺")
 async def assign_permissions(
     role_id: str,
     permission_ids: list[str],
     db: Session = Depends(get_db)
 ):
     """
-    分配权限给角色
-    
-    功能：
-    - 清空角色现有权限
-    - 添加新的权限列表
+    鍒嗛厤鏉冮檺缁欒鑹?    
+    鍔熻兘锛?    - 娓呯┖瑙掕壊鐜版湁鏉冮檺
+    - 娣诲姞鏂扮殑鏉冮檺鍒楄〃
     
     Args:
-        role_id: 角色ID
-        permission_ids: 权限ID列表
+        role_id: 瑙掕壊ID
+        permission_ids: 鏉冮檺ID鍒楄〃
     
     Returns:
-        RoleResponse: 更新后的角色信息
+        RoleResponse: 鏇存柊鍚庣殑瑙掕壊淇℃伅
     
     Raises:
-        HTTPException: 角色不存在时抛出404错误
+        HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"分配权限: role_id={role_id}, permission_count={len(permission_ids)}")
+    logger.info(f"鍒嗛厤鏉冮檺: role_id={role_id}, permission_count={len(permission_ids)}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         updated_role = role_service.assign_permissions(role_id, permission_ids)
         
-        logger.info(f"分配权限成功: role_id={role_id}, permission_count={len(permission_ids)}")
+        logger.info(f"鍒嗛厤鏉冮檺鎴愬姛: role_id={role_id}, permission_count={len(permission_ids)}")
         
         return RoleResponse(
             id=updated_role.id,
@@ -256,35 +254,35 @@ async def assign_permissions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"分配权限异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="分配权限失败，请稍后重试")
+        logger.error(f"鍒嗛厤鏉冮檺寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒嗛厤鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{role_id}/permissions", summary="获取角色权限")
+@router.get("/{role_id}/permissions", summary="鑾峰彇瑙掕壊鏉冮檺")
 async def get_role_permissions(
     role_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    获取角色权限列表
+    鑾峰彇瑙掕壊鏉冮檺鍒楄〃
     
     Args:
-        role_id: 角色ID
+        role_id: 瑙掕壊ID
     
     Returns:
-        list: 权限列表
+        list: 鏉冮檺鍒楄〃
     
     Raises:
-        HTTPException: 角色不存在时抛出404错误
+        HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"获取角色权限: role_id={role_id}")
+    logger.info(f"鑾峰彇瑙掕壊鏉冮檺: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         permissions = role_service.get_role_permissions(role_id)
         
@@ -302,45 +300,43 @@ async def get_role_permissions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取角色权限异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色权限失败，请稍后重试")
+        logger.error(f"鑾峰彇瑙掕壊鏉冮檺寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瑙掕壊鏉冮檺澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.post("/{role_id}/menus", response_model=RoleResponse, summary="分配菜单")
+@router.post("/{role_id}/menus", response_model=RoleResponse, summary="鍒嗛厤鑿滃崟")
 async def assign_menus(
     role_id: str,
     menu_ids: list[str],
     db: Session = Depends(get_db)
 ):
     """
-    分配菜单给角色
-    
-    功能：
-    - 清空角色现有菜单
-    - 添加新的菜单列表
+    鍒嗛厤鑿滃崟缁欒鑹?    
+    鍔熻兘锛?    - 娓呯┖瑙掕壊鐜版湁鑿滃崟
+    - 娣诲姞鏂扮殑鑿滃崟鍒楄〃
     
     Args:
-        role_id: 角色ID
-        menu_ids: 菜单ID列表
+        role_id: 瑙掕壊ID
+        menu_ids: 鑿滃崟ID鍒楄〃
     
     Returns:
-        RoleResponse: 更新后的角色信息
+        RoleResponse: 鏇存柊鍚庣殑瑙掕壊淇℃伅
     
     Raises:
-        HTTPException: 角色不存在时抛出404错误
+        HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"分配菜单: role_id={role_id}, menu_count={len(menu_ids)}")
+    logger.info(f"鍒嗛厤鑿滃崟: role_id={role_id}, menu_count={len(menu_ids)}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         updated_role = role_service.assign_menus(role_id, menu_ids)
         
-        logger.info(f"分配菜单成功: role_id={role_id}, menu_count={len(menu_ids)}")
+        logger.info(f"鍒嗛厤鑿滃崟鎴愬姛: role_id={role_id}, menu_count={len(menu_ids)}")
         
         return RoleResponse(
             id=updated_role.id,
@@ -356,35 +352,35 @@ async def assign_menus(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"分配菜单异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="分配菜单失败，请稍后重试")
+        logger.error(f"鍒嗛厤鑿滃崟寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鍒嗛厤鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{role_id}/menus", summary="获取角色菜单")
+@router.get("/{role_id}/menus", summary="鑾峰彇瑙掕壊鑿滃崟")
 async def get_role_menus(
     role_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    获取角色菜单列表
+    鑾峰彇瑙掕壊鑿滃崟鍒楄〃
     
     Args:
-        role_id: 角色ID
+        role_id: 瑙掕壊ID
     
     Returns:
-        list: 菜单列表
+        list: 鑿滃崟鍒楄〃
     
     Raises:
-        HTTPException: 角色不存在时抛出404错误
+        HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"获取角色菜单: role_id={role_id}")
+    logger.info(f"鑾峰彇瑙掕壊鑿滃崟: role_id={role_id}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         menus = role_service.get_role_menus(role_id)
         
@@ -405,37 +401,35 @@ async def get_role_menus(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取角色菜单异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取角色菜单失败，请稍后重试")
+        logger.error(f"鑾峰彇瑙掕壊鑿滃崟寮傚父: role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇瑙掕壊鑿滃崟澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/{role_id}/check-permission/{permission_code}", summary="检查角色权限")
+@router.get("/{role_id}/check-permission/{permission_code}", summary="妫€鏌ヨ鑹叉潈闄?)
 async def check_role_permission(
     role_id: str,
     permission_code: str,
     db: Session = Depends(get_db)
 ):
     """
-    检查角色是否拥有指定权限
-    
+    妫€鏌ヨ鑹叉槸鍚︽嫢鏈夋寚瀹氭潈闄?    
     Args:
-        role_id: 角色ID
-        permission_code: 权限编码
+        role_id: 瑙掕壊ID
+        permission_code: 鏉冮檺缂栫爜
     
     Returns:
-        dict: 检查结果
-    
+        dict: 妫€鏌ョ粨鏋?    
     Raises:
-        HTTPException: 角色不存在时抛出404错误
+        HTTPException: 瑙掕壊涓嶅瓨鍦ㄦ椂鎶涘嚭404閿欒
     """
-    logger.info(f"检查角色权限: role_id={role_id}, permission_code={permission_code}")
+    logger.info(f"妫€鏌ヨ鑹叉潈闄? role_id={role_id}, permission_code={permission_code}")
     
     try:
         role_service = RoleService(db)
         
         existing_role = role_service.get_by_id(role_id)
         if not existing_role:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="角色不存在")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="瑙掕壊涓嶅瓨鍦?)
         
         has_permission = role_service.check_permission(role_id, permission_code)
         
@@ -447,5 +441,5 @@ async def check_role_permission(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"检查角色权限异常: role_id={role_id}, error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="检查角色权限失败，请稍后重试")
+        logger.error(f"妫€鏌ヨ鑹叉潈闄愬紓甯? role_id={role_id}, error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="妫€鏌ヨ鑹叉潈闄愬け璐ワ紝璇风◢鍚庨噸璇?)

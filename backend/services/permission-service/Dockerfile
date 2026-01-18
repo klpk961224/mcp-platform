@@ -16,6 +16,5 @@ COPY . .
 
 RUN mkdir -p logs
 
-EXPOSE 8003
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8003"]
+# 启动命令（使用环境变量APP_PORT配置端口）
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${APP_PORT:-28003}"]

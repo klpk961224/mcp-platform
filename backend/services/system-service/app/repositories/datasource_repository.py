@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-数据源数据访问层
+鏁版嵁婧愭暟鎹闂眰
 
-功能说明：
-1. 数据源CRUD操作
-2. 数据源查询操作
-3. 数据源统计操作
-
-使用示例：
-    from app.repositories.datasource_repository import DataSourceRepository
+鍔熻兘璇存槑锛?1. 鏁版嵁婧怌RUD鎿嶄綔
+2. 鏁版嵁婧愭煡璇㈡搷浣?3. 鏁版嵁婧愮粺璁℃搷浣?
+浣跨敤绀轰緥锛?    from app.repositories.datasource_repository import DataSourceRepository
     
     datasource_repo = DataSourceRepository(db)
     datasource = datasource_repo.get_default_datasource()
@@ -24,38 +20,30 @@ from app.models.datasource import DataSource
 
 class DataSourceRepository:
     """
-    数据源数据访问层
+    鏁版嵁婧愭暟鎹闂眰
     
-    功能：
-    - 数据源CRUD操作
-    - 数据源查询操作
-    - 数据源统计操作
-    
-    使用方法：
-        datasource_repo = DataSourceRepository(db)
+    鍔熻兘锛?    - 鏁版嵁婧怌RUD鎿嶄綔
+    - 鏁版嵁婧愭煡璇㈡搷浣?    - 鏁版嵁婧愮粺璁℃搷浣?    
+    浣跨敤鏂规硶锛?        datasource_repo = DataSourceRepository(db)
         datasource = datasource_repo.get_default_datasource()
     """
     
     def __init__(self, db: Session):
         """
-        初始化数据源数据访问层
-        
+        鍒濆鍖栨暟鎹簮鏁版嵁璁块棶灞?        
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, datasource: DataSource) -> DataSource:
         """
-        创建数据源
-        
+        鍒涘缓鏁版嵁婧?        
         Args:
-            datasource: 数据源对象
-        
+            datasource: 鏁版嵁婧愬璞?        
         Returns:
-            DataSource: 创建的数据源对象
+            DataSource: 鍒涘缓鐨勬暟鎹簮瀵硅薄
         """
-        logger.info(f"创建数据源: name={datasource.name}, type={datasource.type}")
+        logger.info(f"鍒涘缓鏁版嵁婧? name={datasource.name}, type={datasource.type}")
         self.db.add(datasource)
         self.db.commit()
         self.db.refresh(datasource)
@@ -63,26 +51,23 @@ class DataSourceRepository:
     
     def get_by_id(self, datasource_id: str) -> Optional[DataSource]:
         """
-        根据ID获取数据源
-        
+        鏍规嵁ID鑾峰彇鏁版嵁婧?        
         Args:
-            datasource_id: 数据源ID
+            datasource_id: 鏁版嵁婧怚D
         
         Returns:
-            Optional[DataSource]: 数据源对象，不存在返回None
+            Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.db.query(DataSource).filter(DataSource.id == datasource_id).first()
     
     def get_by_name(self, name: str, tenant_id: str) -> Optional[DataSource]:
         """
-        根据名称获取数据源
-        
+        鏍规嵁鍚嶇О鑾峰彇鏁版嵁婧?        
         Args:
-            name: 数据源名称
-            tenant_id: 租户ID
+            name: 鏁版嵁婧愬悕绉?            tenant_id: 绉熸埛ID
         
         Returns:
-            Optional[DataSource]: 数据源对象，不存在返回None
+            Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.db.query(DataSource).filter(
             and_(
@@ -93,43 +78,38 @@ class DataSourceRepository:
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        根据租户ID获取数据源列表
-        
+        鏍规嵁绉熸埛ID鑾峰彇鏁版嵁婧愬垪琛?        
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DataSource]: 数据源列表
-        """
+            List[DataSource]: 鏁版嵁婧愬垪琛?        """
         offset = (page - 1) * page_size
         return self.db.query(DataSource).filter(DataSource.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_by_type(self, data_type: str, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        根据类型获取数据源列表
-        
+        鏍规嵁绫诲瀷鑾峰彇鏁版嵁婧愬垪琛?        
         Args:
-            data_type: 数据源类型
-            page: 页码
-            page_size: 每页数量
+            data_type: 鏁版嵁婧愮被鍨?            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DataSource]: 数据源列表
-        """
+            List[DataSource]: 鏁版嵁婧愬垪琛?        """
         offset = (page - 1) * page_size
         return self.db.query(DataSource).filter(DataSource.type == data_type).offset(offset).limit(page_size).all()
     
     def get_default_datasource(self, tenant_id: str) -> Optional[DataSource]:
         """
-        获取租户的默认数据源
+        鑾峰彇绉熸埛鐨勯粯璁ゆ暟鎹簮
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            Optional[DataSource]: 数据源对象，不存在返回None
+            Optional[DataSource]: 鏁版嵁婧愬璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.db.query(DataSource).filter(
             and_(
@@ -140,16 +120,15 @@ class DataSourceRepository:
     
     def get_active_datasources(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        获取租户的活跃数据源列表
+        鑾峰彇绉熸埛鐨勬椿璺冩暟鎹簮鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DataSource]: 数据源列表
-        """
+            List[DataSource]: 鏁版嵁婧愬垪琛?        """
         offset = (page - 1) * page_size
         return self.db.query(DataSource).filter(
             and_(
@@ -160,17 +139,14 @@ class DataSourceRepository:
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        搜索数据源
-        
+        鎼滅储鏁版嵁婧?        
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DataSource]: 数据源列表
-        """
+            List[DataSource]: 鏁版嵁婧愬垪琛?        """
         offset = (page - 1) * page_size
         query = self.db.query(DataSource).filter(
             or_(
@@ -187,51 +163,45 @@ class DataSourceRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[DataSource]:
         """
-        获取所有数据源
+        鑾峰彇鎵€鏈夋暟鎹簮
         
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DataSource]: 数据源列表
-        """
+            List[DataSource]: 鏁版嵁婧愬垪琛?        """
         offset = (page - 1) * page_size
         return self.db.query(DataSource).offset(offset).limit(page_size).all()
     
     def update(self, datasource: DataSource) -> DataSource:
         """
-        更新数据源
-        
+        鏇存柊鏁版嵁婧?        
         Args:
-            datasource: 数据源对象
-        
+            datasource: 鏁版嵁婧愬璞?        
         Returns:
-            DataSource: 更新后的数据源对象
-        """
-        logger.info(f"更新数据源: datasource_id={datasource.id}")
+            DataSource: 鏇存柊鍚庣殑鏁版嵁婧愬璞?        """
+        logger.info(f"鏇存柊鏁版嵁婧? datasource_id={datasource.id}")
         self.db.commit()
         self.db.refresh(datasource)
         return datasource
     
     def delete(self, datasource_id: str) -> bool:
         """
-        删除数据源
-        
+        鍒犻櫎鏁版嵁婧?        
         Args:
-            datasource_id: 数据源ID
+            datasource_id: 鏁版嵁婧怚D
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除数据源: datasource_id={datasource_id}")
+        logger.info(f"鍒犻櫎鏁版嵁婧? datasource_id={datasource_id}")
         datasource = self.get_by_id(datasource_id)
         if not datasource:
             return False
         
-        # 检查是否为默认数据源
-        if datasource.is_default:
-            raise ValueError("无法删除默认数据源")
+        # 妫€鏌ユ槸鍚︿负榛樿鏁版嵁婧?        if datasource.is_default:
+            raise ValueError("鏃犳硶鍒犻櫎榛樿鏁版嵁婧?)
         
         self.db.delete(datasource)
         self.db.commit()
@@ -239,47 +209,41 @@ class DataSourceRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户数据源数量
-        
+        缁熻绉熸埛鏁版嵁婧愭暟閲?        
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 数据源数量
-        """
+            int: 鏁版嵁婧愭暟閲?        """
         return self.db.query(DataSource).filter(DataSource.tenant_id == tenant_id).count()
     
     def count_by_type(self, data_type: str) -> int:
         """
-        统计数据源类型的数量
+        缁熻鏁版嵁婧愮被鍨嬬殑鏁伴噺
         
         Args:
-            data_type: 数据源类型
-        
+            data_type: 鏁版嵁婧愮被鍨?        
         Returns:
-            int: 数据源数量
-        """
+            int: 鏁版嵁婧愭暟閲?        """
         return self.db.query(DataSource).filter(DataSource.type == data_type).count()
     
     def count_all(self) -> int:
         """
-        统计所有数据源数量
+        缁熻鎵€鏈夋暟鎹簮鏁伴噺
         
         Returns:
-            int: 数据源数量
-        """
+            int: 鏁版嵁婧愭暟閲?        """
         return self.db.query(DataSource).count()
     
     def exists_by_name(self, name: str, tenant_id: str) -> bool:
         """
-        检查数据源名称是否存在
+        妫€鏌ユ暟鎹簮鍚嶇О鏄惁瀛樺湪
         
         Args:
-            name: 数据源名称
-            tenant_id: 租户ID
+            name: 鏁版嵁婧愬悕绉?            tenant_id: 绉熸埛ID
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(DataSource).filter(
             and_(

@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-用户服务
+鐢ㄦ埛鏈嶅姟
 
-功能说明：
-1. 用户CRUD操作
-2. 用户查询操作
-3. 用户状态管理
-
-使用示例：
-    from app.services.user_service import UserService
+鍔熻兘璇存槑锛?1. 鐢ㄦ埛CRUD鎿嶄綔
+2. 鐢ㄦ埛鏌ヨ鎿嶄綔
+3. 鐢ㄦ埛鐘舵€佺鐞?
+浣跨敤绀轰緥锛?    from app.services.user_service import UserService
     
     user_service = UserService(db)
     user = user_service.create_user(username="admin", email="admin@example.com")
@@ -26,25 +23,20 @@ from app.repositories.tenant_repository import TenantRepository
 
 class UserService:
     """
-    用户服务
+    鐢ㄦ埛鏈嶅姟
     
-    功能：
-    - 用户CRUD操作
-    - 用户查询操作
-    - 用户状态管理
-    
-    使用方法：
-        user_service = UserService(db)
+    鍔熻兘锛?    - 鐢ㄦ埛CRUD鎿嶄綔
+    - 鐢ㄦ埛鏌ヨ鎿嶄綔
+    - 鐢ㄦ埛鐘舵€佺鐞?    
+    浣跨敤鏂规硶锛?        user_service = UserService(db)
         user = user_service.create_user(username="admin", email="admin@example.com")
     """
     
     def __init__(self, db: Session):
         """
-        初始化用户服务
-        
+        鍒濆鍖栫敤鎴锋湇鍔?        
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.user_repo = UserRepository(db)
         self.dept_repo = DepartmentRepository(db)
@@ -52,115 +44,105 @@ class UserService:
     
     def create_user(self, user_data: Dict[str, Any]) -> User:
         """
-        创建用户
+        鍒涘缓鐢ㄦ埛
         
         Args:
-            user_data: 用户数据
+            user_data: 鐢ㄦ埛鏁版嵁
         
         Returns:
-            User: 创建的用户对象
-        
+            User: 鍒涘缓鐨勭敤鎴峰璞?        
         Raises:
-            ValueError: 用户名或邮箱已存在
-            ValueError: 部门不存在
-            ValueError: 租户不存在
-            ValueError: 租户已过期
-            ValueError: 租户用户数已达上限
-        """
-        logger.info(f"创建用户: username={user_data.get('username')}")
+            ValueError: 鐢ㄦ埛鍚嶆垨閭宸插瓨鍦?            ValueError: 閮ㄩ棬涓嶅瓨鍦?            ValueError: 绉熸埛涓嶅瓨鍦?            ValueError: 绉熸埛宸茶繃鏈?            ValueError: 绉熸埛鐢ㄦ埛鏁板凡杈句笂闄?        """
+        logger.info(f"鍒涘缓鐢ㄦ埛: username={user_data.get('username')}")
         
-        # 检查用户名是否已存在
-        if self.user_repo.exists_by_username(user_data.get("username")):
-            raise ValueError("用户名已存在")
+        # 妫€鏌ョ敤鎴峰悕鏄惁宸插瓨鍦?        if self.user_repo.exists_by_username(user_data.get("username")):
+            raise ValueError("鐢ㄦ埛鍚嶅凡瀛樺湪")
         
-        # 检查邮箱是否已存在
+        # 妫€鏌ラ偖绠辨槸鍚﹀凡瀛樺湪
         if self.user_repo.exists_by_email(user_data.get("email")):
-            raise ValueError("邮箱已存在")
+            raise ValueError("閭宸插瓨鍦?)
         
-        # 验证租户
+        # 楠岃瘉绉熸埛
         tenant_id = user_data.get("tenant_id")
         if tenant_id:
             tenant = self.tenant_repo.get_by_id(tenant_id)
             if not tenant:
-                raise ValueError("租户不存在")
+                raise ValueError("绉熸埛涓嶅瓨鍦?)
             if tenant.is_expired():
-                raise ValueError("租户已过期")
+                raise ValueError("绉熸埛宸茶繃鏈?)
             if not tenant.can_add_user():
-                raise ValueError("租户用户数已达上限")
+                raise ValueError("绉熸埛鐢ㄦ埛鏁板凡杈句笂闄?)
         
-        # 验证部门
+        # 楠岃瘉閮ㄩ棬
         dept_id = user_data.get("dept_id")
         if dept_id:
             department = self.dept_repo.get_by_id(dept_id)
             if not department:
-                raise ValueError("部门不存在")
+                raise ValueError("閮ㄩ棬涓嶅瓨鍦?)
             if tenant_id and department.tenant_id != tenant_id:
-                raise ValueError("部门不属于该租户")
+                raise ValueError("閮ㄩ棬涓嶅睘浜庤绉熸埛")
         
-        # 创建用户
+        # 鍒涘缓鐢ㄦ埛
         user = User(**user_data)
         return self.user_repo.create(user)
     
     def get_user(self, user_id: str) -> Optional[User]:
         """
-        获取用户
+        鑾峰彇鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            Optional[User]: 用户对象，不存在返回None
+            Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.user_repo.get_by_id(user_id)
     
     def get_user_by_username(self, username: str) -> Optional[User]:
         """
-        根据用户名获取用户
-        
+        鏍规嵁鐢ㄦ埛鍚嶈幏鍙栫敤鎴?        
         Args:
-            username: 用户名
-        
+            username: 鐢ㄦ埛鍚?        
         Returns:
-            Optional[User]: 用户对象，不存在返回None
+            Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.user_repo.get_by_username(username)
     
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Optional[User]:
         """
-        更新用户
+        鏇存柊鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
-            user_data: 用户数据
+            user_id: 鐢ㄦ埛ID
+            user_data: 鐢ㄦ埛鏁版嵁
         
         Returns:
-            Optional[User]: 更新后的用户对象，不存在返回None
+            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         
         Raises:
-            ValueError: 邮箱已被其他用户使用
-            ValueError: 部门不存在
-            ValueError: 部门不属于该租户
+            ValueError: 閭宸茶鍏朵粬鐢ㄦ埛浣跨敤
+            ValueError: 閮ㄩ棬涓嶅瓨鍦?            ValueError: 閮ㄩ棬涓嶅睘浜庤绉熸埛
         """
-        logger.info(f"更新用户: user_id={user_id}")
+        logger.info(f"鏇存柊鐢ㄦ埛: user_id={user_id}")
         
         user = self.user_repo.get_by_id(user_id)
         if not user:
             return None
         
-        # 检查邮箱是否被其他用户使用
+        # 妫€鏌ラ偖绠辨槸鍚﹁鍏朵粬鐢ㄦ埛浣跨敤
         if "email" in user_data and user_data["email"] != user.email:
             if self.user_repo.exists_by_email(user_data["email"]):
-                raise ValueError("邮箱已被其他用户使用")
+                raise ValueError("閭宸茶鍏朵粬鐢ㄦ埛浣跨敤")
         
-        # 验证部门
+        # 楠岃瘉閮ㄩ棬
         if "department_id" in user_data and user_data["department_id"]:
             department = self.dept_repo.get_by_id(user_data["department_id"])
             if not department:
-                raise ValueError("部门不存在")
+                raise ValueError("閮ㄩ棬涓嶅瓨鍦?)
             if department.tenant_id != user.tenant_id:
-                raise ValueError("部门不属于该租户")
+                raise ValueError("閮ㄩ棬涓嶅睘浜庤绉熸埛")
         
-        # 更新用户
+        # 鏇存柊鐢ㄦ埛
         for key, value in user_data.items():
             if hasattr(user, key):
                 setattr(user, key, value)
@@ -169,31 +151,31 @@ class UserService:
     
     def delete_user(self, user_id: str) -> bool:
         """
-        删除用户
+        鍒犻櫎鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除用户: user_id={user_id}")
+        logger.info(f"鍒犻櫎鐢ㄦ埛: user_id={user_id}")
         return self.user_repo.delete(user_id)
     
     def list_users(self, tenant_id: Optional[str] = None, department_id: Optional[str] = None, 
                    keyword: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        获取用户列表
+        鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            tenant_id: 租户ID（可选）
-            department_id: 部门ID（可选）
-            keyword: 搜索关键词（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            department_id: 閮ㄩ棬ID锛堝彲閫夛級
+            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[User]: 用户列表
+            List[User]: 鐢ㄦ埛鍒楄〃
         """
         if keyword:
             return self.user_repo.search(keyword, tenant_id, page, page_size)
@@ -206,15 +188,14 @@ class UserService:
     
     def activate_user(self, user_id: str) -> Optional[User]:
         """
-        激活用户
-        
+        婵€娲荤敤鎴?        
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            Optional[User]: 更新后的用户对象，不存在返回None
+            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"激活用户: user_id={user_id}")
+        logger.info(f"婵€娲荤敤鎴? user_id={user_id}")
         user = self.user_repo.get_by_id(user_id)
         if not user:
             return None
@@ -225,15 +206,15 @@ class UserService:
     
     def deactivate_user(self, user_id: str) -> Optional[User]:
         """
-        停用用户
+        鍋滅敤鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            Optional[User]: 更新后的用户对象，不存在返回None
+            Optional[User]: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"停用用户: user_id={user_id}")
+        logger.info(f"鍋滅敤鐢ㄦ埛: user_id={user_id}")
         user = self.user_repo.get_by_id(user_id)
         if not user:
             return None
@@ -244,14 +225,14 @@ class UserService:
     
     def count_users(self, tenant_id: Optional[str] = None, department_id: Optional[str] = None) -> int:
         """
-        统计用户数量
+        缁熻鐢ㄦ埛鏁伴噺
         
         Args:
-            tenant_id: 租户ID（可选）
-            department_id: 部门ID（可选）
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            department_id: 閮ㄩ棬ID锛堝彲閫夛級
         
         Returns:
-            int: 用户数量
+            int: 鐢ㄦ埛鏁伴噺
         """
         if department_id:
             return self.user_repo.count_by_department(department_id)

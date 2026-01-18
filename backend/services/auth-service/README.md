@@ -1,182 +1,182 @@
-# 认证域服务 (auth-service)
+﻿# 璁よ瘉鍩熸湇鍔?(auth-service)
 
-## 服务说明
+## 鏈嶅姟璇存槑
 
-认证域服务负责处理用户认证、Token管理和用户登录登出等核心认证功能。
+璁よ瘉鍩熸湇鍔¤礋璐ｅ鐞嗙敤鎴疯璇併€乀oken绠＄悊鍜岀敤鎴风櫥褰曠櫥鍑虹瓑鏍稿績璁よ瘉鍔熻兘銆?
 
-## 功能特性
+## 鍔熻兘鐗规€?
 
-- ✅ 用户登录/登出
-- ✅ JWT Token生成和验证
-- ✅ Token刷新机制
-- ✅ 密码加密和验证
-- ✅ 用户状态管理
-- ✅ 多租户支持
-- ✅ API Key认证
+- 鉁?鐢ㄦ埛鐧诲綍/鐧诲嚭
+- 鉁?JWT Token鐢熸垚鍜岄獙璇?
+- 鉁?Token鍒锋柊鏈哄埗
+- 鉁?瀵嗙爜鍔犲瘑鍜岄獙璇?
+- 鉁?鐢ㄦ埛鐘舵€佺鐞?
+- 鉁?澶氱鎴锋敮鎸?
+- 鉁?API Key璁よ瘉
 
-## 技术栈
+## 鎶€鏈爤
 
-- **框架**: FastAPI 0.104+
+- **妗嗘灦**: FastAPI 0.104+
 - **ORM**: SQLAlchemy 2.0+
-- **数据库**: MySQL 8.0+
-- **缓存**: Redis 7.0+
-- **日志**: loguru 0.7+
+- **鏁版嵁搴?*: MySQL 8.0+
+- **缂撳瓨**: Redis 7.0+
+- **鏃ュ織**: loguru 0.7+
 
-## 项目结构
+## 椤圭洰缁撴瀯
 
 ```
 auth-service/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              # 应用入口
-│   ├── api/                  # API路由
-│   │   └── v1/
-│   │       └── auth.py      # 认证API
-│   ├── core/                 # 核心配置
-│   │   ├── config.py        # 配置类
-│   │   └── deps.py          # 依赖注入
-│   ├── models/               # SQLAlchemy模型
-│   │   ├── __init__.py
-│   │   ├── user.py          # 用户模型
-│   │   └── token.py         # Token模型
-│   ├── schemas/              # Pydantic模型
-│   │   ├── __init__.py
-│   │   └── auth.py          # 认证Schema
-│   ├── services/             # 业务逻辑层
-│   │   ├── __init__.py
-│   │   ├── auth_service.py  # 认证服务
-│   │   └── token_service.py # Token服务
-│   └── repositories/         # 数据访问层
-│       ├── __init__.py
-│       ├── user_repository.py    # 用户数据访问
-│       └── token_repository.py   # Token数据访问
-├── tests/                     # 测试目录
-│   ├── unit/               # 单元测试
-│   └── integration/        # 集成测试
-├── alembic/                   # 数据库迁移
-│   ├── env.py              # 迁移环境配置
-│   ├── script.py.mako      # 迁移脚本模板
-│   └── versions/           # 迁移版本
-├── scripts/                   # 脚本工具
-├── .env.development          # 开发环境配置
-├── .env.production           # 生产环境配置
-├── Dockerfile                # Docker配置
-├── docker-compose.yml        # Docker编排
-├── requirements.txt          # Python依赖
-└── README.md                 # 本文件
+鈹溾攢鈹€ app/
+鈹?  鈹溾攢鈹€ __init__.py
+鈹?  鈹溾攢鈹€ main.py              # 搴旂敤鍏ュ彛
+鈹?  鈹溾攢鈹€ api/                  # API璺敱
+鈹?  鈹?  鈹斺攢鈹€ v1/
+鈹?  鈹?      鈹斺攢鈹€ auth.py      # 璁よ瘉API
+鈹?  鈹溾攢鈹€ core/                 # 鏍稿績閰嶇疆
+鈹?  鈹?  鈹溾攢鈹€ config.py        # 閰嶇疆绫?
+鈹?  鈹?  鈹斺攢鈹€ deps.py          # 渚濊禆娉ㄥ叆
+鈹?  鈹溾攢鈹€ models/               # SQLAlchemy妯″瀷
+鈹?  鈹?  鈹溾攢鈹€ __init__.py
+鈹?  鈹?  鈹溾攢鈹€ user.py          # 鐢ㄦ埛妯″瀷
+鈹?  鈹?  鈹斺攢鈹€ token.py         # Token妯″瀷
+鈹?  鈹溾攢鈹€ schemas/              # Pydantic妯″瀷
+鈹?  鈹?  鈹溾攢鈹€ __init__.py
+鈹?  鈹?  鈹斺攢鈹€ auth.py          # 璁よ瘉Schema
+鈹?  鈹溾攢鈹€ services/             # 涓氬姟閫昏緫灞?
+鈹?  鈹?  鈹溾攢鈹€ __init__.py
+鈹?  鈹?  鈹溾攢鈹€ auth_service.py  # 璁よ瘉鏈嶅姟
+鈹?  鈹?  鈹斺攢鈹€ token_service.py # Token鏈嶅姟
+鈹?  鈹斺攢鈹€ repositories/         # 鏁版嵁璁块棶灞?
+鈹?      鈹溾攢鈹€ __init__.py
+鈹?      鈹溾攢鈹€ user_repository.py    # 鐢ㄦ埛鏁版嵁璁块棶
+鈹?      鈹斺攢鈹€ token_repository.py   # Token鏁版嵁璁块棶
+鈹溾攢鈹€ tests/                     # 娴嬭瘯鐩綍
+鈹?  鈹溾攢鈹€ unit/               # 鍗曞厓娴嬭瘯
+鈹?  鈹斺攢鈹€ integration/        # 闆嗘垚娴嬭瘯
+鈹溾攢鈹€ alembic/                   # 鏁版嵁搴撹縼绉?
+鈹?  鈹溾攢鈹€ env.py              # 杩佺Щ鐜閰嶇疆
+鈹?  鈹溾攢鈹€ script.py.mako      # 杩佺Щ鑴氭湰妯℃澘
+鈹?  鈹斺攢鈹€ versions/           # 杩佺Щ鐗堟湰
+鈹溾攢鈹€ scripts/                   # 鑴氭湰宸ュ叿
+鈹溾攢鈹€ .env.development          # 寮€鍙戠幆澧冮厤缃?
+鈹溾攢鈹€ .env.production           # 鐢熶骇鐜閰嶇疆
+鈹溾攢鈹€ Dockerfile                # Docker閰嶇疆
+鈹溾攢鈹€ docker-compose.yml        # Docker缂栨帓
+鈹溾攢鈹€ requirements.txt          # Python渚濊禆
+鈹斺攢鈹€ README.md                 # 鏈枃浠?
 ```
 
-## 快速开始
+## 蹇€熷紑濮?
 
-### 本地开发
+### 鏈湴寮€鍙?
 
 ```bash
-# 安装依赖
+# 瀹夎渚濊禆
 pip install -r requirements.txt
 
-# 配置环境变量
+# 閰嶇疆鐜鍙橀噺
 cp .env.development .env
 
-# 启动服务
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+# 鍚姩鏈嶅姟
+python -m uvicorn app.main:app --host 0.0.0.0 --port 28001 --reload
 ```
 
-### Docker部署
+### Docker閮ㄧ讲
 
 ```bash
-# 构建镜像
+# 鏋勫缓闀滃儚
 docker build -t auth-service:latest .
 
-# 启动服务
+# 鍚姩鏈嶅姟
 docker-compose up -d
 
-# 查看日志
+# 鏌ョ湅鏃ュ織
 docker-compose logs -f auth-service
 ```
 
-## API接口
+## API鎺ュ彛
 
-### 健康检查
+### 鍋ュ悍妫€鏌?
 
-- `GET /health` - 健康检查接口
+- `GET /health` - 鍋ュ悍妫€鏌ユ帴鍙?
 
-### 认证接口
+### 璁よ瘉鎺ュ彛
 
-- `POST /api/v1/auth/login` - 用户登录
-- `POST /api/v1/auth/refresh` - 刷新Token
-- `POST /api/v1/auth/logout` - 用户登出
+- `POST /api/v1/auth/login` - 鐢ㄦ埛鐧诲綍
+- `POST /api/v1/auth/refresh` - 鍒锋柊Token
+- `POST /api/v1/auth/logout` - 鐢ㄦ埛鐧诲嚭
 
-## 环境变量
+## 鐜鍙橀噺
 
-| 变量名 | 说明 | 默认值 |
+| 鍙橀噺鍚?| 璇存槑 | 榛樿鍊?|
 |--------|------|--------|
-| APP_NAME | 应用名称 | 认证域服务 |
-| APP_ENV | 环境类型 | development |
-| APP_DEBUG | 调试模式 | True |
-| APP_PORT | 服务端口 | 8001 |
-| DATABASE_URL | 数据库连接URL | - |
-| REDIS_HOST | Redis主机 | 127.0.0.1 |
-| REDIS_PORT | Redis端口 | 6379 |
-| JWT_SECRET | JWT密钥 | - |
-| JWT_EXPIRE_MINUTES | Token过期时间（分钟） | 1440 |
-| REFRESH_TOKEN_EXPIRE_DAYS | 刷新Token过期时间（天） | 30 |
+| APP_NAME | 搴旂敤鍚嶇О | 璁よ瘉鍩熸湇鍔?|
+| APP_ENV | 鐜绫诲瀷 | development |
+| APP_DEBUG | 璋冭瘯妯″紡 | True |
+| APP_PORT | 鏈嶅姟绔彛 | 28001 |
+| DATABASE_URL | 鏁版嵁搴撹繛鎺RL | - |
+| REDIS_HOST | Redis涓绘満 | 127.0.0.1 |
+| REDIS_PORT | Redis绔彛 | 6379 |
+| JWT_SECRET | JWT瀵嗛挜 | - |
+| JWT_EXPIRE_MINUTES | Token杩囨湡鏃堕棿锛堝垎閽燂級 | 1440 |
+| REFRESH_TOKEN_EXPIRE_DAYS | 鍒锋柊Token杩囨湡鏃堕棿锛堝ぉ锛?| 30 |
 
-## 数据库迁移
+## 鏁版嵁搴撹縼绉?
 
 ```bash
-# 生成迁移脚本
-alembic revision --autogenerate -m "创建用户表"
+# 鐢熸垚杩佺Щ鑴氭湰
+alembic revision --autogenerate -m "鍒涘缓鐢ㄦ埛琛?
 
-# 执行迁移
+# 鎵ц杩佺Щ
 alembic upgrade head
 
-# 回滚迁移
+# 鍥炴粴杩佺Щ
 alembic downgrade -1
 ```
 
-## 测试
+## 娴嬭瘯
 
 ```bash
-# 运行所有测试
+# 杩愯鎵€鏈夋祴璇?
 pytest
 
-# 运行单元测试
+# 杩愯鍗曞厓娴嬭瘯
 pytest tests/unit
 
-# 运行集成测试
+# 杩愯闆嗘垚娴嬭瘯
 pytest tests/integration
 
-# 生成测试报告
+# 鐢熸垚娴嬭瘯鎶ュ憡
 pytest --html=reports/test-report.html
 ```
 
-## 开发规范
+## 寮€鍙戣鑼?
 
-- 遵循 PEP 8 代码规范
-- 使用类型注解
-- 编写单元测试
-- 添加日志记录
-- 编写文档注释
+- 閬靛惊 PEP 8 浠ｇ爜瑙勮寖
+- 浣跨敤绫诲瀷娉ㄨВ
+- 缂栧啓鍗曞厓娴嬭瘯
+- 娣诲姞鏃ュ織璁板綍
+- 缂栧啓鏂囨。娉ㄩ噴
 
-## 常见问题
+## 甯歌闂
 
-### 数据库连接失败
+### 鏁版嵁搴撹繛鎺ュけ璐?
 
-检查 MySQL 服务是否启动，数据库配置是否正确。
+妫€鏌?MySQL 鏈嶅姟鏄惁鍚姩锛屾暟鎹簱閰嶇疆鏄惁姝ｇ‘銆?
 
-### Token验证失败
+### Token楠岃瘉澶辫触
 
-检查 JWT_SECRET 配置是否正确，Token是否过期。
+妫€鏌?JWT_SECRET 閰嶇疆鏄惁姝ｇ‘锛孴oken鏄惁杩囨湡銆?
 
-### 依赖安装失败
+### 渚濊禆瀹夎澶辫触
 
-尝试使用虚拟环境，或者升级 pip 版本。
+灏濊瘯浣跨敤铏氭嫙鐜锛屾垨鑰呭崌绾?pip 鐗堟湰銆?
 
-## 联系方式
+## 鑱旂郴鏂瑰紡
 
-- 项目地址: https://github.com/klpk961224/mcp-platform
-- 问题反馈: 提交 Issue
+- 椤圭洰鍦板潃: https://github.com/klpk961224/mcp-platform
+- 闂鍙嶉: 鎻愪氦 Issue
 
 ---
 
-**最后更新**: 2026-01-15
+**鏈€鍚庢洿鏂?*: 2026-01-15

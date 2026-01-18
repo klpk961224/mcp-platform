@@ -1,5 +1,5 @@
-"""
-权限相关Schema
+﻿"""
+鏉冮檺鐩稿叧Schema
 """
 
 from pydantic import BaseModel, Field
@@ -8,28 +8,28 @@ from datetime import datetime
 
 
 class PermissionBase(BaseModel):
-    """权限基础模型"""
+    """鏉冮檺鍩虹妯″瀷"""
     
-    name: str = Field(..., description="权限名称")
-    code: str = Field(..., description="权限编码")
-    type: str = Field(..., description="类型")
-    description: Optional[str] = Field(None, description="描述")
+    name: str = Field(..., description="鏉冮檺鍚嶇О")
+    code: str = Field(..., description="鏉冮檺缂栫爜")
+    type: str = Field(..., description="绫诲瀷")
+    description: Optional[str] = Field(None, description="鎻忚堪")
 
 
 class PermissionCreate(PermissionBase):
-    """创建权限"""
+    """鍒涘缓鏉冮檺"""
     pass
 
 
 class PermissionUpdate(BaseModel):
-    """更新权限"""
+    """鏇存柊鏉冮檺"""
     
     name: Optional[str] = None
     description: Optional[str] = None
 
 
 class PermissionResponse(PermissionBase):
-    """权限响应"""
+    """鏉冮檺鍝嶅簲"""
     
     id: str
     created_at: datetime
@@ -40,7 +40,7 @@ class PermissionResponse(PermissionBase):
 
 
 class PermissionListResponse(BaseModel):
-    """权限列表响应"""
+    """鏉冮檺鍒楄〃鍝嶅簲"""
     
     total: int
     items: List[PermissionResponse]

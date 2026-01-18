@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-用户数据访问层
+鐢ㄦ埛鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 鐢ㄦ埛CRUD鎿嶄綔
+2. 鐢ㄦ埛鏌ヨ鎿嶄綔
+3. 鐢ㄦ埛缁熻鎿嶄綔
 
-功能说明：
-1. 用户CRUD操作
-2. 用户查询操作
-3. 用户统计操作
-
-使用示例：
-    from app.repositories.user_repository import UserRepository
+浣跨敤绀轰緥锛?    from app.repositories.user_repository import UserRepository
     
     user_repo = UserRepository(db)
     user = user_repo.get_by_username("admin")
@@ -24,38 +21,33 @@ from common.database.models.user import User
 
 class UserRepository:
     """
-    用户数据访问层
+    鐢ㄦ埛鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 鐢ㄦ埛CRUD鎿嶄綔
+    - 鐢ㄦ埛鏌ヨ鎿嶄綔
+    - 鐢ㄦ埛缁熻鎿嶄綔
     
-    功能：
-    - 用户CRUD操作
-    - 用户查询操作
-    - 用户统计操作
-    
-    使用方法：
-        user_repo = UserRepository(db)
+    浣跨敤鏂规硶锛?        user_repo = UserRepository(db)
         user = user_repo.get_by_username("admin")
     """
     
     def __init__(self, db: Session):
         """
-        初始化用户数据访问层
+        鍒濆鍖栫敤鎴锋暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, user: User) -> User:
         """
-        创建用户
+        鍒涘缓鐢ㄦ埛
         
         Args:
-            user: 用户对象
+            user: 鐢ㄦ埛瀵硅薄
         
         Returns:
-            User: 创建的用户对象
-        """
-        logger.info(f"创建用户: username={user.username}, tenant_id={user.tenant_id}")
+            User: 鍒涘缓鐨勭敤鎴峰璞?        """
+        logger.info(f"鍒涘缓鐢ㄦ埛: username={user.username}, tenant_id={user.tenant_id}")
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
@@ -63,82 +55,79 @@ class UserRepository:
     
     def get_by_id(self, user_id: str) -> Optional[User]:
         """
-        根据ID获取用户
+        鏍规嵁ID鑾峰彇鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            Optional[User]: 用户对象，不存在返回None
+            Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(User).filter(User.id == user_id).first()
     
     def get_by_username(self, username: str) -> Optional[User]:
         """
-        根据用户名获取用户
-        
+        鏍规嵁鐢ㄦ埛鍚嶈幏鍙栫敤鎴?        
         Args:
-            username: 用户名
-        
+            username: 鐢ㄦ埛鍚?        
         Returns:
-            Optional[User]: 用户对象，不存在返回None
+            Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(User).filter(User.username == username).first()
     
     def get_by_email(self, email: str) -> Optional[User]:
         """
-        根据邮箱获取用户
+        鏍规嵁閭鑾峰彇鐢ㄦ埛
         
         Args:
-            email: 邮箱
+            email: 閭
         
         Returns:
-            Optional[User]: 用户对象，不存在返回None
+            Optional[User]: 鐢ㄦ埛瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(User).filter(User.email == email).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        根据租户ID获取用户列表
+        鏍规嵁绉熸埛ID鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[User]: 用户列表
+            List[User]: 鐢ㄦ埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(User).filter(User.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_by_department_id(self, department_id: str, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        根据部门ID获取用户列表
+        鏍规嵁閮ㄩ棬ID鑾峰彇鐢ㄦ埛鍒楄〃
         
         Args:
-            department_id: 部门ID
-            page: 页码
-            page_size: 每页数量
+            department_id: 閮ㄩ棬ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[User]: 用户列表
+            List[User]: 鐢ㄦ埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(User).filter(User.dept_id == department_id).offset(offset).limit(page_size).all()
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        搜索用户
+        鎼滅储鐢ㄦ埛
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[User]: 用户列表
+            List[User]: 鐢ㄦ埛鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(User).filter(
@@ -157,44 +146,43 @@ class UserRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[User]:
         """
-        获取所有用户
-        
+        鑾峰彇鎵€鏈夌敤鎴?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[User]: 用户列表
+            List[User]: 鐢ㄦ埛鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(User).offset(offset).limit(page_size).all()
     
     def update(self, user: User) -> User:
         """
-        更新用户
+        鏇存柊鐢ㄦ埛
         
         Args:
-            user: 用户对象
+            user: 鐢ㄦ埛瀵硅薄
         
         Returns:
-            User: 更新后的用户对象
+            User: 鏇存柊鍚庣殑鐢ㄦ埛瀵硅薄
         """
-        logger.info(f"更新用户: user_id={user.id}")
+        logger.info(f"鏇存柊鐢ㄦ埛: user_id={user.id}")
         self.db.commit()
         self.db.refresh(user)
         return user
     
     def delete(self, user_id: str) -> bool:
         """
-        删除用户
+        鍒犻櫎鐢ㄦ埛
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除用户: user_id={user_id}")
+        logger.info(f"鍒犻櫎鐢ㄦ埛: user_id={user_id}")
         user = self.get_by_id(user_id)
         if not user:
             return False
@@ -205,57 +193,54 @@ class UserRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户用户数量
+        缁熻绉熸埛鐢ㄦ埛鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 用户数量
+            int: 鐢ㄦ埛鏁伴噺
         """
         return self.db.query(User).filter(User.tenant_id == tenant_id).count()
     
     def count_by_department(self, department_id: str) -> int:
         """
-        统计部门用户数量
+        缁熻閮ㄩ棬鐢ㄦ埛鏁伴噺
         
         Args:
-            department_id: 部门ID
+            department_id: 閮ㄩ棬ID
         
         Returns:
-            int: 用户数量
+            int: 鐢ㄦ埛鏁伴噺
         """
         return self.db.query(User).filter(User.department_id == department_id).count()
     
     def count_all(self) -> int:
         """
-        统计所有用户数量
-        
+        缁熻鎵€鏈夌敤鎴锋暟閲?        
         Returns:
-            int: 用户数量
+            int: 鐢ㄦ埛鏁伴噺
         """
         return self.db.query(User).count()
     
     def exists_by_username(self, username: str) -> bool:
         """
-        检查用户名是否存在
+        妫€鏌ョ敤鎴峰悕鏄惁瀛樺湪
         
         Args:
-            username: 用户名
-        
+            username: 鐢ㄦ埛鍚?        
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(User).filter(User.username == username).first() is not None
     
     def exists_by_email(self, email: str) -> bool:
         """
-        检查邮箱是否存在
-        
+        妫€鏌ラ偖绠辨槸鍚﹀瓨鍦?        
         Args:
-            email: 邮箱
+            email: 閭
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(User).filter(User.email == email).first() is not None

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-业务逻辑模块
+涓氬姟閫昏緫妯″潡
 
-功能说明：
-1. 认证服务
-2. Token管理服务
-3. 用户管理服务
+鍔熻兘璇存槑锛?1. 璁よ瘉鏈嶅姟
+2. Token绠＄悊鏈嶅姟
+3. 鐢ㄦ埛绠＄悊鏈嶅姟
 
-使用示例：
-    from app.services.auth_service import AuthService
+浣跨敤绀轰緥锛?    from app.services.auth_service import AuthService
     from app.services.token_service import TokenService
 """
 

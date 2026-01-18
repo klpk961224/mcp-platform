@@ -1,9 +1,7 @@
-"""
-租户相关模型
+﻿"""
+绉熸埛鐩稿叧妯″瀷
 
-包含：
-- Tenant: 租户表
-"""
+鍖呭惈锛?- Tenant: 绉熸埛琛?"""
 
 from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.orm import relationship
@@ -12,16 +10,16 @@ from ..base import BaseModel, TimestampMixin, FullModelMixin
 
 
 class Tenant(BaseModel, FullModelMixin):
-    """租户表"""
+    """绉熸埛琛?""
     
     __tablename__ = 'tenants'
     
-    name = Column(String(100), nullable=False, comment='租户名称')
-    code = Column(String(50), nullable=False, unique=True, comment='租户编码')
-    status = Column(String(20), nullable=False, default='active', comment='状态')
-    description = Column(Text, comment='描述')
+    name = Column(String(100), nullable=False, comment='绉熸埛鍚嶇О')
+    code = Column(String(50), nullable=False, unique=True, comment='绉熸埛缂栫爜')
+    status = Column(String(20), nullable=False, default='active', comment='鐘舵€?)
+    description = Column(Text, comment='鎻忚堪')
     
-    # 关系
+    # 鍏崇郴
     users = relationship('User', back_populates='tenant', cascade='all, delete-orphan')
     departments = relationship('Department', back_populates='tenant', cascade='all, delete-orphan')
     roles = relationship('Role', back_populates='tenant', cascade='all, delete-orphan')

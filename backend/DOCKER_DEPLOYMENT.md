@@ -19,9 +19,10 @@ docker-compose logs -f
 ## 服务列表
 - MySQL: 3306
 - Redis: 6379
-- auth-service: 8001
-- user-service: 8002
-- permission-service: 8003
-- system-service: 8004
-- support-service: 8005
-- business-service: 8006
+- auth-service: 28001
+- user-service: 28002
+- permission-service: 28003
+- system-service: 28004
+- support-service: 28005
+- business-service: 28006
+

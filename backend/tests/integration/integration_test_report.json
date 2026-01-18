@@ -1,9 +1,9 @@
 {
-  "test_time": "2026-01-19T00:01:03.387704",
+  "test_time": "2026-01-19T00:31:09.258257",
   "total_tests": 22,
-  "total_passed": 19,
-  "total_failed": 3,
-  "pass_rate": "86.36%",
+  "total_passed": 22,
+  "total_failed": 0,
+  "pass_rate": "100.00%",
   "health_checks": {
     "auth": true,
     "user": true,
@@ -21,8 +21,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.056549,
-      "timestamp": "2026-01-19T00:00:38.815163"
+      "response_time": 2.074022,
+      "timestamp": "2026-01-19T00:30:45.383518"
     },
     {
       "test_case": "健康检查-user",
@@ -32,8 +32,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.063958,
-      "timestamp": "2026-01-19T00:00:40.880265"
+      "response_time": 2.057127,
+      "timestamp": "2026-01-19T00:30:47.441994"
     },
     {
       "test_case": "健康检查-permission",
@@ -43,8 +43,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.082418,
-      "timestamp": "2026-01-19T00:00:42.963658"
+      "response_time": 2.043175,
+      "timestamp": "2026-01-19T00:30:49.487120"
     },
     {
       "test_case": "健康检查-system",
@@ -54,8 +54,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.064395,
-      "timestamp": "2026-01-19T00:00:45.029005"
+      "response_time": 2.03638,
+      "timestamp": "2026-01-19T00:30:51.524816"
     },
     {
       "test_case": "健康检查-support",
@@ -65,8 +65,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.068059,
-      "timestamp": "2026-01-19T00:00:47.098062"
+      "response_time": 2.03906,
+      "timestamp": "2026-01-19T00:30:53.565409"
     },
     {
       "test_case": "健康检查-business",
@@ -76,8 +76,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.043553,
-      "timestamp": "2026-01-19T00:00:49.142915"
+      "response_time": 2.042375,
+      "timestamp": "2026-01-19T00:30:55.608947"
     },
     {
       "test_case": "认证服务-用户登录",
@@ -85,10 +85,10 @@
       "url": "http://localhost:28001/api/v1/auth/login",
       "method": "POST",
       "expected_status": 200,
-      "actual_status": 401,
-      "success": false,
-      "response_time": 2.395522,
-      "timestamp": "2026-01-19T00:00:51.540939"
+      "actual_status": 200,
+      "success": true,
+      "response_time": 2.392665,
+      "timestamp": "2026-01-19T00:30:58.003661"
     },
     {
       "test_case": "认证服务-用户注册",
@@ -98,8 +98,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.273322,
-      "timestamp": "2026-01-19T00:00:51.815949"
+      "response_time": 0.299423,
+      "timestamp": "2026-01-19T00:30:58.305107"
     },
     {
       "test_case": "认证服务-用户登出",
@@ -109,8 +109,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.004911,
-      "timestamp": "2026-01-19T00:00:52.084807"
+      "response_time": 0.003483,
+      "timestamp": "2026-01-19T00:30:58.574775"
     },
     {
       "test_case": "认证服务-用户登录",
@@ -118,10 +118,10 @@
       "url": "http://localhost:28001/api/v1/auth/login",
       "method": "POST",
       "expected_status": 200,
-      "actual_status": 401,
-      "success": false,
-      "response_time": 0.288735,
-      "timestamp": "2026-01-19T00:00:52.374636"
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.283525,
+      "timestamp": "2026-01-19T00:30:58.859422"
     },
     {
       "test_case": "用户服务-获取用户列表",
@@ -131,8 +131,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.145201,
-      "timestamp": "2026-01-19T00:00:54.521097"
+      "response_time": 2.064859,
+      "timestamp": "2026-01-19T00:31:00.925842"
     },
     {
       "test_case": "用户服务-获取部门列表",
@@ -142,8 +142,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.015211,
-      "timestamp": "2026-01-19T00:00:54.537501"
+      "response_time": 0.00914,
+      "timestamp": "2026-01-19T00:31:00.936281"
     },
     {
       "test_case": "用户服务-获取租户列表",
@@ -153,8 +153,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.013152,
-      "timestamp": "2026-01-19T00:00:54.552162"
+      "response_time": 0.008647,
+      "timestamp": "2026-01-19T00:31:00.946169"
     },
     {
       "test_case": "权限服务-获取角色列表",
@@ -164,8 +164,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.197536,
-      "timestamp": "2026-01-19T00:00:56.751222"
+      "response_time": 2.076187,
+      "timestamp": "2026-01-19T00:31:03.023779"
     },
     {
       "test_case": "权限服务-获取权限列表",
@@ -175,8 +175,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.012431,
-      "timestamp": "2026-01-19T00:00:56.765205"
+      "response_time": 0.00742,
+      "timestamp": "2026-01-19T00:31:03.032527"
     },
     {
       "test_case": "权限服务-获取菜单列表",
@@ -186,8 +186,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.016888,
-      "timestamp": "2026-01-19T00:00:56.783807"
+      "response_time": 0.009299,
+      "timestamp": "2026-01-19T00:31:03.043580"
     },
     {
       "test_case": "系统服务-获取MCP工具列表",
@@ -197,8 +197,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.135642,
-      "timestamp": "2026-01-19T00:00:58.978494"
+      "response_time": 0.009028,
+      "timestamp": "2026-01-19T00:31:05.109715"
     },
     {
       "test_case": "系统服务-获取字典列表",
@@ -208,8 +208,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.017534,
-      "timestamp": "2026-01-19T00:00:58.997216"
+      "response_time": 0.009796,
+      "timestamp": "2026-01-19T00:31:05.120658"
     },
     {
       "test_case": "支撑服务-获取登录日志",
@@ -219,8 +219,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 2.186554,
-      "timestamp": "2026-01-19T00:01:01.185268"
+      "response_time": 2.052925,
+      "timestamp": "2026-01-19T00:31:07.174716"
     },
     {
       "test_case": "支撑服务-获取操作日志",
@@ -230,8 +230,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.013284,
-      "timestamp": "2026-01-19T00:01:01.200143"
+      "response_time": 0.013797,
+      "timestamp": "2026-01-19T00:31:07.190953"
     },
     {
       "test_case": "支撑服务-获取待办任务列表",
@@ -241,8 +241,8 @@
       "expected_status": 200,
       "actual_status": 200,
       "success": true,
-      "response_time": 0.004046,
-      "timestamp": "2026-01-19T00:01:01.208600"
+      "response_time": 0.005925,
+      "timestamp": "2026-01-19T00:31:07.204723"
     },
     {
       "test_case": "业务服务-获取工作流列表",
@@ -250,10 +250,10 @@
       "url": "http://localhost:28006/api/v1/workflows",
       "method": "GET",
       "expected_status": 200,
-      "actual_status": 500,
-      "success": false,
-      "response_time": 0.093629,
-      "timestamp": "2026-01-19T00:01:03.387240"
+      "actual_status": 200,
+      "success": true,
+      "response_time": 0.008136,
+      "timestamp": "2026-01-19T00:31:09.258010"
     }
   ]
 }

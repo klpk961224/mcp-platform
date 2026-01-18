@@ -1,8 +1,7 @@
-"""
-地区Service
+﻿"""
+鍦板尯Service
 
-提供地区业务逻辑层
-"""
+鎻愪緵鍦板尯涓氬姟閫昏緫灞?"""
 
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
@@ -12,16 +11,12 @@ from app.repositories.region_repository import RegionRepository
 
 
 class RegionService:
-    """地区Service"""
+    """鍦板尯Service"""
 
-    # 地区级别常量
-    LEVEL_PROVINCE = "province"  # 省
-    LEVEL_CITY = "city"  # 市
-    LEVEL_DISTRICT = "district"  # 区
-    LEVEL_STREET = "street"  # 街道
+    # 鍦板尯绾у埆甯搁噺
+    LEVEL_PROVINCE = "province"  # 鐪?    LEVEL_CITY = "city"  # 甯?    LEVEL_DISTRICT = "district"  # 鍖?    LEVEL_STREET = "street"  # 琛楅亾
 
-    # 状态常量
-    STATUS_ACTIVE = "active"
+    # 鐘舵€佸父閲?    STATUS_ACTIVE = "active"
     STATUS_INACTIVE = "inactive"
 
     def __init__(self, db: Session):
@@ -29,21 +24,21 @@ class RegionService:
         self.repository = RegionRepository(db)
 
     def get_region_by_id(self, region_id: str) -> Optional[Dict[str, Any]]:
-        """根据ID获取地区"""
+        """鏍规嵁ID鑾峰彇鍦板尯"""
         region = self.repository.get_by_id(region_id)
         if not region:
             return None
         return self._to_dict(region)
 
     def get_region_by_code(self, code: str) -> Optional[Dict[str, Any]]:
-        """根据地区编码获取"""
+        """鏍规嵁鍦板尯缂栫爜鑾峰彇"""
         region = self.repository.get_by_code(code)
         if not region:
             return None
         return self._to_dict(region)
 
     def get_all_regions(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """获取所有地区"""
+        """鑾峰彇鎵€鏈夊湴鍖?""
         regions = self.repository.get_all(skip=skip, limit=limit)
         total = self.repository.count()
         return {
@@ -52,7 +47,7 @@ class RegionService:
         }
 
     def get_regions_by_level(self, level: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """根据地区级别获取地区"""
+        """鏍规嵁鍦板尯绾у埆鑾峰彇鍦板尯"""
         regions = self.repository.get_by_level(level, skip=skip, limit=limit)
         total = self.repository.count_by_level(level)
         return {
@@ -61,7 +56,7 @@ class RegionService:
         }
 
     def get_regions_by_parent(self, parent_id: Optional[str], skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """根据父级ID获取子地区"""
+        """鏍规嵁鐖剁骇ID鑾峰彇瀛愬湴鍖?""
         regions = self.repository.get_by_parent_id(parent_id, skip=skip, limit=limit)
         total = self.repository.count_by_parent(parent_id)
         return {
@@ -70,7 +65,7 @@ class RegionService:
         }
 
     def get_children(self, region_id: str, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
-        """获取子地区"""
+        """鑾峰彇瀛愬湴鍖?""
         regions = self.repository.get_children(region_id, skip=skip, limit=limit)
         total = self.repository.count_by_parent(region_id)
         return {
@@ -79,12 +74,12 @@ class RegionService:
         }
 
     def get_all_children(self, region_id: str) -> List[Dict[str, Any]]:
-        """获取所有子地区（递归）"""
+        """鑾峰彇鎵€鏈夊瓙鍦板尯锛堥€掑綊锛?""
         regions = self.repository.get_all_children(region_id)
         return [self._to_dict(r) for r in regions]
 
     def get_region_tree(self, parent_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """获取地区树"""
+        """鑾峰彇鍦板尯鏍?""
         return self.repository.get_tree(parent_id)
 
     def search_regions(
@@ -93,7 +88,7 @@ class RegionService:
         skip: int = 0,
         limit: int = 100
     ) -> Dict[str, Any]:
-        """搜索地区"""
+        """鎼滅储鍦板尯"""
         regions, total = self.repository.search(query_params, skip=skip, limit=limit)
         return {
             "items": [self._to_dict(r) for r in regions],
@@ -108,19 +103,19 @@ class RegionService:
         parent_id: Optional[str] = None,
         sort_order: int = 0
     ) -> Dict[str, Any]:
-        """创建地区"""
-        # 检查地区编码是否已存在
+        """鍒涘缓鍦板尯"""
+        # 妫€鏌ュ湴鍖虹紪鐮佹槸鍚﹀凡瀛樺湪
         existing = self.repository.get_by_code(code)
         if existing:
-            raise ValueError(f"地区编码 {code} 已存在")
+            raise ValueError(f"鍦板尯缂栫爜 {code} 宸插瓨鍦?)
 
-        # 验证父级ID
+        # 楠岃瘉鐖剁骇ID
         if parent_id:
             parent = self.repository.get_by_id(parent_id)
             if not parent:
-                raise ValueError(f"父级地区 {parent_id} 不存在")
+                raise ValueError(f"鐖剁骇鍦板尯 {parent_id} 涓嶅瓨鍦?)
 
-        # 创建地区
+        # 鍒涘缓鍦板尯
         region = Region(
             name=name,
             code=code,
@@ -143,12 +138,12 @@ class RegionService:
         sort_order: Optional[int] = None,
         status: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """更新地区"""
+        """鏇存柊鍦板尯"""
         region = self.repository.get_by_id(region_id)
         if not region:
             return None
 
-        # 更新字段
+        # 鏇存柊瀛楁
         if name is not None:
             region.name = name
         if code is not None:
@@ -166,23 +161,21 @@ class RegionService:
         return self._to_dict(region)
 
     def delete_region(self, region_id: str) -> bool:
-        """删除地区"""
+        """鍒犻櫎鍦板尯"""
         return self.repository.delete(region_id)
 
     def get_statistics(self) -> Dict[str, Any]:
-        """获取地区统计信息"""
+        """鑾峰彇鍦板尯缁熻淇℃伅"""
         total = self.repository.count()
 
-        # 按级别统计
-        level_stats = {}
+        # 鎸夌骇鍒粺璁?        level_stats = {}
         for level in [self.LEVEL_PROVINCE, self.LEVEL_CITY, self.LEVEL_DISTRICT, self.LEVEL_STREET]:
             level_stats[level] = self.repository.count_by_level(level)
 
-        # 按状态统计
-        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
+        # 鎸夌姸鎬佺粺璁?        active_count = self.repository.search({"status": self.STATUS_ACTIVE}, skip=0, limit=999999)[1]
         inactive_count = self.repository.search({"status": self.STATUS_INACTIVE}, skip=0, limit=999999)[1]
 
-        # 顶级地区数量
+        # 椤剁骇鍦板尯鏁伴噺
         top_level_count = self.repository.count_by_parent(None)
 
         return {
@@ -196,7 +189,7 @@ class RegionService:
         }
 
     def _to_dict(self, region: Region) -> Dict[str, Any]:
-        """转换为字典"""
+        """杞崲涓哄瓧鍏?""
         return {
             "id": region.id,
             "name": region.name,

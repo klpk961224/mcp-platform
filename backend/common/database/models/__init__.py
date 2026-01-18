@@ -1,7 +1,6 @@
-"""
-数据库模型模块
-
-导出所有数据库模型
+﻿"""
+鏁版嵁搴撴ā鍨嬫ā鍧?
+瀵煎嚭鎵€鏈夋暟鎹簱妯″瀷
 """
 
 from ..base import BaseModel
@@ -19,24 +18,24 @@ from .todo import (
 )
 
 __all__ = [
-    # 基础模型
+    # 鍩虹妯″瀷
     'BaseModel',
     
-    # 租户
+    # 绉熸埛
     'Tenant',
     
-    # 用户
+    # 鐢ㄦ埛
     'User',
     'Department',
     'Role',
     
-    # 权限
+    # 鏉冮檺
     'Permission',
     'Menu',
     'role_permissions',
     'role_menus',
     
-    # 系统
+    # 绯荤粺
     'MCPTool',
     'LoginLog',
     'OperationLog',
@@ -44,15 +43,14 @@ __all__ = [
     'DictItem',
     'SystemNotification',
     
-    # 工作流
-    'WorkflowDefinition',
+    # 宸ヤ綔娴?    'WorkflowDefinition',
     'WorkflowInstance',
     'WorkflowNode',
     'WorkflowTask',
     'WorkflowLog',
     'WorkflowTemplate',
     
-    # 待办任务
+    # 寰呭姙浠诲姟
     'TodoTask',
     'TodoTag',
     'TodoAttachment',

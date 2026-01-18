@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-角色数据访问层
+瑙掕壊鏁版嵁璁块棶灞?
+鍔熻兘璇存槑锛?1. 瑙掕壊CRUD鎿嶄綔
+2. 瑙掕壊鏉冮檺绠＄悊
+3. 瑙掕壊鑿滃崟绠＄悊
 
-功能说明：
-1. 角色CRUD操作
-2. 角色权限管理
-3. 角色菜单管理
-
-使用示例：
-    from app.repositories.role_repository import RoleRepository
+浣跨敤绀轰緥锛?    from app.repositories.role_repository import RoleRepository
     
     role_repo = RoleRepository(db)
     role = role_repo.get_by_code("admin")
@@ -24,38 +21,33 @@ from common.database.models.user import Role
 
 class RoleRepository:
     """
-    角色数据访问层
+    瑙掕壊鏁版嵁璁块棶灞?    
+    鍔熻兘锛?    - 瑙掕壊CRUD鎿嶄綔
+    - 瑙掕壊鏉冮檺绠＄悊
+    - 瑙掕壊鑿滃崟绠＄悊
     
-    功能：
-    - 角色CRUD操作
-    - 角色权限管理
-    - 角色菜单管理
-    
-    使用方法：
-        role_repo = RoleRepository(db)
+    浣跨敤鏂规硶锛?        role_repo = RoleRepository(db)
         role = role_repo.get_by_code("admin")
     """
     
     def __init__(self, db: Session):
         """
-        初始化角色数据访问层
+        鍒濆鍖栬鑹叉暟鎹闂眰
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
     
     def create(self, role: Role) -> Role:
         """
-        创建角色
+        鍒涘缓瑙掕壊
         
         Args:
-            role: 角色对象
+            role: 瑙掕壊瀵硅薄
         
         Returns:
-            Role: 创建的角色对象
-        """
-        logger.info(f"创建角色: name={role.name}, code={role.code}, tenant_id={role.tenant_id}")
+            Role: 鍒涘缓鐨勮鑹插璞?        """
+        logger.info(f"鍒涘缓瑙掕壊: name={role.name}, code={role.code}, tenant_id={role.tenant_id}")
         self.db.add(role)
         self.db.commit()
         self.db.refresh(role)
@@ -63,81 +55,80 @@ class RoleRepository:
     
     def get_by_id(self, role_id: str) -> Optional[Role]:
         """
-        根据ID获取角色
+        鏍规嵁ID鑾峰彇瑙掕壊
         
         Args:
-            role_id: 角色ID
+            role_id: 瑙掕壊ID
         
         Returns:
-            Optional[Role]: 角色对象，不存在返回None
+            Optional[Role]: 瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Role).filter(Role.id == role_id).first()
     
     def get_by_code(self, code: str) -> Optional[Role]:
         """
-        根据编码获取角色
+        鏍规嵁缂栫爜鑾峰彇瑙掕壊
         
         Args:
-            code: 角色编码
+            code: 瑙掕壊缂栫爜
         
         Returns:
-            Optional[Role]: 角色对象，不存在返回None
+            Optional[Role]: 瑙掕壊瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.db.query(Role).filter(Role.code == code).first()
     
     def get_by_tenant_id(self, tenant_id: str, page: int = 1, page_size: int = 10) -> List[Role]:
         """
-        根据租户ID获取角色列表
+        鏍规嵁绉熸埛ID鑾峰彇瑙掕壊鍒楄〃
         
         Args:
-            tenant_id: 租户ID
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Role]: 角色列表
+            List[Role]: 瑙掕壊鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Role).filter(Role.tenant_id == tenant_id).offset(offset).limit(page_size).all()
     
     def get_by_user_id(self, user_id: str) -> List[Role]:
         """
-        根据用户ID获取角色列表
+        鏍规嵁鐢ㄦ埛ID鑾峰彇瑙掕壊鍒楄〃
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            List[Role]: 角色列表
+            List[Role]: 瑙掕壊鍒楄〃
         """
         return self.db.query(Role).join("users").filter(users.id == user_id).all()
     
     def get_system_roles(self, page: int = 1, page_size: int = 10) -> List[Role]:
         """
-        获取系统角色
+        鑾峰彇绯荤粺瑙掕壊
         
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Role]: 角色列表
+            List[Role]: 瑙掕壊鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Role).filter(Role.is_system == "1").offset(offset).limit(page_size).all()
     
     def search(self, keyword: str, tenant_id: Optional[str] = None, page: int = 1, page_size: int = 10) -> List[Role]:
         """
-        搜索角色
+        鎼滅储瑙掕壊
         
         Args:
-            keyword: 关键词
-            tenant_id: 租户ID（可选）
-            page: 页码
-            page_size: 每页数量
+            keyword: 鍏抽敭璇?            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Role]: 角色列表
+            List[Role]: 瑙掕壊鍒楄〃
         """
         offset = (page - 1) * page_size
         query = self.db.query(Role).filter(
@@ -155,55 +146,54 @@ class RoleRepository:
     
     def get_all(self, page: int = 1, page_size: int = 10) -> List[Role]:
         """
-        获取所有角色
-        
+        鑾峰彇鎵€鏈夎鑹?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[Role]: 角色列表
+            List[Role]: 瑙掕壊鍒楄〃
         """
         offset = (page - 1) * page_size
         return self.db.query(Role).offset(offset).limit(page_size).all()
     
     def update(self, role: Role) -> Role:
         """
-        更新角色
+        鏇存柊瑙掕壊
         
         Args:
-            role: 角色对象
+            role: 瑙掕壊瀵硅薄
         
         Returns:
-            Role: 更新后的角色对象
+            Role: 鏇存柊鍚庣殑瑙掕壊瀵硅薄
         """
-        logger.info(f"更新角色: role_id={role.id}")
+        logger.info(f"鏇存柊瑙掕壊: role_id={role.id}")
         self.db.commit()
         self.db.refresh(role)
         return role
     
     def delete(self, role_id: str) -> bool:
         """
-        删除角色
+        鍒犻櫎瑙掕壊
         
         Args:
-            role_id: 角色ID
+            role_id: 瑙掕壊ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除角色: role_id={role_id}")
+        logger.info(f"鍒犻櫎瑙掕壊: role_id={role_id}")
         role = self.get_by_id(role_id)
         if not role:
             return False
         
-        # 检查是否为系统角色
+        # 妫€鏌ユ槸鍚︿负绯荤粺瑙掕壊
         if role.is_system == "1":
-            raise ValueError("无法删除系统角色")
+            raise ValueError("鏃犳硶鍒犻櫎绯荤粺瑙掕壊")
         
-        # 检查是否有用户
+        # 妫€鏌ユ槸鍚︽湁鐢ㄦ埛
         if role.users:
-            raise ValueError("无法删除角色：该角色下存在用户")
+            raise ValueError("鏃犳硶鍒犻櫎瑙掕壊锛氳瑙掕壊涓嬪瓨鍦ㄧ敤鎴?)
         
         self.db.delete(role)
         self.db.commit()
@@ -211,25 +201,24 @@ class RoleRepository:
     
     def assign_permissions(self, role_id: str, permission_ids: List[str]) -> Role:
         """
-        分配权限
+        鍒嗛厤鏉冮檺
         
         Args:
-            role_id: 角色ID
-            permission_ids: 权限ID列表
+            role_id: 瑙掕壊ID
+            permission_ids: 鏉冮檺ID鍒楄〃
         
         Returns:
-            Role: 更新后的角色对象
+            Role: 鏇存柊鍚庣殑瑙掕壊瀵硅薄
         """
-        logger.info(f"分配权限: role_id={role_id}, permission_count={len(permission_ids)}")
+        logger.info(f"鍒嗛厤鏉冮檺: role_id={role_id}, permission_count={len(permission_ids)}")
         role = self.get_by_id(role_id)
         if not role:
-            raise ValueError("角色不存在")
+            raise ValueError("瑙掕壊涓嶅瓨鍦?)
         
-        # 清空现有权限
+        # 娓呯┖鐜版湁鏉冮檺
         role.permissions.clear()
         
-        # 添加新权限
-        from common.database.models.permission import Permission
+        # 娣诲姞鏂版潈闄?        from common.database.models.permission import Permission
         for permission_id in permission_ids:
             permission = self.db.query(Permission).filter(Permission.id == permission_id).first()
             if permission:
@@ -241,25 +230,24 @@ class RoleRepository:
     
     def assign_menus(self, role_id: str, menu_ids: List[str]) -> Role:
         """
-        分配菜单
+        鍒嗛厤鑿滃崟
         
         Args:
-            role_id: 角色ID
-            menu_ids: 菜单ID列表
+            role_id: 瑙掕壊ID
+            menu_ids: 鑿滃崟ID鍒楄〃
         
         Returns:
-            Role: 更新后的角色对象
+            Role: 鏇存柊鍚庣殑瑙掕壊瀵硅薄
         """
-        logger.info(f"分配菜单: role_id={role_id}, menu_count={len(menu_ids)}")
+        logger.info(f"鍒嗛厤鑿滃崟: role_id={role_id}, menu_count={len(menu_ids)}")
         role = self.get_by_id(role_id)
         if not role:
-            raise ValueError("角色不存在")
+            raise ValueError("瑙掕壊涓嶅瓨鍦?)
         
-        # 清空现有菜单
+        # 娓呯┖鐜版湁鑿滃崟
         role.menus.clear()
         
-        # 添加新菜单
-        from common.database.models.permission import Menu
+        # 娣诲姞鏂拌彍鍗?        from common.database.models.permission import Menu
         for menu_id in menu_ids:
             menu = self.db.query(Menu).filter(Menu.id == menu_id).first()
             if menu:
@@ -271,47 +259,45 @@ class RoleRepository:
     
     def count_by_tenant(self, tenant_id: str) -> int:
         """
-        统计租户角色数量
+        缁熻绉熸埛瑙掕壊鏁伴噺
         
         Args:
-            tenant_id: 租户ID
+            tenant_id: 绉熸埛ID
         
         Returns:
-            int: 角色数量
+            int: 瑙掕壊鏁伴噺
         """
         return self.db.query(Role).filter(Role.tenant_id == tenant_id).count()
     
     def count_all(self) -> int:
         """
-        统计所有角色数量
-        
+        缁熻鎵€鏈夎鑹叉暟閲?        
         Returns:
-            int: 角色数量
+            int: 瑙掕壊鏁伴噺
         """
         return self.db.query(Role).count()
     
     def exists_by_code(self, code: str) -> bool:
         """
-        检查角色编码是否存在
-        
+        妫€鏌ヨ鑹茬紪鐮佹槸鍚﹀瓨鍦?        
         Args:
-            code: 角色编码
+            code: 瑙掕壊缂栫爜
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Role).filter(Role.code == code).first() is not None
     
     def exists_by_name_in_tenant(self, name: str, tenant_id: str) -> bool:
         """
-        检查租户内角色名称是否存在
+        妫€鏌ョ鎴峰唴瑙掕壊鍚嶇О鏄惁瀛樺湪
         
         Args:
-            name: 角色名称
-            tenant_id: 租户ID
+            name: 瑙掕壊鍚嶇О
+            tenant_id: 绉熸埛ID
         
         Returns:
-            bool: 是否存在
+            bool: 鏄惁瀛樺湪
         """
         return self.db.query(Role).filter(
             and_(

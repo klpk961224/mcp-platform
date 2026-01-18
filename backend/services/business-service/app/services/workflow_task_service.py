@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-工作流任务服务
+宸ヤ綔娴佷换鍔℃湇鍔?
+鍔熻兘璇存槑锛?1. 宸ヤ綔娴佷换鍔＄鐞?2. 瀹℃壒浠诲姟澶勭悊
+3. 浠诲姟杞氦
 
-功能说明：
-1. 工作流任务管理
-2. 审批任务处理
-3. 任务转交
-
-使用示例：
-    from app.services.workflow_task_service import WorkflowTaskService
+浣跨敤绀轰緥锛?    from app.services.workflow_task_service import WorkflowTaskService
     
     task_service = WorkflowTaskService(db)
-    task = task_service.approve_task(task_id="task_123", comment="同意")
+    task = task_service.approve_task(task_id="task_123", comment="鍚屾剰")
 """
 
 from sqlalchemy.orm import Session
@@ -25,109 +21,103 @@ from app.repositories.workflow_repository import WorkflowRepository
 
 class WorkflowTaskService:
     """
-    工作流任务服务
+    宸ヤ綔娴佷换鍔℃湇鍔?    
+    鍔熻兘锛?    - 宸ヤ綔娴佷换鍔＄鐞?    - 瀹℃壒浠诲姟澶勭悊
+    - 浠诲姟杞氦
     
-    功能：
-    - 工作流任务管理
-    - 审批任务处理
-    - 任务转交
-    
-    使用方法：
-        task_service = WorkflowTaskService(db)
-        task = task_service.approve_task(task_id="task_123", comment="同意")
+    浣跨敤鏂规硶锛?        task_service = WorkflowTaskService(db)
+        task = task_service.approve_task(task_id="task_123", comment="鍚屾剰")
     """
     
     def __init__(self, db: Session):
         """
-        初始化工作流任务服务
+        鍒濆鍖栧伐浣滄祦浠诲姟鏈嶅姟
         
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.task_repo = WorkflowTaskRepository(db)
         self.workflow_repo = WorkflowRepository(db)
     
     def get_task(self, task_id: str) -> Optional[WorkflowTask]:
         """
-        获取任务
+        鑾峰彇浠诲姟
         
         Args:
-            task_id: 任务ID
+            task_id: 浠诲姟ID
         
         Returns:
-            Optional[WorkflowTask]: 任务对象，不存在返回None
+            Optional[WorkflowTask]: 浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.task_repo.get_by_id(task_id)
     
     def get_user_tasks(self, user_id: str, status: Optional[str] = None,
                       page: int = 1, page_size: int = 10) -> List[WorkflowTask]:
         """
-        获取用户任务
+        鑾峰彇鐢ㄦ埛浠诲姟
         
         Args:
-            user_id: 用户ID
-            status: 状态（可选）
-            page: 页码
-            page_size: 每页数量
+            user_id: 鐢ㄦ埛ID
+            status: 鐘舵€侊紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTask]: 任务列表
+            List[WorkflowTask]: 浠诲姟鍒楄〃
         """
         return self.task_repo.get_user_tasks(user_id, status, page, page_size)
     
     def approve_task(self, task_id: str, comment: Optional[str] = None) -> Optional[WorkflowTask]:
         """
-        通过审批任务
+        閫氳繃瀹℃壒浠诲姟
         
         Args:
-            task_id: 任务ID
-            comment: 审批意见（可选）
+            task_id: 浠诲姟ID
+            comment: 瀹℃壒鎰忚锛堝彲閫夛級
         
         Returns:
-            Optional[WorkflowTask]: 更新后的任务对象，不存在返回None
+            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"通过审批任务: task_id={task_id}")
+        logger.info(f"閫氳繃瀹℃壒浠诲姟: task_id={task_id}")
         
         task = self.task_repo.get_by_id(task_id)
         if not task:
             return None
         
         if not task.is_pending():
-            raise ValueError("任务已处理，无法再次审批")
+            raise ValueError("浠诲姟宸插鐞嗭紝鏃犳硶鍐嶆瀹℃壒")
         
         task.approve(comment)
         task = self.task_repo.update(task)
         
-        # 检查工作流是否需要继续
-        self._check_workflow_continuation(task.workflow_id)
+        # 妫€鏌ュ伐浣滄祦鏄惁闇€瑕佺户缁?        self._check_workflow_continuation(task.workflow_id)
         
         return task
     
     def reject_task(self, task_id: str, comment: Optional[str] = None) -> Optional[WorkflowTask]:
         """
-        拒绝审批任务
+        鎷掔粷瀹℃壒浠诲姟
         
         Args:
-            task_id: 任务ID
-            comment: 审批意见（可选）
+            task_id: 浠诲姟ID
+            comment: 瀹℃壒鎰忚锛堝彲閫夛級
         
         Returns:
-            Optional[WorkflowTask]: 更新后的任务对象，不存在返回None
+            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"拒绝审批任务: task_id={task_id}")
+        logger.info(f"鎷掔粷瀹℃壒浠诲姟: task_id={task_id}")
         
         task = self.task_repo.get_by_id(task_id)
         if not task:
             return None
         
         if not task.is_pending():
-            raise ValueError("任务已处理，无法再次审批")
+            raise ValueError("浠诲姟宸插鐞嗭紝鏃犳硶鍐嶆瀹℃壒")
         
         task.reject(comment)
         task = self.task_repo.update(task)
         
-        # 拒绝后终止工作流
+        # 鎷掔粷鍚庣粓姝㈠伐浣滄祦
         workflow = self.workflow_repo.get_by_id(task.workflow_id)
         if workflow and workflow.is_running():
             workflow.terminate()
@@ -137,24 +127,24 @@ class WorkflowTaskService:
     
     def transfer_task(self, task_id: str, new_assignee_id: str, new_assignee_name: str) -> Optional[WorkflowTask]:
         """
-        转交任务
+        杞氦浠诲姟
         
         Args:
-            task_id: 任务ID
-            new_assignee_id: 新受理人ID
-            new_assignee_name: 新受理人名称
+            task_id: 浠诲姟ID
+            new_assignee_id: 鏂板彈鐞嗕汉ID
+            new_assignee_name: 鏂板彈鐞嗕汉鍚嶇О
         
         Returns:
-            Optional[WorkflowTask]: 更新后的任务对象，不存在返回None
+            Optional[WorkflowTask]: 鏇存柊鍚庣殑浠诲姟瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"转交任务: task_id={task_id}, new_assignee_id={new_assignee_id}")
+        logger.info(f"杞氦浠诲姟: task_id={task_id}, new_assignee_id={new_assignee_id}")
         
         task = self.task_repo.get_by_id(task_id)
         if not task:
             return None
         
         if not task.is_pending():
-            raise ValueError("任务已处理，无法转交")
+            raise ValueError("浠诲姟宸插鐞嗭紝鏃犳硶杞氦")
         
         task.transfer(new_assignee_id, new_assignee_name)
         return self.task_repo.update(task)
@@ -162,52 +152,47 @@ class WorkflowTaskService:
     def get_workflow_tasks(self, workflow_id: str, status: Optional[str] = None,
                           page: int = 1, page_size: int = 10) -> List[WorkflowTask]:
         """
-        获取工作流的任务
+        鑾峰彇宸ヤ綔娴佺殑浠诲姟
         
         Args:
-            workflow_id: 工作流ID
-            status: 状态（可选）
-            page: 页码
-            page_size: 每页数量
+            workflow_id: 宸ヤ綔娴両D
+            status: 鐘舵€侊紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTask]: 任务列表
+            List[WorkflowTask]: 浠诲姟鍒楄〃
         """
         return self.task_repo.get_workflow_tasks(workflow_id, status, page, page_size)
     
     def get_pending_tasks(self, page: int = 1, page_size: int = 10) -> List[WorkflowTask]:
         """
-        获取待处理任务
-        
+        鑾峰彇寰呭鐞嗕换鍔?        
         Args:
-            page: 页码
-            page_size: 每页数量
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[WorkflowTask]: 任务列表
+            List[WorkflowTask]: 浠诲姟鍒楄〃
         """
         return self.task_repo.get_pending_tasks(page, page_size)
     
     def _check_workflow_continuation(self, workflow_id: str):
         """
-        检查工作流是否需要继续
-        
+        妫€鏌ュ伐浣滄祦鏄惁闇€瑕佺户缁?        
         Args:
-            workflow_id: 工作流ID
+            workflow_id: 宸ヤ綔娴両D
         """
         workflow = self.workflow_repo.get_by_id(workflow_id)
         if not workflow:
             return
         
-        # 获取工作流的所有任务
-        tasks = self.task_repo.get_workflow_tasks(workflow_id)
+        # 鑾峰彇宸ヤ綔娴佺殑鎵€鏈変换鍔?        tasks = self.task_repo.get_workflow_tasks(workflow_id)
         
-        # 检查是否所有任务都已完成
-        all_finished = all(task.is_finished() for task in tasks)
+        # 妫€鏌ユ槸鍚︽墍鏈変换鍔￠兘宸插畬鎴?        all_finished = all(task.is_finished() for task in tasks)
         
         if all_finished:
-            # 检查是否有拒绝的任务
-            has_rejected = any(task.is_rejected() for task in tasks)
+            # 妫€鏌ユ槸鍚︽湁鎷掔粷鐨勪换鍔?            has_rejected = any(task.is_rejected() for task in tasks)
             
             if has_rejected:
                 workflow.terminate()
@@ -218,13 +203,13 @@ class WorkflowTaskService:
     
     def get_task_statistics(self, user_id: str) -> Dict[str, Any]:
         """
-        获取用户任务统计信息
+        鑾峰彇鐢ㄦ埛浠诲姟缁熻淇℃伅
         
         Args:
-            user_id: 用户ID
+            user_id: 鐢ㄦ埛ID
         
         Returns:
-            Dict[str, Any]: 统计信息
+            Dict[str, Any]: 缁熻淇℃伅
         """
         total = self.task_repo.count_by_user(user_id)
         pending = self.task_repo.count_by_user(user_id, "pending")
@@ -243,13 +228,13 @@ class WorkflowTaskService:
     
     def count_tasks(self, user_id: Optional[str] = None) -> int:
         """
-        统计任务数量
+        缁熻浠诲姟鏁伴噺
         
         Args:
-            user_id: 用户ID（可选）
+            user_id: 鐢ㄦ埛ID锛堝彲閫夛級
         
         Returns:
-            int: 任务数量
+            int: 浠诲姟鏁伴噺
         """
         if user_id:
             return self.task_repo.count_by_user(user_id)

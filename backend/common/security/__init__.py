@@ -1,20 +1,17 @@
-"""
-安全模块
+﻿"""
+瀹夊叏妯″潡
 
-导出：
-- create_access_token: 创建访问Token
-- create_refresh_token: 创建刷新Token
-- verify_token: 验证Token
-- decode_token: 解码Token
-- hash_password: 哈希密码
-- verify_password: 验证密码
-- check_password_strength: 检查密码强度
-- generate_api_key: 生成API Key
-- verify_api_key: 验证API Key
-- decode_api_key: 解码API Key
+瀵煎嚭锛?- create_access_token: 鍒涘缓璁块棶Token
+- create_refresh_token: 鍒涘缓鍒锋柊Token
+- verify_token: 楠岃瘉Token
+- decode_token: 瑙ｇ爜Token
+- hash_password: 鍝堝笇瀵嗙爜
+- verify_password: 楠岃瘉瀵嗙爜
+- check_password_strength: 妫€鏌ュ瘑鐮佸己搴?- generate_api_key: 鐢熸垚API Key
+- verify_api_key: 楠岃瘉API Key
+- decode_api_key: 瑙ｇ爜API Key
 
-使用示例：
-    from common.security import (
+浣跨敤绀轰緥锛?    from common.security import (
         create_access_token,
         verify_token,
         hash_password,
@@ -48,7 +45,7 @@ __all__ = [
     'verify_token',
     'decode_token',
     
-    # 密码
+    # 瀵嗙爜
     'hash_password',
     'verify_password',
     'check_password_strength',

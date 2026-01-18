@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-日志审计API路由
+鏃ュ織瀹¤API璺敱
 """
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
@@ -16,19 +16,19 @@ from app.core.config import settings
 from app.core.deps import get_db
 from app.services.log_service import LogService
 
-router = APIRouter(prefix="/logs", tags=["日志审计"])
+router = APIRouter(prefix="/logs", tags=["鏃ュ織瀹¤"])
 
 
-@router.get("/login", summary="获取登录日志列表")
+@router.get("/login", summary="鑾峰彇鐧诲綍鏃ュ織鍒楄〃")
 async def get_login_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    user_id: Optional[str] = Query(None, description="用户ID"),
-    tenant_id: Optional[str] = Query(None, description="租户ID"),
+    user_id: Optional[str] = Query(None, description="鐢ㄦ埛ID"),
+    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
     db: Session = Depends(get_db)
 ):
-    """获取登录日志列表"""
-    logger.info(f"获取登录日志列表: page={page}")
+    """鑾峰彇鐧诲綍鏃ュ織鍒楄〃"""
+    logger.info(f"鑾峰彇鐧诲綍鏃ュ織鍒楄〃: page={page}")
     
     try:
         log_service = LogService(db)
@@ -54,18 +54,18 @@ async def get_login_logs(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"获取登录日志列表异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取登录日志列表失败，请稍后重试")
+        logger.error(f"鑾峰彇鐧诲綍鏃ュ織鍒楄〃寮傚父: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鐧诲綍鏃ュ織鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/login/statistics", summary="获取登录统计信息")
+@router.get("/login/statistics", summary="鑾峰彇鐧诲綍缁熻淇℃伅")
 async def get_login_statistics(
-    tenant_id: str = Query(..., description="租户ID"),
-    days: int = Query(7, ge=1, le=30, description="统计天数"),
+    tenant_id: str = Query(..., description="绉熸埛ID"),
+    days: int = Query(7, ge=1, le=30, description="缁熻澶╂暟"),
     db: Session = Depends(get_db)
 ):
-    """获取登录统计信息"""
-    logger.info(f"获取登录统计信息: tenant_id={tenant_id}, days={days}")
+    """鑾峰彇鐧诲綍缁熻淇℃伅"""
+    logger.info(f"鑾峰彇鐧诲綍缁熻淇℃伅: tenant_id={tenant_id}, days={days}")
     
     try:
         log_service = LogService(db)
@@ -73,20 +73,20 @@ async def get_login_statistics(
         
         return statistics
     except Exception as e:
-        logger.error(f"获取登录统计信息异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取登录统计信息失败，请稍后重试")
+        logger.error(f"鑾峰彇鐧诲綍缁熻淇℃伅寮傚父: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鐧诲綍缁熻淇℃伅澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/operation", summary="获取操作日志列表")
+@router.get("/operation", summary="鑾峰彇鎿嶄綔鏃ュ織鍒楄〃")
 async def get_operation_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    user_id: Optional[str] = Query(None, description="用户ID"),
-    tenant_id: Optional[str] = Query(None, description="租户ID"),
+    user_id: Optional[str] = Query(None, description="鐢ㄦ埛ID"),
+    tenant_id: Optional[str] = Query(None, description="绉熸埛ID"),
     db: Session = Depends(get_db)
 ):
-    """获取操作日志列表"""
-    logger.info(f"获取操作日志列表: page={page}")
+    """鑾峰彇鎿嶄綔鏃ュ織鍒楄〃"""
+    logger.info(f"鑾峰彇鎿嶄綔鏃ュ織鍒楄〃: page={page}")
     
     try:
         log_service = LogService(db)
@@ -111,19 +111,19 @@ async def get_operation_logs(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"获取操作日志列表异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取操作日志列表失败，请稍后重试")
+        logger.error(f"鑾峰彇鎿嶄綔鏃ュ織鍒楄〃寮傚父: error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鎿嶄綔鏃ュ織鍒楄〃澶辫触锛岃绋嶅悗閲嶈瘯")
 
 
-@router.get("/operation/slow", summary="获取慢查询日志")
+@router.get("/operation/slow", summary="鑾峰彇鎱㈡煡璇㈡棩蹇?)
 async def get_slow_queries(
-    threshold: int = Query(1000, ge=100, description="阈值（毫秒）"),
+    threshold: int = Query(1000, ge=100, description="闃堝€硷紙姣锛?),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    """获取慢查询日志"""
-    logger.info(f"获取慢查询日志: threshold={threshold}")
+    """鑾峰彇鎱㈡煡璇㈡棩蹇?""
+    logger.info(f"鑾峰彇鎱㈡煡璇㈡棩蹇? threshold={threshold}")
     
     try:
         log_service = LogService(db)
@@ -139,5 +139,6 @@ async def get_slow_queries(
             "page_size": page_size
         }
     except Exception as e:
-        logger.error(f"获取慢查询日志异常: error={str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取慢查询日志失败，请稍后重试")
+        logger.error(f"鑾峰彇鎱㈡煡璇㈡棩蹇楀紓甯? error={str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="鑾峰彇鎱㈡煡璇㈡棩蹇楀け璐ワ紝璇风◢鍚庨噸璇?)
+

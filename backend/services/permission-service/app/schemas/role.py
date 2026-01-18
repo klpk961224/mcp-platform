@@ -1,5 +1,5 @@
-"""
-角色相关Schema
+﻿"""
+瑙掕壊鐩稿叧Schema
 """
 
 from pydantic import BaseModel, Field
@@ -8,22 +8,22 @@ from datetime import datetime
 
 
 class RoleBase(BaseModel):
-    """角色基础模型"""
+    """瑙掕壊鍩虹妯″瀷"""
     
-    name: str = Field(..., description="角色名称")
-    code: str = Field(..., description="角色编码")
-    description: Optional[str] = Field(None, description="描述")
-    status: str = Field(default="active", description="状态")
+    name: str = Field(..., description="瑙掕壊鍚嶇О")
+    code: str = Field(..., description="瑙掕壊缂栫爜")
+    description: Optional[str] = Field(None, description="鎻忚堪")
+    status: str = Field(default="active", description="鐘舵€?)
 
 
 class RoleCreate(RoleBase):
-    """创建角色"""
+    """鍒涘缓瑙掕壊"""
     
-    tenant_id: str = Field(..., description="租户ID")
+    tenant_id: str = Field(..., description="绉熸埛ID")
 
 
 class RoleUpdate(BaseModel):
-    """更新角色"""
+    """鏇存柊瑙掕壊"""
     
     name: Optional[str] = None
     description: Optional[str] = None
@@ -31,7 +31,7 @@ class RoleUpdate(BaseModel):
 
 
 class RoleResponse(RoleBase):
-    """角色响应"""
+    """瑙掕壊鍝嶅簲"""
     
     id: str
     tenant_id: str
@@ -44,7 +44,7 @@ class RoleResponse(RoleBase):
 
 
 class RoleListResponse(BaseModel):
-    """角色列表响应"""
+    """瑙掕壊鍒楄〃鍝嶅簲"""
     
     total: int
     items: List[RoleResponse]

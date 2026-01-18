@@ -1,26 +1,22 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-字典模型
+瀛楀吀妯″瀷
 
-功能说明：
-1. 字典分类管理
-2. 字典项管理
-3. 字典缓存
+鍔熻兘璇存槑锛?1. 瀛楀吀鍒嗙被绠＄悊
+2. 瀛楀吀椤圭鐞?3. 瀛楀吀缂撳瓨
 
-使用示例：
-    from app.models.dict import Dict, DictItem
+浣跨敤绀轰緥锛?    from app.models.dict import Dict, DictItem
     
-    # 创建字典
+    # 鍒涘缓瀛楀吀
     dict = Dict(
-        name="用户状态",
+        name="鐢ㄦ埛鐘舵€?,
         code="user_status",
-        description="用户状态字典"
+        description="鐢ㄦ埛鐘舵€佸瓧鍏?
     )
     
-    # 创建字典项
-    item = DictItem(
+    # 鍒涘缓瀛楀吀椤?    item = DictItem(
         dict_id=dict.id,
-        label="激活",
+        label="婵€娲?,
         value="active",
         sort_order=1
     )
@@ -35,44 +31,40 @@ from common.database.base import BaseModel
 
 class Dict(BaseModel):
     """
-    字典模型
+    瀛楀吀妯″瀷
     
-    功能：
-    - 字典分类管理
-    - 字字典项管理
+    鍔熻兘锛?    - 瀛楀吀鍒嗙被绠＄悊
+    - 瀛楀瓧鍏搁」绠＄悊
     
-    属性说明：
-    - id: 字典ID（主键）
-    - tenant_id: 租户ID
-    - name: 字典名称
-    - code: 字典编码（唯一）
-    - description: 字典描述
-    - is_system: 是否系统字典（不可删除）
-    - status: 状态（active/inactive）
-    - created_at: 创建时间
-    - updated_at: 更新时间
+    灞炴€ц鏄庯細
+    - id: 瀛楀吀ID锛堜富閿級
+    - tenant_id: 绉熸埛ID
+    - name: 瀛楀吀鍚嶇О
+    - code: 瀛楀吀缂栫爜锛堝敮涓€锛?    - description: 瀛楀吀鎻忚堪
+    - is_system: 鏄惁绯荤粺瀛楀吀锛堜笉鍙垹闄わ級
+    - status: 鐘舵€侊紙active/inactive锛?    - created_at: 鍒涘缓鏃堕棿
+    - updated_at: 鏇存柊鏃堕棿
     """
     
     __tablename__ = "dicts"
     
-    # 基本信息
-    tenant_id = Column(String(64), nullable=False, index=True, comment="租户ID")
-    name = Column(String(100), nullable=False, comment="字典名称")
-    code = Column(String(50), nullable=False, unique=True, index=True, comment="字典编码")
-    description = Column(Text, nullable=True, comment="字典描述")
+    # 鍩烘湰淇℃伅
+    tenant_id = Column(String(64), nullable=False, index=True, comment="绉熸埛ID")
+    name = Column(String(100), nullable=False, comment="瀛楀吀鍚嶇О")
+    code = Column(String(50), nullable=False, unique=True, index=True, comment="瀛楀吀缂栫爜")
+    description = Column(Text, nullable=True, comment="瀛楀吀鎻忚堪")
     
-    # 状态信息
-    is_system = Column(Boolean, nullable=False, default=False, comment="是否系统字典")
-    status = Column(String(20), nullable=False, default="active", comment="状态")
+    # 鐘舵€佷俊鎭?    is_system = Column(Boolean, nullable=False, default=False, comment="鏄惁绯荤粺瀛楀吀")
+    status = Column(String(20), nullable=False, default="active", comment="鐘舵€?)
     
-    # 关系
+    # 鍏崇郴
     items = relationship("DictItem", back_populates="dict", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Dict(id={self.id}, name={self.name}, code={self.code})>"
     
     def to_dict(self):
-        """转换为字典"""
+        """杞崲涓哄瓧鍏?""
         return {
             "id": self.id,
             "tenant_id": self.tenant_id,
@@ -90,45 +82,36 @@ class Dict(BaseModel):
 
 class DictItem(BaseModel):
     """
-    字典项模型
-    
-    功能：
-    - 字典项管理
-    
-    属性说明：
-    - id: 字典项ID（主键）
-    - dict_id: 字典ID（外键）
-    - label: 字典项标签
-    - value: 字典项值
-    - description: 字典项描述
-    - sort_order: 排序
-    - is_default: 是否默认值
-    - status: 状态（active/inactive）
-    - created_at: 创建时间
-    - updated_at: 更新时间
+    瀛楀吀椤规ā鍨?    
+    鍔熻兘锛?    - 瀛楀吀椤圭鐞?    
+    灞炴€ц鏄庯細
+    - id: 瀛楀吀椤笽D锛堜富閿級
+    - dict_id: 瀛楀吀ID锛堝閿級
+    - label: 瀛楀吀椤规爣绛?    - value: 瀛楀吀椤瑰€?    - description: 瀛楀吀椤规弿杩?    - sort_order: 鎺掑簭
+    - is_default: 鏄惁榛樿鍊?    - status: 鐘舵€侊紙active/inactive锛?    - created_at: 鍒涘缓鏃堕棿
+    - updated_at: 鏇存柊鏃堕棿
     """
     
     __tablename__ = "dict_items"
     
-    # 基本信息
-    dict_id = Column(String(64), ForeignKey("dicts.id"), nullable=False, index=True, comment="字典ID")
-    label = Column(String(100), nullable=False, comment="字典项标签")
-    value = Column(String(100), nullable=False, comment="字典项值")
-    description = Column(Text, nullable=True, comment="字典项描述")
+    # 鍩烘湰淇℃伅
+    dict_id = Column(String(64), ForeignKey("dicts.id"), nullable=False, index=True, comment="瀛楀吀ID")
+    label = Column(String(100), nullable=False, comment="瀛楀吀椤规爣绛?)
+    value = Column(String(100), nullable=False, comment="瀛楀吀椤瑰€?)
+    description = Column(Text, nullable=True, comment="瀛楀吀椤规弿杩?)
     
-    # 排序和状态
-    sort_order = Column(Integer, nullable=False, default=0, comment="排序")
-    is_default = Column(Boolean, nullable=False, default=False, comment="是否默认值")
-    status = Column(String(20), nullable=False, default="active", comment="状态")
+    # 鎺掑簭鍜岀姸鎬?    sort_order = Column(Integer, nullable=False, default=0, comment="鎺掑簭")
+    is_default = Column(Boolean, nullable=False, default=False, comment="鏄惁榛樿鍊?)
+    status = Column(String(20), nullable=False, default="active", comment="鐘舵€?)
     
-    # 关系
+    # 鍏崇郴
     dict = relationship("Dict", back_populates="items")
     
     def __repr__(self):
         return f"<DictItem(id={self.id}, label={self.label}, value={self.value})>"
     
     def to_dict(self):
-        """转换为字典"""
+        """杞崲涓哄瓧鍏?""
         return {
             "id": self.id,
             "dict_id": self.dict_id,

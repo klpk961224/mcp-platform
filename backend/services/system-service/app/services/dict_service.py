@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-字典服务
+瀛楀吀鏈嶅姟
 
-功能说明：
-1. 字典CRUD操作
-2. 字典项CRUD操作
-3. 字典查询操作
+鍔熻兘璇存槑锛?1. 瀛楀吀CRUD鎿嶄綔
+2. 瀛楀吀椤笴RUD鎿嶄綔
+3. 瀛楀吀鏌ヨ鎿嶄綔
 
-使用示例：
-    from app.services.dict_service import DictService
+浣跨敤绀轰緥锛?    from app.services.dict_service import DictService
     
     dict_service = DictService(db)
     dicts = dict_service.get_dict_by_type("user_status")
@@ -24,95 +22,89 @@ from app.repositories.dict_repository import DictRepository, DictItemRepository
 
 class DictService:
     """
-    字典服务
+    瀛楀吀鏈嶅姟
     
-    功能：
-    - 字典CRUD操作
-    - 字典项CRUD操作
-    - 字典查询操作
+    鍔熻兘锛?    - 瀛楀吀CRUD鎿嶄綔
+    - 瀛楀吀椤笴RUD鎿嶄綔
+    - 瀛楀吀鏌ヨ鎿嶄綔
     
-    使用方法：
-        dict_service = DictService(db)
+    浣跨敤鏂规硶锛?        dict_service = DictService(db)
         dicts = dict_service.get_dict_by_type("user_status")
     """
     
     def __init__(self, db: Session):
         """
-        初始化字典服务
-        
+        鍒濆鍖栧瓧鍏告湇鍔?        
         Args:
-            db: 数据库会话
-        """
+            db: 鏁版嵁搴撲細璇?        """
         self.db = db
         self.dict_repo = DictRepository(db)
         self.dict_item_repo = DictItemRepository(db)
     
     def create_dict(self, dict_data: DictType[str, Any]) -> DictModel:
         """
-        创建字典
+        鍒涘缓瀛楀吀
         
         Args:
-            dict_data: 字典数据
+            dict_data: 瀛楀吀鏁版嵁
         
         Returns:
-            DictModel: 创建的字典对象
-        
+            DictModel: 鍒涘缓鐨勫瓧鍏稿璞?        
         Raises:
-            ValueError: 字典类型已存在
-        """
-        logger.info(f"创建字典: type={dict_data.get('type')}, name={dict_data.get('name')}")
+            ValueError: 瀛楀吀绫诲瀷宸插瓨鍦?        """
+        logger.info(f"鍒涘缓瀛楀吀: type={dict_data.get('type')}, name={dict_data.get('name')}")
         
-        # 检查字典类型是否已存在
+        # 妫€鏌ュ瓧鍏哥被鍨嬫槸鍚﹀凡瀛樺湪
         existing = self.dict_repo.get_by_type(dict_data.get("type"))
         if existing:
-            raise ValueError("字典类型已存在")
+            raise ValueError("瀛楀吀绫诲瀷宸插瓨鍦?)
         
-        # 创建字典
+        # 鍒涘缓瀛楀吀
         dict_obj = DictModel(**dict_data)
         return self.dict_repo.create(dict_obj)
     
     def get_dict(self, dict_id: str) -> Optional[DictModel]:
         """
-        获取字典
+        鑾峰彇瀛楀吀
         
         Args:
-            dict_id: 字典ID
+            dict_id: 瀛楀吀ID
         
         Returns:
-            Optional[DictModel]: 字典对象，不存在返回None
+            Optional[DictModel]: 瀛楀吀瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.dict_repo.get_by_id(dict_id)
     
     def get_dict_by_type(self, dict_type: str) -> Optional[DictModel]:
         """
-        根据类型获取字典
+        鏍规嵁绫诲瀷鑾峰彇瀛楀吀
         
         Args:
-            dict_type: 字典类型
+            dict_type: 瀛楀吀绫诲瀷
         
         Returns:
-            Optional[DictModel]: 字典对象，不存在返回None
+            Optional[DictModel]: 瀛楀吀瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
         return self.dict_repo.get_by_type(dict_type)
     
     def update_dict(self, dict_id: str, dict_data: DictType[str, Any]) -> Optional[DictModel]:
         """
-        更新字典
+        鏇存柊瀛楀吀
         
         Args:
-            dict_id: 字典ID
-            dict_data: 字典数据
+            dict_id: 瀛楀吀ID
+            dict_data: 瀛楀吀鏁版嵁
         
         Returns:
-            Optional[DictModel]: 更新后的字典对象，不存在返回None
+            Optional[DictModel]: 鏇存柊鍚庣殑瀛楀吀瀵硅薄锛屼笉瀛樺湪杩斿洖None
         """
-        logger.info(f"更新字典: dict_id={dict_id}")
+        logger.info(f"鏇存柊瀛楀吀: dict_id={dict_id}")
         
         dict_obj = self.dict_repo.get_by_id(dict_id)
         if not dict_obj:
             return None
         
-        # 更新字典
+        # 鏇存柊瀛楀吀
         for key, value in dict_data.items():
             if hasattr(dict_obj, key):
                 setattr(dict_obj, key, value)
@@ -121,30 +113,30 @@ class DictService:
     
     def delete_dict(self, dict_id: str) -> bool:
         """
-        删除字典
+        鍒犻櫎瀛楀吀
         
         Args:
-            dict_id: 字典ID
+            dict_id: 瀛楀吀ID
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除字典: dict_id={dict_id}")
+        logger.info(f"鍒犻櫎瀛楀吀: dict_id={dict_id}")
         return self.dict_repo.delete(dict_id)
     
     def list_dicts(self, tenant_id: Optional[str] = None, keyword: Optional[str] = None,
                    page: int = 1, page_size: int = 10) -> List[DictModel]:
         """
-        获取字典列表
+        鑾峰彇瀛楀吀鍒楄〃
         
         Args:
-            tenant_id: 租户ID（可选）
-            keyword: 搜索关键词（可选）
-            page: 页码
-            page_size: 每页数量
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
+            keyword: 鎼滅储鍏抽敭璇嶏紙鍙€夛級
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DictModel]: 字典列表
+            List[DictModel]: 瀛楀吀鍒楄〃
         """
         if keyword:
             return self.dict_repo.search(keyword, tenant_id, page, page_size)
@@ -155,13 +147,13 @@ class DictService:
     
     def count_dicts(self, tenant_id: Optional[str] = None) -> int:
         """
-        统计字典数量
+        缁熻瀛楀吀鏁伴噺
         
         Args:
-            tenant_id: 租户ID（可选）
+            tenant_id: 绉熸埛ID锛堝彲閫夛級
         
         Returns:
-            int: 字典数量
+            int: 瀛楀吀鏁伴噺
         """
         if tenant_id:
             return self.dict_repo.count_by_tenant(tenant_id)
@@ -170,87 +162,75 @@ class DictService:
     
     def create_dict_item(self, dict_id: str, dict_item_data: DictType[str, Any]) -> DictItem:
         """
-        创建字典项
-        
+        鍒涘缓瀛楀吀椤?        
         Args:
-            dict_id: 字典ID
-            dict_item_data: 字典项数据
-        
+            dict_id: 瀛楀吀ID
+            dict_item_data: 瀛楀吀椤规暟鎹?        
         Returns:
-            DictItem: 创建的字典项对象
+            DictItem: 鍒涘缓鐨勫瓧鍏搁」瀵硅薄
         
         Raises:
-            ValueError: 字典不存在
-        """
-        logger.info(f"创建字典项: dict_id={dict_id}, label={dict_item_data.get('label')}")
+            ValueError: 瀛楀吀涓嶅瓨鍦?        """
+        logger.info(f"鍒涘缓瀛楀吀椤? dict_id={dict_id}, label={dict_item_data.get('label')}")
         
-        # 检查字典是否存在
-        dict_obj = self.dict_repo.get_by_id(dict_id)
+        # 妫€鏌ュ瓧鍏告槸鍚﹀瓨鍦?        dict_obj = self.dict_repo.get_by_id(dict_id)
         if not dict_obj:
-            raise ValueError("字典不存在")
+            raise ValueError("瀛楀吀涓嶅瓨鍦?)
         
-        # 创建字典项
-        dict_item_data["dict_id"] = dict_id
+        # 鍒涘缓瀛楀吀椤?        dict_item_data["dict_id"] = dict_id
         dict_item = DictItem(**dict_item_data)
         return self.dict_item_repo.create(dict_item)
     
     def get_dict_item(self, dict_item_id: str) -> Optional[DictItem]:
         """
-        获取字典项
-        
+        鑾峰彇瀛楀吀椤?        
         Args:
-            dict_item_id: 字典项ID
+            dict_item_id: 瀛楀吀椤笽D
         
         Returns:
-            Optional[DictItem]: 字典项对象，不存在返回None
+            Optional[DictItem]: 瀛楀吀椤瑰璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
         return self.dict_item_repo.get_by_id(dict_item_id)
     
     def get_dict_items(self, dict_id: str, page: int = 1, page_size: int = 10) -> List[DictItem]:
         """
-        获取字典的字典项列表
+        鑾峰彇瀛楀吀鐨勫瓧鍏搁」鍒楄〃
         
         Args:
-            dict_id: 字典ID
-            page: 页码
-            page_size: 每页数量
+            dict_id: 瀛楀吀ID
+            page: 椤电爜
+            page_size: 姣忛〉鏁伴噺
         
         Returns:
-            List[DictItem]: 字典项列表
-        """
+            List[DictItem]: 瀛楀吀椤瑰垪琛?        """
         return self.dict_item_repo.get_by_dict_id(dict_id, page, page_size)
     
     def get_dict_items_by_type(self, dict_type: str) -> List[DictItem]:
         """
-        根据字典类型获取字典项列表
-        
+        鏍规嵁瀛楀吀绫诲瀷鑾峰彇瀛楀吀椤瑰垪琛?        
         Args:
-            dict_type: 字典类型
+            dict_type: 瀛楀吀绫诲瀷
         
         Returns:
-            List[DictItem]: 字典项列表
-        """
+            List[DictItem]: 瀛楀吀椤瑰垪琛?        """
         return self.dict_item_repo.get_by_dict_type(dict_type)
     
     def update_dict_item(self, dict_item_id: str, dict_item_data: DictType[str, Any]) -> Optional[DictItem]:
         """
-        更新字典项
-        
+        鏇存柊瀛楀吀椤?        
         Args:
-            dict_item_id: 字典项ID
-            dict_item_data: 字典项数据
-        
+            dict_item_id: 瀛楀吀椤笽D
+            dict_item_data: 瀛楀吀椤规暟鎹?        
         Returns:
-            Optional[DictItem]: 更新后的字典项对象，不存在返回None
+            Optional[DictItem]: 鏇存柊鍚庣殑瀛楀吀椤瑰璞★紝涓嶅瓨鍦ㄨ繑鍥濶one
         """
-        logger.info(f"更新字典项: dict_item_id={dict_item_id}")
+        logger.info(f"鏇存柊瀛楀吀椤? dict_item_id={dict_item_id}")
         
         dict_item = self.dict_item_repo.get_by_id(dict_item_id)
         if not dict_item:
             return None
         
-        # 更新字典项
-        for key, value in dict_item_data.items():
+        # 鏇存柊瀛楀吀椤?        for key, value in dict_item_data.items():
             if hasattr(dict_item, key):
                 setattr(dict_item, key, value)
         
@@ -258,25 +238,23 @@ class DictService:
     
     def delete_dict_item(self, dict_item_id: str) -> bool:
         """
-        删除字典项
-        
+        鍒犻櫎瀛楀吀椤?        
         Args:
-            dict_item_id: 字典项ID
+            dict_item_id: 瀛楀吀椤笽D
         
         Returns:
-            bool: 删除是否成功
+            bool: 鍒犻櫎鏄惁鎴愬姛
         """
-        logger.info(f"删除字典项: dict_item_id={dict_item_id}")
+        logger.info(f"鍒犻櫎瀛楀吀椤? dict_item_id={dict_item_id}")
         return self.dict_item_repo.delete(dict_item_id)
     
     def count_dict_items(self, dict_id: str) -> int:
         """
-        统计字典的字典项数量
+        缁熻瀛楀吀鐨勫瓧鍏搁」鏁伴噺
         
         Args:
-            dict_id: 字典ID
+            dict_id: 瀛楀吀ID
         
         Returns:
-            int: 字典项数量
-        """
+            int: 瀛楀吀椤规暟閲?        """
         return self.dict_item_repo.count_by_dict(dict_id)

@@ -1,18 +1,12 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-初始化默认数据脚本
-
-功能：
-1. 创建默认租户
-2. 创建超级管理员账号
-3. 创建默认角色（超级管理员）
-4. 创建基础权限
-5. 创建默认菜单
-6. 分配角色和权限
-
-使用方法：
-    python scripts/init_data.py
+鍒濆鍖栭粯璁ゆ暟鎹剼鏈?
+鍔熻兘锛?1. 鍒涘缓榛樿绉熸埛
+2. 鍒涘缓瓒呯骇绠＄悊鍛樿处鍙?3. 鍒涘缓榛樿瑙掕壊锛堣秴绾х鐞嗗憳锛?4. 鍒涘缓鍩虹鏉冮檺
+5. 鍒涘缓榛樿鑿滃崟
+6. 鍒嗛厤瑙掕壊鍜屾潈闄?
+浣跨敤鏂规硶锛?    python scripts/init_data.py
 """
 
 import sys
@@ -20,18 +14,17 @@ import os
 import uuid
 from datetime import datetime
 
-# 添加项目根目录到Python路径
+# 娣诲姞椤圭洰鏍圭洰褰曞埌Python璺緞
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, project_root)
-# 添加backend目录到Python路径
+# 娣诲姞backend鐩綍鍒癙ython璺緞
 backend_root = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, backend_root)
 
 import pymysql
 from common.security.password import hash_password
 
-# 数据库连接配置
-db_config = {
+# 鏁版嵁搴撹繛鎺ラ厤缃?db_config = {
     'host': 'localhost',
     'port': 3306,
     'user': 'root',
@@ -42,23 +35,22 @@ db_config = {
 
 
 def init_default_data():
-    """初始化默认数据"""
+    """鍒濆鍖栭粯璁ゆ暟鎹?""
     print("=" * 60)
-    print("开始初始化默认数据...")
+    print("寮€濮嬪垵濮嬪寲榛樿鏁版嵁...")
     print("=" * 60)
     
     connection = None
     cursor = None
     
     try:
-        # 连接数据库
-        print("\n[1/6] 连接数据库...")
+        # 杩炴帴鏁版嵁搴?        print("\n[1/6] 杩炴帴鏁版嵁搴?..")
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor()
-        print("✅ 数据库连接成功")
+        print("鉁?鏁版嵁搴撹繛鎺ユ垚鍔?)
         
-        # 1. 创建默认租户
-        print("\n[2/6] 创建默认租户...")
+        # 1. 鍒涘缓榛樿绉熸埛
+        print("\n[2/6] 鍒涘缓榛樿绉熸埛...")
         tenant_id = str(uuid.uuid4())
         cursor.execute("""
             SELECT id FROM tenants WHERE code = 'default'
@@ -67,16 +59,15 @@ def init_default_data():
         
         if existing_tenant:
             tenant_id = existing_tenant[0]
-            print(f"✅ 默认租户已存在: {tenant_id}")
+            print(f"鉁?榛樿绉熸埛宸插瓨鍦? {tenant_id}")
         else:
             cursor.execute("""
                 INSERT INTO tenants (id, name, code, status, description, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (tenant_id, '默认租户', 'default', 'active', '系统默认租户', datetime.now(), datetime.now()))
-            print(f"✅ 默认租户创建成功: {tenant_id}")
+            """, (tenant_id, '榛樿绉熸埛', 'default', 'active', '绯荤粺榛樿绉熸埛', datetime.now(), datetime.now()))
+            print(f"鉁?榛樿绉熸埛鍒涘缓鎴愬姛: {tenant_id}")
         
-        # 2. 创建超级管理员
-        print("\n[3/6] 创建超级管理员...")
+        # 2. 鍒涘缓瓒呯骇绠＄悊鍛?        print("\n[3/6] 鍒涘缓瓒呯骇绠＄悊鍛?..")
         admin_id = str(uuid.uuid4())
         password_hash = hash_password('admin123456')
         
@@ -87,33 +78,33 @@ def init_default_data():
         
         if existing_admin:
             admin_id = existing_admin[0]
-            print(f"✅ 超级管理员已存在: {admin_id}")
+            print(f"鉁?瓒呯骇绠＄悊鍛樺凡瀛樺湪: {admin_id}")
         else:
             cursor.execute("""
                 INSERT INTO users (id, tenant_id, username, email, password, status, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (admin_id, tenant_id, 'admin', 'admin@example.com', password_hash, 'active', datetime.now(), datetime.now()))
-            print(f"✅ 超级管理员创建成功: {admin_id}")
+            print(f"鉁?瓒呯骇绠＄悊鍛樺垱寤烘垚鍔? {admin_id}")
         
-        # 3. 创建默认角色
-        print("\n[4/6] 创建默认角色...")
+        # 3. 鍒涘缓榛樿瑙掕壊
+        print("\n[4/6] 鍒涘缓榛樿瑙掕壊...")
         roles = [
             {
-                'name': '超级管理员',
+                'name': '瓒呯骇绠＄悊鍛?,
                 'code': 'super_admin',
-                'description': '系统超级管理员角色，拥有所有权限',
+                'description': '绯荤粺瓒呯骇绠＄悊鍛樿鑹诧紝鎷ユ湁鎵€鏈夋潈闄?,
                 'is_system': True
             },
             {
-                'name': '普通用户',
+                'name': '鏅€氱敤鎴?,
                 'code': 'user',
-                'description': '普通用户角色',
+                'description': '鏅€氱敤鎴疯鑹?,
                 'is_system': False
             },
             {
-                'name': '管理员',
+                'name': '绠＄悊鍛?,
                 'code': 'admin',
-                'description': '管理员角色',
+                'description': '绠＄悊鍛樿鑹?,
                 'is_system': False
             }
         ]
@@ -127,7 +118,7 @@ def init_default_data():
             
             if existing_role:
                 role_ids[role['code']] = existing_role[0]
-                print(f"✅ 角色已存在: {role['name']}")
+                print(f"鉁?瑙掕壊宸插瓨鍦? {role['name']}")
             else:
                 role_id = str(uuid.uuid4())
                 cursor.execute("""
@@ -135,104 +126,102 @@ def init_default_data():
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (role_id, tenant_id, role['name'], role['code'], role['description'], role['is_system'], 'active', datetime.now(), datetime.now()))
                 role_ids[role['code']] = role_id
-                print(f"✅ 角色创建成功: {role['name']}")
+                print(f"鉁?瑙掕壊鍒涘缓鎴愬姛: {role['name']}")
         
-        # 4. 分配角色给超级管理员
-        print("\n[5/6] 分配角色给超级管理员...")
+        # 4. 鍒嗛厤瑙掕壊缁欒秴绾х鐞嗗憳
+        print("\n[5/6] 鍒嗛厤瑙掕壊缁欒秴绾х鐞嗗憳...")
         cursor.execute("""
             SELECT id FROM user_roles WHERE user_id = %s AND role_id = %s
         """, (admin_id, role_ids['super_admin']))
         existing_user_role = cursor.fetchone()
         
         if existing_user_role:
-            print(f"✅ 角色已分配")
+            print(f"鉁?瑙掕壊宸插垎閰?)
         else:
             cursor.execute("""
                 INSERT INTO user_roles (id, user_id, role_id, created_at)
                 VALUES (%s, %s, %s, %s)
             """, (str(uuid.uuid4()), admin_id, role_ids['super_admin'], datetime.now()))
-            print(f"✅ 角色分配成功")
+            print(f"鉁?瑙掕壊鍒嗛厤鎴愬姛")
         
-        # 5. 创建基础权限
-        print("\n[6/6] 创建基础权限...")
+        # 5. 鍒涘缓鍩虹鏉冮檺
+        print("\n[6/6] 鍒涘缓鍩虹鏉冮檺...")
         permissions = [
-            # 用户管理
-            ('user:create', '创建用户', 'operation', '用户管理'),
-            ('user:read', '查看用户', 'operation', '用户管理'),
-            ('user:update', '更新用户', 'operation', '用户管理'),
-            ('user:delete', '删除用户', 'operation', '用户管理'),
-            ('user:export', '导出用户', 'operation', '用户管理'),
-            ('user:import', '导入用户', 'operation', '用户管理'),
+            # 鐢ㄦ埛绠＄悊
+            ('user:create', '鍒涘缓鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
+            ('user:read', '鏌ョ湅鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
+            ('user:update', '鏇存柊鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
+            ('user:delete', '鍒犻櫎鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
+            ('user:export', '瀵煎嚭鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
+            ('user:import', '瀵煎叆鐢ㄦ埛', 'operation', '鐢ㄦ埛绠＄悊'),
             
-            # 角色管理
-            ('role:create', '创建角色', 'operation', '角色管理'),
-            ('role:read', '查看角色', 'operation', '角色管理'),
-            ('role:update', '更新角色', 'operation', '角色管理'),
-            ('role:delete', '删除角色', 'operation', '角色管理'),
-            ('role:assign', '分配角色', 'operation', '角色管理'),
+            # 瑙掕壊绠＄悊
+            ('role:create', '鍒涘缓瑙掕壊', 'operation', '瑙掕壊绠＄悊'),
+            ('role:read', '鏌ョ湅瑙掕壊', 'operation', '瑙掕壊绠＄悊'),
+            ('role:update', '鏇存柊瑙掕壊', 'operation', '瑙掕壊绠＄悊'),
+            ('role:delete', '鍒犻櫎瑙掕壊', 'operation', '瑙掕壊绠＄悊'),
+            ('role:assign', '鍒嗛厤瑙掕壊', 'operation', '瑙掕壊绠＄悊'),
             
-            # 权限管理
-            ('permission:read', '查看权限', 'operation', '权限管理'),
-            ('permission:update', '更新权限', 'operation', '权限管理'),
+            # 鏉冮檺绠＄悊
+            ('permission:read', '鏌ョ湅鏉冮檺', 'operation', '鏉冮檺绠＄悊'),
+            ('permission:update', '鏇存柊鏉冮檺', 'operation', '鏉冮檺绠＄悊'),
             
-            # 菜单管理
-            ('menu:create', '创建菜单', 'operation', '菜单管理'),
-            ('menu:read', '查看菜单', 'operation', '菜单管理'),
-            ('menu:update', '更新菜单', 'operation', '菜单管理'),
-            ('menu:delete', '删除菜单', 'operation', '菜单管理'),
+            # 鑿滃崟绠＄悊
+            ('menu:create', '鍒涘缓鑿滃崟', 'operation', '鑿滃崟绠＄悊'),
+            ('menu:read', '鏌ョ湅鑿滃崟', 'operation', '鑿滃崟绠＄悊'),
+            ('menu:update', '鏇存柊鑿滃崟', 'operation', '鑿滃崟绠＄悊'),
+            ('menu:delete', '鍒犻櫎鑿滃崟', 'operation', '鑿滃崟绠＄悊'),
             
-            # 部门管理
-            ('department:create', '创建部门', 'operation', '部门管理'),
-            ('department:read', '查看部门', 'operation', '部门管理'),
-            ('department:update', '更新部门', 'operation', '部门管理'),
-            ('department:delete', '删除部门', 'operation', '部门管理'),
+            # 閮ㄩ棬绠＄悊
+            ('department:create', '鍒涘缓閮ㄩ棬', 'operation', '閮ㄩ棬绠＄悊'),
+            ('department:read', '鏌ョ湅閮ㄩ棬', 'operation', '閮ㄩ棬绠＄悊'),
+            ('department:update', '鏇存柊閮ㄩ棬', 'operation', '閮ㄩ棬绠＄悊'),
+            ('department:delete', '鍒犻櫎閮ㄩ棬', 'operation', '閮ㄩ棬绠＄悊'),
             
-            # 租户管理
-            ('tenant:create', '创建租户', 'operation', '租户管理'),
-            ('tenant:read', '查看租户', 'operation', '租户管理'),
-            ('tenant:update', '更新租户', 'operation', '租户管理'),
-            ('tenant:delete', '删除租户', 'operation', '租户管理'),
+            # 绉熸埛绠＄悊
+            ('tenant:create', '鍒涘缓绉熸埛', 'operation', '绉熸埛绠＄悊'),
+            ('tenant:read', '鏌ョ湅绉熸埛', 'operation', '绉熸埛绠＄悊'),
+            ('tenant:update', '鏇存柊绉熸埛', 'operation', '绉熸埛绠＄悊'),
+            ('tenant:delete', '鍒犻櫎绉熸埛', 'operation', '绉熸埛绠＄悊'),
             
-            # MCP工具管理
-            ('mcp:register', '注册MCP工具', 'operation', 'MCP工具管理'),
-            ('mcp:read', '查看MCP工具', 'operation', 'MCP工具管理'),
-            ('mcp:update', '更新MCP工具', 'operation', 'MCP工具管理'),
-            ('mcp:delete', '删除MCP工具', 'operation', 'MCP工具管理'),
-            ('mcp:execute', '执行MCP工具', 'operation', 'MCP工具管理'),
+            # MCP宸ュ叿绠＄悊
+            ('mcp:register', '娉ㄥ唽MCP宸ュ叿', 'operation', 'MCP宸ュ叿绠＄悊'),
+            ('mcp:read', '鏌ョ湅MCP宸ュ叿', 'operation', 'MCP宸ュ叿绠＄悊'),
+            ('mcp:update', '鏇存柊MCP宸ュ叿', 'operation', 'MCP宸ュ叿绠＄悊'),
+            ('mcp:delete', '鍒犻櫎MCP宸ュ叿', 'operation', 'MCP宸ュ叿绠＄悊'),
+            ('mcp:execute', '鎵цMCP宸ュ叿', 'operation', 'MCP宸ュ叿绠＄悊'),
             
-            # 数据源管理
-            ('datasource:create', '创建数据源', 'operation', '数据源管理'),
-            ('datasource:read', '查看数据源', 'operation', '数据源管理'),
-            ('datasource:update', '更新数据源', 'operation', '数据源管理'),
-            ('datasource:delete', '删除数据源', 'operation', '数据源管理'),
-            ('datasource:query', '查询数据源', 'operation', '数据源管理'),
+            # 鏁版嵁婧愮鐞?            ('datasource:create', '鍒涘缓鏁版嵁婧?, 'operation', '鏁版嵁婧愮鐞?),
+            ('datasource:read', '鏌ョ湅鏁版嵁婧?, 'operation', '鏁版嵁婧愮鐞?),
+            ('datasource:update', '鏇存柊鏁版嵁婧?, 'operation', '鏁版嵁婧愮鐞?),
+            ('datasource:delete', '鍒犻櫎鏁版嵁婧?, 'operation', '鏁版嵁婧愮鐞?),
+            ('datasource:query', '鏌ヨ鏁版嵁婧?, 'operation', '鏁版嵁婧愮鐞?),
             
-            # 字典管理
-            ('dict:create', '创建字典', 'operation', '字典管理'),
-            ('dict:read', '查看字典', 'operation', '字典管理'),
-            ('dict:update', '更新字典', 'operation', '字典管理'),
-            ('dict:delete', '删除字典', 'operation', '字典管理'),
+            # 瀛楀吀绠＄悊
+            ('dict:create', '鍒涘缓瀛楀吀', 'operation', '瀛楀吀绠＄悊'),
+            ('dict:read', '鏌ョ湅瀛楀吀', 'operation', '瀛楀吀绠＄悊'),
+            ('dict:update', '鏇存柊瀛楀吀', 'operation', '瀛楀吀绠＄悊'),
+            ('dict:delete', '鍒犻櫎瀛楀吀', 'operation', '瀛楀吀绠＄悊'),
             
-            # 日志管理
-            ('log:read', '查看日志', 'operation', '日志管理'),
-            ('log:export', '导出日志', 'operation', '日志管理'),
+            # 鏃ュ織绠＄悊
+            ('log:read', '鏌ョ湅鏃ュ織', 'operation', '鏃ュ織绠＄悊'),
+            ('log:export', '瀵煎嚭鏃ュ織', 'operation', '鏃ュ織绠＄悊'),
             
-            # 待办任务管理
-            ('todo:create', '创建待办任务', 'operation', '待办任务管理'),
-            ('todo:read', '查看待办任务', 'operation', '待办任务管理'),
-            ('todo:update', '更新待办任务', 'operation', '待办任务管理'),
-            ('todo:delete', '删除待办任务', 'operation', '待办任务管理'),
+            # 寰呭姙浠诲姟绠＄悊
+            ('todo:create', '鍒涘缓寰呭姙浠诲姟', 'operation', '寰呭姙浠诲姟绠＄悊'),
+            ('todo:read', '鏌ョ湅寰呭姙浠诲姟', 'operation', '寰呭姙浠诲姟绠＄悊'),
+            ('todo:update', '鏇存柊寰呭姙浠诲姟', 'operation', '寰呭姙浠诲姟绠＄悊'),
+            ('todo:delete', '鍒犻櫎寰呭姙浠诲姟', 'operation', '寰呭姙浠诲姟绠＄悊'),
             
-            # 工作流管理
-            ('workflow:create', '创建工作流', 'operation', '工作流管理'),
-            ('workflow:read', '查看工作流', 'operation', '工作流管理'),
-            ('workflow:update', '更新工作流', 'operation', '工作流管理'),
-            ('workflow:delete', '删除工作流', 'operation', '工作流管理'),
-            ('workflow:approve', '审批工作流', 'operation', '工作流管理'),
+            # 宸ヤ綔娴佺鐞?            ('workflow:create', '鍒涘缓宸ヤ綔娴?, 'operation', '宸ヤ綔娴佺鐞?),
+            ('workflow:read', '鏌ョ湅宸ヤ綔娴?, 'operation', '宸ヤ綔娴佺鐞?),
+            ('workflow:update', '鏇存柊宸ヤ綔娴?, 'operation', '宸ヤ綔娴佺鐞?),
+            ('workflow:delete', '鍒犻櫎宸ヤ綔娴?, 'operation', '宸ヤ綔娴佺鐞?),
+            ('workflow:approve', '瀹℃壒宸ヤ綔娴?, 'operation', '宸ヤ綔娴佺鐞?),
             
-            # 系统管理
-            ('system:config', '系统配置', 'operation', '系统管理'),
-            ('system:monitor', '系统监控', 'operation', '系统管理'),
+            # 绯荤粺绠＄悊
+            ('system:config', '绯荤粺閰嶇疆', 'operation', '绯荤粺绠＄悊'),
+            ('system:monitor', '绯荤粺鐩戞帶', 'operation', '绯荤粺绠＄悊'),
         ]
         
         permission_count = 0
@@ -250,44 +239,44 @@ def init_default_data():
                 """, (perm_id, name, code, type_, datetime.now(), datetime.now()))
                 permission_count += 1
         
-        print(f"✅ 基础权限创建成功: {permission_count} 个新权限")
+        print(f"鉁?鍩虹鏉冮檺鍒涘缓鎴愬姛: {permission_count} 涓柊鏉冮檺")
         
-        # 6. 创建默认菜单
-        print("\n[7/7] 创建默认菜单...")
+        # 6. 鍒涘缓榛樿鑿滃崟
+        print("\n[7/7] 鍒涘缓榛樿鑿滃崟...")
         menus = [
             {
-                'name': '系统管理',
+                'name': '绯荤粺绠＄悊',
                 'path': '/system',
                 'icon': 'setting',
                 'parent_id': None,
                 'sort_order': 100,
                 'children': [
                     {
-                        'name': '用户管理',
+                        'name': '鐢ㄦ埛绠＄悊',
                         'path': '/system/users',
                         'icon': 'user',
                         'sort_order': 101
                     },
                     {
-                        'name': '角色管理',
+                        'name': '瑙掕壊绠＄悊',
                         'path': '/system/roles',
                         'icon': 'team',
                         'sort_order': 102
                     },
                     {
-                        'name': '权限管理',
+                        'name': '鏉冮檺绠＄悊',
                         'path': '/system/permissions',
                         'icon': 'key',
                         'sort_order': 103
                     },
                     {
-                        'name': '菜单管理',
+                        'name': '鑿滃崟绠＄悊',
                         'path': '/system/menus',
                         'icon': 'menu',
                         'sort_order': 104
                     },
                     {
-                        'name': '部门管理',
+                        'name': '閮ㄩ棬绠＄悊',
                         'path': '/system/departments',
                         'icon': 'apartment',
                         'sort_order': 105
@@ -295,26 +284,26 @@ def init_default_data():
                 ]
             },
             {
-                'name': 'MCP工具',
+                'name': 'MCP宸ュ叿',
                 'path': '/mcp',
                 'icon': 'api',
                 'parent_id': None,
                 'sort_order': 200,
                 'children': [
                     {
-                        'name': '工具管理',
+                        'name': '宸ュ叿绠＄悊',
                         'path': '/mcp/tools',
                         'icon': 'tool',
                         'sort_order': 201
                     },
                     {
-                        'name': '数据源管理',
+                        'name': '鏁版嵁婧愮鐞?,
                         'path': '/mcp/datasources',
                         'icon': 'database',
                         'sort_order': 202
                     },
                     {
-                        'name': '字典管理',
+                        'name': '瀛楀吀绠＄悊',
                         'path': '/mcp/dictionaries',
                         'icon': 'book',
                         'sort_order': 203
@@ -322,20 +311,20 @@ def init_default_data():
                 ]
             },
             {
-                'name': '工作中心',
+                'name': '宸ヤ綔涓績',
                 'path': '/work',
                 'icon': 'work',
                 'parent_id': None,
                 'sort_order': 300,
                 'children': [
                     {
-                        'name': '待办任务',
+                        'name': '寰呭姙浠诲姟',
                         'path': '/work/todos',
                         'icon': 'check-circle',
                         'sort_order': 301
                     },
                     {
-                        'name': '工作流管理',
+                        'name': '宸ヤ綔娴佺鐞?,
                         'path': '/work/workflows',
                         'icon': 'branch',
                         'sort_order': 302
@@ -343,20 +332,20 @@ def init_default_data():
                 ]
             },
             {
-                'name': '系统监控',
+                'name': '绯荤粺鐩戞帶',
                 'path': '/monitor',
                 'icon': 'monitor',
                 'parent_id': None,
                 'sort_order': 400,
                 'children': [
                     {
-                        'name': '登录日志',
+                        'name': '鐧诲綍鏃ュ織',
                         'path': '/monitor/login-logs',
                         'icon': 'login',
                         'sort_order': 401
                     },
                     {
-                        'name': '操作日志',
+                        'name': '鎿嶄綔鏃ュ織',
                         'path': '/monitor/operation-logs',
                         'icon': 'file-text',
                         'sort_order': 402
@@ -367,8 +356,7 @@ def init_default_data():
         
         menu_count = 0
         for menu in menus:
-            # 创建父菜单
-            cursor.execute("""
+            # 鍒涘缓鐖惰彍鍗?            cursor.execute("""
                 SELECT id FROM menus WHERE path = %s AND tenant_id = %s
             """, (menu['path'], tenant_id))
             existing_menu = cursor.fetchone()
@@ -383,8 +371,7 @@ def init_default_data():
                 """, (parent_id, tenant_id, menu['name'], menu['path'], menu['icon'], None, menu['sort_order'], True, 'active', datetime.now(), datetime.now()))
                 menu_count += 1
             
-            # 创建子菜单
-            for child in menu['children']:
+            # 鍒涘缓瀛愯彍鍗?            for child in menu['children']:
                 cursor.execute("""
                     SELECT id FROM menus WHERE path = %s AND tenant_id = %s
                 """, (child['path'], tenant_id))
@@ -398,25 +385,25 @@ def init_default_data():
                     """, (child_id, tenant_id, child['name'], child['path'], child['icon'], parent_id, child['sort_order'], True, 'active', datetime.now(), datetime.now()))
                     menu_count += 1
         
-        print(f"✅ 默认菜单创建成功: {menu_count} 个新菜单")
+        print(f"鉁?榛樿鑿滃崟鍒涘缓鎴愬姛: {menu_count} 涓柊鑿滃崟")
         
-        # 提交事务
+        # 鎻愪氦浜嬪姟
         connection.commit()
         
         print("\n" + "=" * 60)
-        print("✅ 默认数据初始化成功！")
+        print("鉁?榛樿鏁版嵁鍒濆鍖栨垚鍔燂紒")
         print("=" * 60)
-        print("\n登录信息：")
-        print(f"超级管理员账号: admin")
-        print(f"超级管理员密码: admin123456")
-        print(f"默认租户: default")
-        print("\n重要提示：")
-        print("1. 请在生产环境中修改超级管理员密码")
-        print("2. 请根据实际需求调整角色和权限配置")
+        print("\n鐧诲綍淇℃伅锛?)
+        print(f"瓒呯骇绠＄悊鍛樿处鍙? admin")
+        print(f"瓒呯骇绠＄悊鍛樺瘑鐮? admin123456")
+        print(f"榛樿绉熸埛: default")
+        print("\n閲嶈鎻愮ず锛?)
+        print("1. 璇峰湪鐢熶骇鐜涓慨鏀硅秴绾х鐞嗗憳瀵嗙爜")
+        print("2. 璇锋牴鎹疄闄呴渶姹傝皟鏁磋鑹插拰鏉冮檺閰嶇疆")
         print("=" * 60)
         
     except Exception as e:
-        print(f"\n❌ 初始化失败: {e}")
+        print(f"\n鉂?鍒濆鍖栧け璐? {e}")
         import traceback
         traceback.print_exc()
         if connection:
@@ -426,7 +413,7 @@ def init_default_data():
             cursor.close()
         if connection:
             connection.close()
-        print("\n数据库连接已关闭")
+        print("\n鏁版嵁搴撹繛鎺ュ凡鍏抽棴")
 
 
 if __name__ == "__main__":
